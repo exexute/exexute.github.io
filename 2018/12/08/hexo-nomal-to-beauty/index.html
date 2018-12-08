@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="hexo框架是一个快速搭建博客的神器, 为了个性化的设置博客的样式, 还需要对hexo做”美化”。此文长期维护，记录使用的美化工具">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-08T04:42:26.192Z">
+<meta property="og:updated_time" content="2018-12-08T05:01:29.191Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo-nomal-to-beauty">
 <meta name="twitter:description" content="hexo框架是一个快速搭建博客的神器, 为了个性化的设置博客的样式, 还需要对hexo做”美化”。此文长期维护，记录使用的美化工具">
@@ -214,6 +214,21 @@
 </li>
 </ol>
 <p>关于配置的具体含义，请移步github。</p>
+<h3 id="增加分类"><a href="#增加分类" class="headerlink" title="增加分类"></a>增加分类</h3><p>什么是分类？<br>分类就是我博客左侧的：home、ctf、tools等内容。</p>
+<p>添加分类的步骤：</p>
+<ol>
+<li><p>创建分类页面</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo n page categories</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在themes/yilia/_config.yml配置文件中，增加分类</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">meun:</span><br><span class="line">  home: /</span><br><span class="line">  ctf: /categories/ctf</span><br><span class="line">  tools: /categories/tools</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建博文时，指定所属的分类</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hexo搭建个人博客</span><br><span class="line">categories:</span><br><span class="line">- hexo</span><br><span class="line">tags: hexo</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在博文中增加categories模块,然后在下一行指定分类名：hexo。ps:// 前面的-必须加，分类名称与-之间有一个空格</p>
+<p>除了分类外，还可以创建about、tags、archives及自定义页面，流程均如上所示。</p>
 
       
 
@@ -457,10 +472,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
               </li>
              
@@ -486,6 +497,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">服务提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
               </li>
              
               <li class="article-tag-list-item">
