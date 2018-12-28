@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="随着项目越来越大, 功能越来越多, 使用python特性的地方也越来越多,随着对python特性的使用, 对这些概念的理解也越来越深, 因此写此文打卡">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-18T16:45:58.572Z">
+<meta property="og:updated_time" content="2018-12-28T12:58:39.562Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python: **器">
 <meta name="twitter:description" content="随着项目越来越大, 功能越来越多, 使用python特性的地方也越来越多,随着对python特性的使用, 对这些概念的理解也越来越深, 因此写此文打卡">
@@ -191,12 +191,45 @@
       
         <p>随着项目越来越大, 功能越来越多, 使用python特性的地方也越来越多,随着对python特性的使用, 对这些概念的理解也越来越深, 因此写此文打卡<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
-<li>生成器</li>
 <li>迭代器</li>
+<li>生成器</li>
 <li>装饰器</li>
 <li>上下文管理器</li>
 </ul>
-<h2 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h2>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><p>背景： 序列中元素的迭代操作十分频繁, 而python中大部分的数据结构都是序列, 因此python提供了额外的工具来使迭代操作简单、高效; 这种工具就是迭代器</p>
+<h4 id="迭代器相关概念"><a href="#迭代器相关概念" class="headerlink" title="迭代器相关概念"></a>迭代器相关概念</h4><p>迭代: 重复相同的动作<br>可迭代：实现了__iter__()方法的对象都是可迭代的。通过<code>isinstance()</code>可判断一个对象是否可迭代, 如case 1.1<code>isinstance(owef(), collections.Iterable)</code>判断是否可迭代<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">owef</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">print(isinstance(owef(), collections.Iterable))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ans: True</span></span><br></pre></td></tr></table></figure></p>
+<p>迭代器：</p>
+<ul>
+<li>python2: 实现了next()方法且可以无参数调用的对象是迭代器</li>
+<li>python3: 实现了__next__()方法且可无参数调用的对象是一个迭代器<br>反向迭代器: 实现了__reversed__方法的迭代器称为反向迭代器<br>迭代协议: 同时实现__iter__()、__next__()方法的对象实现了迭代协议, 可被for循环调用</li>
+</ul>
+<h4 id="内置类型迭代器"><a href="#内置类型迭代器" class="headerlink" title="内置类型迭代器"></a>内置类型迭代器</h4><ul>
+<li>文件迭代器</li>
+</ul>
+<h4 id="迭代器的优点"><a href="#迭代器的优点" class="headerlink" title="迭代器的优点"></a>迭代器的优点</h4><p>快速, 迭代器在python中是以C语言运行的速度来运行的, 而普通的for、while循环均为python运行速度来运行, 理论上来说迭代器的运行速度更快但是也不尽然, 在是实际环境中需要通过计时操作判断哪一种方式更加快速;</p>
+<p>可被for循环调用的对象必须实现迭代协议, for循环时, 先调用被循环对象的<strong>iter</strong>方法获取一个可迭代的对象, 然后可迭代的对象不停调用<strong>next</strong>()方法来获取新的数据</p>
+<h2 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h2><p>生成器是封装后的迭代器, 比迭代器功能强大。</p>
+<h4 id="生成器相关概念"><a href="#生成器相关概念" class="headerlink" title="生成器相关概念"></a>生成器相关概念</h4><p>生成器: 含有yield的函数或对象被称为生成器</p>
+<h4 id="生成器的函数"><a href="#生成器的函数" class="headerlink" title="生成器的函数"></a>生成器的函数</h4><p><code>__del__()</code>、<code>__getattribute__(self, name, /)</code>、<code>__iter__(self, /)</code>、<code>__next__(self, /)</code>、<code>__repr__(self, /)</code>、<code>close()</code>、<code>send(arg)</code>、<code>throw()</code></p>
+<ol>
+<li>调用生成器时, 生成器将返回一个迭代器</li>
+<li>可通过生成器的<code>sned(arg)</code>方法与生成器通信, 协程便是利用此方法实现; 当外部调用生成器的send(arg)方法时, 将唤醒生成器, 生成器内部通过<code>arg = yield r</code>的形式接收外部发送的数据并存入局部变量arg中, 然后调用内部迭代器的<strong>next</strong>方法返回一个数据, 然后睡眠。</li>
+<li>创建迭代器的最佳方案是使用生成器创建</li>
+</ol>
+<h2 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h2><h2 id="上下文管理器"><a href="#上下文管理器" class="headerlink" title="上下文管理器"></a>上下文管理器</h2><p>上下文管理器主要用来处理加载需要释放的资源的问题。</p>
+<h4 id="概念的理解"><a href="#概念的理解" class="headerlink" title="概念的理解"></a>概念的理解</h4><p>case 1: python中的上下文<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="number">2</span></span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line">b = <span class="number">3</span></span><br><span class="line">print(b)</span><br></pre></td></tr></table></figure></p>
+<p>python是解释型语言, 代码是从上向下逐条运行的, 在case 1中, <code>print(a)</code>的上下文分别是该条语句上下的哪些代码;</p>
+<p>case 2: 语句附近的上下文<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">f_user = open(<span class="string">"user.txt"</span>)</span><br><span class="line">f_pass = open(<span class="string">"passwd.txt"</span>)</span><br><span class="line"><span class="keyword">for</span> u <span class="keyword">in</span> f_user:</span><br><span class="line">  <span class="keyword">for</span> p <span class="keyword">in</span> f_pass:</span><br><span class="line">    print(u.strip(), p.strip())</span><br><span class="line"></span><br><span class="line">f_user.close()</span><br><span class="line">f_pass.close()</span><br></pre></td></tr></table></figure></p>
+<p>上下文管理器中的上下文: 当通过文件对象读取文件时, 需要先创建文件文件对象, 读取之后需要关闭文件对象; 这些代码在python中可以放在文件对象读取数据的上下, 如:case 2; 也可以放在遥远的上下, 如: case 3; 这些都可以叫做文件对象读取文件的上下文, 上下文管理器中的上下文就是特指这种需要先创建对象, 使用完对象之后需要进行资源释放和回收的上下文环境。</p>
+<p>case 3: 遥远的上下文<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">f_user = open(<span class="string">"user.txt"</span>)</span><br><span class="line">f_pass = open(<span class="string">"passwd.txt"</span>)</span><br><span class="line"></span><br><span class="line">...好多语句</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> u <span class="keyword">in</span> f_user:</span><br><span class="line">  <span class="keyword">for</span> p <span class="keyword">in</span> f_pass:</span><br><span class="line">    print(u, p)</span><br><span class="line"></span><br><span class="line">...好多语句</span><br><span class="line"></span><br><span class="line">f_user.close()</span><br><span class="line">f_pass.close()</span><br></pre></td></tr></table></figure></p>
+<p>case 4: 上下文协议<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 上下文管理器</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Contextor</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__enter__</span><span class="params">(self)</span>:</span></span><br><span class="line">    print(<span class="string">"welcome to contextor"</span>)</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__exit__</span><span class="params">(self, exc_type, exc_val, exc_tb)</span>:</span></span><br><span class="line">    print(<span class="string">"goodbye."</span>)</span><br><span class="line"></span><br><span class="line">contextor = Contextor()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用上下文管理器</span></span><br><span class="line"><span class="keyword">with</span> contextor <span class="keyword">as</span> c:</span><br><span class="line">  print(<span class="string">"i use a contextor."</span>)</span><br></pre></td></tr></table></figure></p>
+<p>上下文协议：实现了<strong>enter</strong>()、<strong>exit</strong>()方法的对象, 实现了上下文协议, with语句调用的对象必须实现上下文协议。</p>
+<h4 id="with与上下文管理器"><a href="#with与上下文管理器" class="headerlink" title="with与上下文管理器"></a>with与上下文管理器</h4><p>with语句用于上下文管理器的调用, 旨在简化”上下文管理”的重复代码; 可以使用with的语句的对象都是上下文管理器对象, 均实现了上下文管理协议.</p>
+<p>case 5: with与上下文管理器<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> open(<span class="string">"file1.txt"</span>) <span class="keyword">as</span> f:</span><br><span class="line">  print(f.readlines())</span><br><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">with语句的执行过程分为四步:</span></span><br><span class="line"><span class="string">  1. 执行with后的语句获得一个匿名对象lambda_f;</span></span><br><span class="line"><span class="string">  2. 调用lambda_f的__enter__()方法, 返回一个文件操作对象lambda_file并赋值给f;</span></span><br><span class="line"><span class="string">  3. 执行pring(f.readlines())</span></span><br><span class="line"><span class="string">  4. 调用f的__exit__()方法关闭文件操作对象</span></span><br><span class="line"><span class="string">'''</span></span><br></pre></td></tr></table></figure></p>
+<p>通过with语句调用open()方法时, <code>open(&quot;file1.txt&quot;)</code>会返回一个匿名对象, 记为lambda_f; with语句调用lambda_f的<code>__enter__()</code>方法, 该方法将返回一个新的对象lambda_file并赋值给as声明的变量f;</p>
+<p>case 6: with与自建上下文管理器<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Contextor</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__enter__</span><span class="params">(self)</span>:</span></span><br><span class="line">    print(<span class="string">"welcome to contextor"</span>)</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__exit__</span><span class="params">(self, exc_type, exc_val, exc_tb)</span>:</span></span><br><span class="line">    print(<span class="string">"goodbye."</span>)</span><br><span class="line"></span><br><span class="line">contextor = Contextor()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> contextor <span class="keyword">as</span> c:</span><br><span class="line">  print(<span class="string">"i use a contextor."</span>)</span><br></pre></td></tr></table></figure></p>
+<p>通过case 6的结果, 我们将更了解with与上下文管理器之间的运行原理, 结果如下:</p>
+
       
 
       
@@ -326,6 +359,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2018/12/25/kong安装lua-waf之最佳实践/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          kong安装lua waf之最佳实践
+        
+      </div>
+    </a>
   
   
     <a href="/2018/12/18/设计模式-工厂模式/" id="article-nav-older" class="article-nav-link-wrap">
@@ -495,6 +537,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -507,31 +557,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">node rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">ss-manager命令注入</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">kong</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">lua waf</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -552,6 +586,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">node rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">ss-manager命令注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
               </li>
             
             <div class="clearfix"></div>

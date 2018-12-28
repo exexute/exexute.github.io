@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: hexo-beauty | owefsad&#39;s blog</title>
+  <title>kong安装lua waf之最佳实践 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/hexo-beauty/index.html">
+  <meta name="description" content="近来接触到了微服务, 简单玩了一下kong, 主要是在kong上配置lua waf来拦截攻击行为, 写此文记录kong与lua waf之间的一些配置">
+<meta name="keywords" content="kong,lua waf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kong安装lua waf之最佳实践">
+<meta property="og:url" content="http://yoursite.com/2018/12/25/kong安装lua-waf之最佳实践/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="近来接触到了微服务, 简单玩了一下kong, 主要是在kong上配置lua waf来拦截攻击行为, 写此文记录kong与lua waf之间的一些配置">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-25T12:20:53.743Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="kong安装lua waf之最佳实践">
+<meta name="twitter:description" content="近来接触到了微服务, 简单玩了一下kong, 主要是在kong上配置lua waf来拦截攻击行为, 写此文记录kong与lua waf之间的一些配置">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,71 +169,206 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-kong安装lua-waf之最佳实践" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/08/hexo-nomal-to-beauty/" class="archive-article-date">
-  	<time datetime="2018-12-08T04:17:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/08/hexo-nomal-to-beauty/">hexo-nomal-to-beauty</a>
+    <h1 class="article-title" itemprop="name">
+      kong安装lua waf之最佳实践
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/12/25/kong安装lua-waf之最佳实践/" class="archive-article-date">
+  	<time datetime="2018-12-25T11:00:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>近来接触到了微服务, 简单玩了一下kong, 主要是在kong上配置lua waf来拦截攻击行为, 写此文记录kong与lua waf之间的一些配置<br><a id="more"></a></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>kong修改nginx配置文件</li>
+<li>kong与loveshell的ngx_lua_waf组合</li>
+</ul>
+<h2 id="kong修改nginx配置文件"><a href="#kong修改nginx配置文件" class="headerlink" title="kong修改nginx配置文件"></a>kong修改nginx配置文件</h2><p>kong安装之后, 会安装openresty, 带有nginx服务器和一些lua模块, 启动kong时, 会根据kong.conf配置文件和nginx-kong.lua脚本创建一份nginx-kong.conf配置文件以供nginx使用; 如果需要更改nginx-kong的配置, 只能通过修改kong.conf配置文件或者nginx-kong.lua模版文件来实现, 如果需要在nginx中放入特定的字段, 只能通过修改nginx-kong.lua模版文件来实现。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim //usr/<span class="built_in">local</span>/share/lua/5.1/kong/templates/nginx-kong.lua</span><br></pre></td></tr></table></figure></p>
+<h2 id="kong与ngx-lua-waf组合"><a href="#kong与ngx-lua-waf组合" class="headerlink" title="kong与ngx_lua_waf组合"></a>kong与ngx_lua_waf组合</h2><p>前提：kong已经安装且可以正常启动运行</p>
+<ol>
+<li><p>下载waf并放到nginx.conf配置文件所在目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/loveshell/ngx_lua_waf.git</span><br><span class="line">$ mv ngx_lua_waf /usr/<span class="built_in">local</span>/kong/waf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改kong.conf配置, 设置waf所在目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ 修改kong.conf配置文件的lua_package_path字段值为：&lt;waf_path&gt;/?.lua</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改ngx_lua_waf代码, 使其支持在access_by_lua_block、init_by_lua_block中调用</p>
+</li>
+<li><p>修改nginx-kong.lua配置, 调用waf</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ 在init_by_lua_block字段中加入 require <span class="string">'init'</span></span><br><span class="line">$ 在access_by_lua_block字段中加入 waf()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改waf/config.lua配置中的RulePath、logdir字段, 设置为规则和日志所在的目录, 其中logdir中指定的目录需要nobody用户可写</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ RulePath = <span class="string">"/usr/local/kong/waf/wafconf/"</span></span><br><span class="line">$ logdir = <span class="string">"/usr/local/kong/logs/waf/"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改init.lua脚本和规则, 使日志中记录拦截的攻击类型<br>代码github中.</p>
+</li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">hexo-beauty</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">kong</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">lua waf</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/hexo//" class="article-tag-list-link color5">hexo</a>
+        			<a href="/categories/coding//" class="article-tag-list-link color2">coding</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/25/kong安装lua-waf之最佳实践/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2018/12/18/Python-器/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Python: **器</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -251,9 +391,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
