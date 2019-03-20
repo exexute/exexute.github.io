@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>dirb实战 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlist/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 15">
+  <meta name="description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlists/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 1">
 <meta name="keywords" content="url爆破">
 <meta property="og:type" content="article">
 <meta property="og:title" content="dirb实战">
 <meta property="og:url" content="http://yoursite.com/2019/03/20/dirb最佳实践/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlist/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 15">
+<meta property="og:description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlists/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 1">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-20T01:07:47.346Z">
+<meta property="og:updated_time" content="2019-03-20T01:14:31.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="dirb实战">
-<meta name="twitter:description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlist/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 15">
+<meta name="twitter:description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlists/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 1">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -189,7 +189,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介：<br>dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于<code>/usr/share/wordlist/dirb/</code>目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.<br>如有错误之处, 请qq联系本渣: 1547147759.<br><a id="more"></a></p>
+        <p>简介：<br>dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于<code>/usr/share/wordlists/dirb/</code>目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.<br>如有错误之处, 请qq联系本渣: 1547147759.<br><a id="more"></a></p>
 <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
 <li>dirb基础语法</li>
 <li>dirb选项解释</li>
@@ -449,6 +449,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -485,15 +489,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -509,18 +513,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">open ssl</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
               </li>
              
@@ -533,15 +525,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color4">open ssl</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -550,6 +538,18 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">hydra</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
               </li>
              
               <li class="article-tag-list-item">
