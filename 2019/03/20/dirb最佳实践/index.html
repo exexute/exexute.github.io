@@ -9,14 +9,14 @@
   <title>dirb实战 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlist/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 15">
-<meta name="keywords" content="tools,url爆破">
+<meta name="keywords" content="url爆破">
 <meta property="og:type" content="article">
 <meta property="og:title" content="dirb实战">
 <meta property="og:url" content="http://yoursite.com/2019/03/20/dirb最佳实践/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlist/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 15">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-20T01:05:22.853Z">
+<meta property="og:updated_time" content="2019-03-20T01:07:47.346Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="dirb实战">
 <meta name="twitter:description" content="简介：dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于/usr/share/wordlist/dirb/目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.如有错误之处, 请qq联系本渣: 15">
@@ -240,10 +240,6 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">tools</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">url爆破</a>
         		</li>
       		
@@ -251,6 +247,17 @@
 	</div>
 
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/tools//" class="article-tag-list-link color1">tools</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -442,26 +449,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -482,19 +469,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">tools</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -518,6 +517,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
               </li>
              
@@ -538,15 +541,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">hydra</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
               </li>
              
               <li class="article-tag-list-item">
