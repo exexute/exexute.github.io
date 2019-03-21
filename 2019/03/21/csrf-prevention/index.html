@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>WMI_persistent | owefsad&#39;s blog</title>
+  <title>csrf_prevention | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文非原创, 翻译自多篇文章。原文请见参考链接.WMI在运维和DBA中使用的比较多, 为了解WMI的原理及其风险和实时监测WMI attack特写此文记录">
+  <meta name="description" content="简介CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如">
+<meta name="keywords" content="csrf,甲方">
 <meta property="og:type" content="article">
-<meta property="og:title" content="WMI_persistent">
-<meta property="og:url" content="http://yoursite.com/2019/03/12/WMI-persistent/index.html">
+<meta property="og:title" content="csrf_prevention">
+<meta property="og:url" content="http://yoursite.com/2019/03/21/csrf-prevention/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="本文非原创, 翻译自多篇文章。原文请见参考链接.WMI在运维和DBA中使用的比较多, 为了解WMI的原理及其风险和实时监测WMI attack特写此文记录">
+<meta property="og:description" content="简介CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-12T04:57:17.414Z">
+<meta property="og:updated_time" content="2019-03-21T02:13:23.089Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="WMI_persistent">
-<meta name="twitter:description" content="本文非原创, 翻译自多篇文章。原文请见参考链接.WMI在运维和DBA中使用的比较多, 为了解WMI的原理及其风险和实时监测WMI attack特写此文记录">
+<meta name="twitter:title" content="csrf_prevention">
+<meta name="twitter:description" content="简介CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -168,39 +169,52 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-WMI-persistent" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-csrf-prevention" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      WMI_persistent
+      csrf_prevention
     </h1>
   
 
         
-        <a href="/2019/03/12/WMI-persistent/" class="archive-article-date">
-  	<time datetime="2019-03-12T04:41:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-12</time>
+        <a href="/2019/03/21/csrf-prevention/" class="archive-article-date">
+  	<time datetime="2019-03-21T01:11:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-21</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本文非原创, 翻译自多篇文章。原文请见参考链接.<br>WMI在运维和DBA中使用的比较多, 为了解WMI的原理及其风险和实时监测WMI attack特写此文记录<br><a id="more"></a></p>
-<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
-<li>什么是WMI? WMI的namespace、class</li>
-<li>remote WMI</li>
-<li>WMI attack</li>
-<li>WMI define</li>
-<li>WMI attack detection</li>
-<li>参考文章</li>
+        <p>简介<br>CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.<br>倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如: 产品采用前后端分离架构，无法从服务器端下发token、增加验证码会影响用户体验、产品拥有多个域名本身需要跨域、产品有些接口需要被第三方程序调用, 无法设置referer、公司实行有大中台小前台的产品架构<br>漏洞该业务线修复还是平台修复等种种问题.<br>为了解决甲方爸爸们的困扰, 特写此CSRF防御方案解决以上提出的问题</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>owef谈csrf原理</li>
+<li>最常用的跨域方式</li>
+<li>不同场景下的CSRF防御方案</li>
 </ul>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
-<li>Tales of a Threat Hunter 2<a href="https://www.eideon.com/2018-03-02-THL03-WMIBackdoors/" target="_blank" rel="noopener">^eideon</a></li>
-<li>Abusion Windows Management<a href="https://www.blackhat.com/docs/us-15/materials/us-15-Graeber-Abusing-Windows-Management-Instrumentation-WMI-To-Build-A-Persistent%20Asynchronous-And-Fileless-Backdoor-wp.pdf" target="_blank" rel="noopener">^mattGraeber</a></li>
+<h2 id="owef谈csrf原理"><a href="#owef谈csrf原理" class="headerlink" title="owef谈csrf原理"></a>owef谈csrf原理</h2><p>Cross Site Request-forgery, 译为跨站点请求伪造. CSRF是一个知其名便知其意的漏洞, 它的原理是：跨站、伪造客户端请求.<br>何为跨站, 此处不予以解释, 请自行查阅. 伪造客户端请求这个话题就比较有意思了, 伪造的方式乙方大佬们应该非常清楚, 所以我不谈伪造方式, 谈一个请求可伪造的前提, 1. get请求都可以被伪造; 2. post请求中除了严格使用json格式传输数据的外, 都可以尝试是否可伪造。<br>当目标站点有了可伪造的请求, 允许跨站调用, 那么它基本上就存在CSRF了.</p>
+<h2 id="最常用的跨域方式"><a href="#最常用的跨域方式" class="headerlink" title="最常用的跨域方式"></a>最常用的跨域方式</h2><p>当下互联网厂商都在进行架构的调整和转型, 无论是BAT还是新型的中型企业都在做大中台、小前台架构的调整，目的是提高整个企业的产能和效益, 同时当下WEB技术的发展已经进入前端的后辉煌时代, 中型以上规模的互联网企业都在做前后端分离, 这种时代背景下, 多域名、多产品线互相调用的情况是不可避免的, 且大中台负责给小前台提供强有力的平台支撑, 称为PAAS平台. 平台提供给业务线接口自然要负责处理业务线的跨域需求, 于是大部分企业选用了这两种跨域方式：jsonp、cors.</p>
+<p>jsonp需要在调用后端接口时传入<code>callback</code>参数（实际参数名可自行判断获取）来接收服务器返回的数据, 然后通过js函数处理对应的数据. cors跨域需要注意的是<code>Access-Control-Allow-Origin</code>属性不支持列表形势的参数, 无法传入多个值.</p>
+<h2 id="不同场景下的CSRF防御方案"><a href="#不同场景下的CSRF防御方案" class="headerlink" title="不同场景下的CSRF防御方案"></a>不同场景下的CSRF防御方案</h2><p>基于上述对CSRF原理的理解和对甲方爸爸们所处现状的分析, owef认为, 在这种场景下如果想搞定CSRF, 必须有PAAS平台来做安全组件, 供小前台调用; 接下来就是分析如何设置适合自己的方案了.</p>
+<p>前提工作：</p>
+<ol>
+<li>分析请求是否易伪造, 是否可更改现有post请求参数为json格式并在后端验证json格式</li>
+<li>获取公司使用的主域名</li>
 </ol>
+<p>场景一: JSONP跨域<br>JSONP跨域请求是通过js发起调用的, 目前市场上几乎所有的浏览器都不支持通过js修改请求的referer字段, 因此, 通过限制referer可以解决掉大部分的jsonp劫持问题</p>
+<p>场景二: 同域调用, 前后端分离<br>前后端分离的架构下, 无法通过后端分发token, 当然有其他的替代方案来解决, 但是此处讨论最简单的方案, 通过验证referer可以解决前后端分离架构下的大部分CSRF问题</p>
+<p>场景三: CORS跨域<br>CORS跨域是可以带cookie发起请求的, 而真实场景中大部分后端接口也都是需要携带cookie进行访问的, 针对CORS下的CSRF可通过验证origin进行防御</p>
+<h3 id="CORS跨域的方案"><a href="#CORS跨域的方案" class="headerlink" title="CORS跨域的方案"></a>CORS跨域的方案</h3><p><strong>核心</strong> 验证origin、配置Access-Control-Allow-Origin属性<br><strong>方案</strong></p>
+<ol>
+<li>收集公司现有的域名</li>
+<li>创建域名白名单列表</li>
+<li>根据http request参数匹配白名单列表, 如果存在在服务器端设置Access-Control-Allow-Origin为匹配到的域名; 如果不存在, 服务器端不设置CORS系列的属性.</li>
+</ol>
+<p><strong>方案平台化</strong><br>通过编写python装饰器或django中间处理程序、.net 过滤器等来完成防御方案的编写, 业务线调用对应的接口来对特定的接口实现CSRF防御.</p>
 
       
 
@@ -230,7 +244,33 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">csrf</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">甲方</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/prevention//" class="article-tag-list-link color1">prevention</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -280,7 +320,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/03/12/WMI-persistent/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/03/21/csrf-prevention/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -294,18 +334,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/03/20/dirb最佳实践/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          dirb实战
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/03/05/cve-2014-0160-心脏滴血漏洞分析/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">cve_2014_0160_心脏滴血漏洞分析</div>
+    <a href="/2019/03/20/port-service-vul/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">port_service_vul</div>
       <i class="icon-circle-right"></i>
     </a>
   
