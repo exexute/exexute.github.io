@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png">
 <meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo2.png">
 <meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo3.png">
-<meta property="og:updated_time" content="2019-03-26T02:06:49.789Z">
+<meta property="og:updated_time" content="2019-03-26T02:09:36.311Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux_find_hacking">
 <meta name="twitter:description" content="简介find命令是linux自带的一款工具用来查找文件, 由于linux中多用户、用户组等特性, 因此文件也具有上述属性, 而linux中文件的权限的控制有一定的入门难度, 因此存在某一部分管理员或失误、或客观需要配置了易受攻击的文件权限, 可用来进行提权操作.本文记录find命令在hacking过程中的使用, 包括各种场景化.  持续更新中….">
@@ -208,7 +208,7 @@
 <p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png" alt="demo1"><br><em>demo 2 </em> 查找具有SGID权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm /6000 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
 <p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo2.png" alt="demo2"><br><em>demo 3 </em> 查找当前用户具有<strong>写</strong>和<strong>执行</strong>权限的<strong>其他用户</strong>的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -user root -<span class="built_in">type</span> f -perm -003 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
 <p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo3.png" alt="demo3"></p>
-<h3 id="根据权限符号查找文件"><a href="#根据权限符号查找文件" class="headerlink" title="根据权限符号查找文件"></a>根据权限符号查找文件</h3><p>权限符号解释: <code>u</code>(文件所有者)、<code>g</code>(文件所属组)、<code>o</code>(其他人)、<code>a</code>(前三种类型)、<code>r</code>(读权限)、<code>w</code>(写权限)、x<code>(执行权限)、</code>s`(SID权限)</p>
+<h3 id="根据权限符号查找文件"><a href="#根据权限符号查找文件" class="headerlink" title="根据权限符号查找文件"></a>根据权限符号查找文件</h3><p>权限符号解释: <code>u</code>(文件所有者)、<code>g</code>(文件所属组)、<code>o</code>(其他人)、<code>a</code>(前三种类型)、<code>r</code>(读权限)、<code>w</code>(写权限)、<code>x</code>(执行权限)、<code>s</code>(SID权限)</p>
 <p><em>demo 1 </em> 查找用户所有者具有写和执行权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm -u w+x 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
 <p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png" alt="demo1"></p>
 <p><em>demo 2 </em> 查找具有SID权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm -u s 2&gt;/dev/null</span><br><span class="line">$ find / -<span class="built_in">type</span> f -perm -g s 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
@@ -458,26 +458,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">生成器</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">迭代器</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">装饰器</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">上下文管理器</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">hexo</a>
               </li>
              
@@ -498,11 +478,39 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">生成器</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">迭代器</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">装饰器</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">上下文管理器</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -518,35 +526,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">open ssl</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">find</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">kong</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">lua waf</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -558,7 +542,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">find</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">kong</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">lua waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -567,10 +575,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">hydra</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -583,10 +587,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
               </li>
              
               <li class="article-tag-list-item">
