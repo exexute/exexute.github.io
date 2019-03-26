@@ -6,15 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: 绕过沙箱 | owefsad&#39;s blog</title>
+  <title>linux_find_hacking | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/绕过沙箱/index.html">
+  <meta name="description" content="简介find命令是linux自带的一款工具用来查找文件, 由于linux中多用户、用户组等特性, 因此文件也具有上述属性, 而linux中文件的权限的控制有一定的入门难度, 因此存在某一部分管理员或失误、或客观需要配置了易受攻击的文件权限, 可用来进行提权操作.本文记录find命令在hacking过程中的使用, 包括各种场景化.  持续更新中….">
+<meta name="keywords" content="find">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux_find_hacking">
+<meta property="og:url" content="http://yoursite.com/2019/03/26/linux-find-hacking/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="简介find命令是linux自带的一款工具用来查找文件, 由于linux中多用户、用户组等特性, 因此文件也具有上述属性, 而linux中文件的权限的控制有一定的入门难度, 因此存在某一部分管理员或失误、或客观需要配置了易受攻击的文件权限, 可用来进行提权操作.本文记录find命令在hacking过程中的使用, 包括各种场景化.  持续更新中….">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png">
+<meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo2.png">
+<meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo3.png">
+<meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png">
+<meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo2.png">
+<meta property="og:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo3.png">
+<meta property="og:updated_time" content="2019-03-26T02:06:49.789Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="linux_find_hacking">
+<meta name="twitter:description" content="简介find命令是linux自带的一款工具用来查找文件, 由于linux中多用户、用户组等特性, 因此文件也具有上述属性, 而linux中文件的权限的控制有一定的入门难度, 因此存在某一部分管理员或失误、或客观需要配置了易受攻击的文件权限, 可用来进行提权操作.本文记录find命令在hacking过程中的使用, 包括各种场景化.  持续更新中….">
+<meta name="twitter:image" content="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,75 +176,196 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-linux-find-hacking" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/03/25/cve-2019-1003000-jenkins系列RCE漏洞分析/" class="archive-article-date">
-  	<time datetime="2019-03-25T04:55:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-25</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/03/25/cve-2019-1003000-jenkins系列RCE漏洞分析/">cve_2019_1003000_jenkins系列RCE漏洞分析</a>
+    <h1 class="article-title" itemprop="name">
+      linux_find_hacking
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/03/26/linux-find-hacking/" class="archive-article-date">
+  	<time datetime="2019-03-26T02:01:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简介<br>find命令是linux自带的一款工具用来查找文件, 由于linux中多用户、用户组等特性, 因此文件也具有上述属性, 而linux中文件的权限的控制有一定的入门难度, 因此存在某一部分管理员或失误、或客观需要配置了易受攻击的文件权限, 可用来进行提权操作.<br>本文记录find命令在hacking过程中的使用, 包括各种场景化. </p>
+<p>持续更新中….<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>根据权限find文件</li>
+<li>参考链接</li>
+</ul>
+<h2 id="根据权限find文件"><a href="#根据权限find文件" class="headerlink" title="根据权限find文件"></a>根据权限find文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find -perm [-/]mode</span><br></pre></td></tr></table></figure>
+<p>mode解释: mode代表权限, 用八进制数字(777, 000等)、权限符号(u=x, a=r+x)指定.<br>mode特殊值: 4000(SUID)、6000(SGID); SUID是可执行文件的一种特殊表示, 设置SUID后非文件所有者的账户运行文件时会以文件所有者的权限运行文件, 常用来提权; SGID与SUID类似, 非文件所属组内用户运行文件时会集成文件所属组的权限执行文件, 可用来提权.<br>mode参数解释:<br>1.无参数: 不带参数时查找指定权限的文件<br>2.’-‘参数: 大于等于指定权限的文件都可以被找出来<br>3.’/‘参数: 所有者、所属组或其他人 任何一个有此权限的文件都可以被找出来</p>
+<h3 id="根据八进制数据查找文件"><a href="#根据八进制数据查找文件" class="headerlink" title="根据八进制数据查找文件"></a>根据八进制数据查找文件</h3><p><em>demo 1 </em> 查找具有SUID权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm /4000 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png" alt="demo1"><br><em>demo 2 </em> 查找具有SGID权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm /6000 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo2.png" alt="demo2"><br><em>demo 3 </em> 查找当前用户具有<strong>写</strong>和<strong>执行</strong>权限的<strong>其他用户</strong>的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -user root -<span class="built_in">type</span> f -perm -003 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo3.png" alt="demo3"></p>
+<h3 id="根据权限符号查找文件"><a href="#根据权限符号查找文件" class="headerlink" title="根据权限符号查找文件"></a>根据权限符号查找文件</h3><p>权限符号解释: <code>u</code>(文件所有者)、<code>g</code>(文件所属组)、<code>o</code>(其他人)、<code>a</code>(前三种类型)、<code>r</code>(读权限)、<code>w</code>(写权限)、x<code>(执行权限)、</code>s`(SID权限)</p>
+<p><em>demo 1 </em> 查找用户所有者具有写和执行权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm -u w+x 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo1.png" alt="demo1"></p>
+<p><em>demo 2 </em> 查找具有SID权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ find / -<span class="built_in">type</span> f -perm -u s 2&gt;/dev/null</span><br><span class="line">$ find / -<span class="built_in">type</span> f -perm -g s 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo2.png" alt="demo2"><br><em>demo 3 </em> 查找<code>root</code>用户的文件且任意账号拥有<strong>写</strong>和<strong>执行</strong>权限的文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -user root -<span class="built_in">type</span> f -perm -o w+x 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://pof0ocf9o.bkt.clouddn.com/images/find/demo3.png" alt="demo3"></p>
+<h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><p><a href="https://www.ostechnix.com/find-files-based-permissions/" target="_blank" rel="noopener">find-files-based-permissions</a></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">绕过沙箱</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">RCE</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">find</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/cve-analysys//" class="article-tag-list-link color3">cve analysys</a>
+        			<a href="/categories/tools//" class="article-tag-list-link color1">tools</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/03/26/linux-find-hacking/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2019/03/25/cve-2019-1003000-jenkins系列RCE漏洞分析/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">cve_2019_1003000_jenkins系列RCE漏洞分析</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -255,9 +388,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
