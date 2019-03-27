@@ -6,15 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: udf提权 | owefsad&#39;s blog</title>
+  <title>How hacking with SUID | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/udf提权/index.html">
+  <meta name="description" content="简介SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的cheat sheet, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How hacking with SUID">
+<meta property="og:url" content="http://yoursite.com/2019/03/27/How-hacking-with-SUID/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="简介SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的cheat sheet, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-03-27T05:04:52.692Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="How hacking with SUID">
+<meta name="twitter:description" content="简介SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的cheat sheet, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,83 +168,166 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-How-hacking-with-SUID" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/08/Vulnhub-Challenging-Raven/" class="archive-article-date">
-  	<time datetime="2018-12-08T02:30:13.393Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/08/Vulnhub-Challenging-Raven/">Vulnhub Challenging: Raven</a>
+    <h1 class="article-title" itemprop="name">
+      How hacking with SUID
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">wordpress爆破</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ssh爆破</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">udf提权</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">sudoers配置错误</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        <a href="/2019/03/27/How-hacking-with-SUID/" class="archive-article-date">
+  	<time datetime="2019-03-27T05:03:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简介<br>SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.<br>但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的<code>cheat sheet</code>, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID文件的漏洞.<br>(由于实测失败, 本文内容暂不可用.)</p>
+<a id="more"></a>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>SUID、SGID介绍</li>
+<li>SUID文件查找及攻击</li>
+</ul>
+<h2 id="SUID、SGID介绍"><a href="#SUID、SGID介绍" class="headerlink" title="SUID、SGID介绍"></a>SUID、SGID介绍</h2><p>由于测试失败, 此处暂做保留内容.</p>
+<h2 id="SUID文件查找及攻击"><a href="#SUID文件查找及攻击" class="headerlink" title="SUID文件查找及攻击"></a>SUID文件查找及攻击</h2><p>查找具有SUID的可执行文件<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">tempfile=<span class="string">"/tmp/vul.txt"</span></span><br><span class="line"><span class="built_in">trap</span> <span class="string">"rm <span class="variable">$tempfile</span>"</span> 0</span><br><span class="line">find / \( -<span class="built_in">type</span> f -a -user root -a -perm -4001 \) -<span class="built_in">print</span> 1&gt; <span class="variable">$tempfile</span> 2&gt;/dev/null</span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `cat <span class="variable">$tempfile</span>`; <span class="keyword">do</span></span><br><span class="line">  strings -a <span class="variable">$file</span> | awk <span class="string">'/^gets$|^strcpy$|^strcat$|^sprintf$/\</span></span><br><span class="line"><span class="string">  &#123; printf ("%-10s \t %-50s \n"), $1, file &#125;'</span> <span class="string">"file=<span class="variable">$file</span>"</span> -</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="系统自带文件产生SUID"><a href="#系统自带文件产生SUID" class="headerlink" title="系统自带文件产生SUID"></a>系统自带文件产生SUID</h4><p>cheat_sheet: <code>nmap</code>、<code>vim</code>、<code>find</code>、<code>bash</code>、<code>more</code>、<code>less</code>、<code>nano</code>、<code>cp</code>这些文件的提权方式与<code>sudoers</code>错误配置提权方式相同, 如有不会可参考<a href="https://exexute.github.io/2019/03/26/sudoers-get-root-cheatsheet/" target="_blank" rel="noopener">sudoers_get_root_cheatsheet</a></p>
+<h4 id="对第三方suid文件进行模糊测试"><a href="#对第三方suid文件进行模糊测试" class="headerlink" title="对第三方suid文件进行模糊测试"></a>对第三方suid文件进行模糊测试</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设第三方suid文件位于: /opt/giac/bin目录下</span></span><br><span class="line">$ cut -f2 vul.txt|sed -e <span class="string">'/giac/!d'</span> - &gt;ssuid</span><br><span class="line">$ <span class="built_in">cd</span> /opt/giac/bin</span><br><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `cat ssuid`; <span class="keyword">do</span></span><br><span class="line">	ls <span class="variable">$file</span></span><br><span class="line">	./file `prel -e <span class="string">'print "A"x2048'</span>`</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p>1.<a href="https://pen-testing.sans.org/resources/papers/gcih/discovering-local-suid-exploit-105447" target="_blank" rel="noopener">discovering-local-suid-exploit-105447</a><br>2.<a href="https://www.linuxnix.com/suid-set-suid-linuxunix/" target="_blank" rel="noopener">suid-set-suid-linuxunix</a></p>
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
-        		</li>
-      		
-		</ul>
-	</div>
+      
 
-
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/03/27/How-hacking-with-SUID/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2019/03/26/sudoers-get-root-cheatsheet/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">sudoers_get_root_cheatsheet</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -263,9 +350,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
