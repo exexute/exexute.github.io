@@ -6,15 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: lua waf | owefsad&#39;s blog</title>
+  <title>Vulnhub-Challenging-Born2Root-2 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/lua-waf/index.html">
+  <meta name="description" content="简介此靶机尚未完成, 目前遇到了问题, 无法继续进行, 先做简要记录.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub-Challenging-Born2Root-2">
+<meta property="og:url" content="http://yoursite.com/2019/04/05/Vulnhub-Challenging-Born2Root-2/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="简介此靶机尚未完成, 目前遇到了问题, 无法继续进行, 先做简要记录.">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2019/04/05/Vulnhub-Challenging-Born2Root-2/nmap.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/05/Vulnhub-Challenging-Born2Root-2/nikto_res.png">
+<meta property="og:updated_time" content="2019-04-04T17:24:30.057Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="Vulnhub-Challenging-Born2Root-2">
+<meta name="twitter:description" content="简介此靶机尚未完成, 目前遇到了问题, 无法继续进行, 先做简要记录.">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/05/Vulnhub-Challenging-Born2Root-2/nmap.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -164,75 +171,181 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Vulnhub-Challenging-Born2Root-2" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/25/kong安装lua-waf之最佳实践/" class="archive-article-date">
-  	<time datetime="2018-12-25T11:00:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-25</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/25/kong安装lua-waf之最佳实践/">kong安装lua waf之最佳实践</a>
+    <h1 class="article-title" itemprop="name">
+      Vulnhub-Challenging-Born2Root-2
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">kong</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">lua waf</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        <a href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/" class="archive-article-date">
+  	<time datetime="2019-04-04T16:47:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简介<br>此靶机尚未完成, 目前遇到了问题, 无法继续进行, 先做简要记录.</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>端口扫描找方向</li>
+<li>80端口出奇迹</li>
+<li>参考链接</li>
+</ul>
+<h2 id="端口扫描找方向"><a href="#端口扫描找方向" class="headerlink" title="端口扫描找方向"></a>端口扫描找方向</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -p- -A 172.16.88.166</span><br></pre></td></tr></table></figure>
+<p><img src="nmap.png" alt="nmap"><br>结果分析:</p>
+<ul>
+<li>Open SSH 6.7 无CVE, 考虑爆破</li>
+<li>Apache httpd 2.4.10 无CVE, 考虑apache后台、WEB站点漏洞挖掘</li>
+<li>55552端口 rcp status 没有见过暂搁置<br>综合上述分析, 先从WEB入手继续收集信息</li>
+</ul>
+<h2 id="80端口出奇迹"><a href="#80端口出奇迹" class="headerlink" title="80端口出奇迹"></a>80端口出奇迹</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nikto -h 172.16.88.166</span><br></pre></td></tr></table></figure>
+<p><img src="nikto_res.png" alt="nikto_res"><br>结果中有价值的地方是package.json, 该文件为node.js的配置文件, 包含项目依赖的模块和相关配置, 经过查证该项目为开源项目<a href="https://github.com/BlackrockDigital/startbootstrap-new-age" target="_blank" rel="noopener">startbootstrap-new-age</a>, 本地部署之后并没有发现有价值的信息;</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dirb http://172.16.88.166 -f</span><br></pre></td></tr></table></figure>
+<p>爆破目录之后发现joomla目录, 于是将注意力放在joomla的渗透上.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ joomscan -u http://172.16.88.166/joomla -ec</span><br></pre></td></tr></table></figure>
+<p>扫描结果信息:</p>
+<ul>
+<li>joomla 3.0</li>
+<li>8个可能存在的CVE漏洞</li>
+<li><code>joomla/administrator/components</code>、<code>joomla/administrator/modules</code>、<code>joomla/administrator/templates</code>、<code>joomla/images/banners</code>目录</li>
+<li>若干个com组件<br>其中, 第三条信息中提到的目录存在目录遍历问题, 有待进一步检查.</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2>
+      
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/coding//" class="article-tag-list-link color2">coding</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/05/Vulnhub-Challenging-Born2Root-2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vulnhub-Challenging-unknowndevice64-v1.0</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -255,9 +368,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
