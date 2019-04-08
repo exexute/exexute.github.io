@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的cheat sheet, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-27T05:04:52.692Z">
+<meta property="og:updated_time" content="2019-04-08T05:41:01.858Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="How hacking with SUID">
 <meta name="twitter:description" content="简介SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的cheat sheet, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID">
@@ -59,11 +59,17 @@
 			
 				<li><a href="/">home</a></li>
 	        
+				<li><a href="/categories/思路">thought</a></li>
+	        
+				<li><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
+	        
 				<li><a href="/categories/ctf">ctf</a></li>
 	        
 				<li><a href="/categories/tools">tools</a></li>
 	        
 				<li><a href="/categories/coding">coding</a></li>
+	        
+				<li><a href="/categories/prevention">prevention</a></li>
 	        
 				<li><a href="/categories/hexo">hexo</a></li>
 	        
@@ -127,6 +133,12 @@
 			
 				
 			
+				
+			
+				
+			
+				
+			
 			
 			
 			<nav class="header-nav">
@@ -145,15 +157,21 @@
 				<ul style="width: 70%">
 				
 				
-					<li style="width: 20%"><a href="/">home</a></li>
+					<li style="width: 12.5%"><a href="/">home</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/ctf">ctf</a></li>
+					<li style="width: 12.5%"><a href="/categories/思路">thought</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/tools">tools</a></li>
+					<li style="width: 12.5%"><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/coding">coding</a></li>
+					<li style="width: 12.5%"><a href="/categories/ctf">ctf</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/hexo">hexo</a></li>
+					<li style="width: 12.5%"><a href="/categories/tools">tools</a></li>
+		        
+					<li style="width: 12.5%"><a href="/categories/coding">coding</a></li>
+		        
+					<li style="width: 12.5%"><a href="/categories/prevention">prevention</a></li>
+		        
+					<li style="width: 12.5%"><a href="/categories/hexo">hexo</a></li>
 		        
 				</ul>
 			</nav>
@@ -188,17 +206,22 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br>SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.<br>但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的<code>cheat sheet</code>, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID文件的漏洞.<br>(由于实测失败, 本文内容暂不可用.)</p>
+        <p>简介<br>SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.<br>但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的<code>cheat sheet</code>, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID文件的漏洞.</p>
+<p>ps://SUID提权技术已经发展很久了, linux系统厂商已经做了内核层的防范, 常规提权方式已无法提权, 因此需开动脑筋构造新奇的提权方案.</p>
 <a id="more"></a>
 <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
-<li>SUID、SGID介绍</li>
 <li>SUID文件查找及攻击</li>
 </ul>
-<h2 id="SUID、SGID介绍"><a href="#SUID、SGID介绍" class="headerlink" title="SUID、SGID介绍"></a>SUID、SGID介绍</h2><p>由于测试失败, 此处暂做保留内容.</p>
-<h2 id="SUID文件查找及攻击"><a href="#SUID文件查找及攻击" class="headerlink" title="SUID文件查找及攻击"></a>SUID文件查找及攻击</h2><p>查找具有SUID的可执行文件<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">tempfile=<span class="string">"/tmp/vul.txt"</span></span><br><span class="line"><span class="built_in">trap</span> <span class="string">"rm <span class="variable">$tempfile</span>"</span> 0</span><br><span class="line">find / \( -<span class="built_in">type</span> f -a -user root -a -perm -4001 \) -<span class="built_in">print</span> 1&gt; <span class="variable">$tempfile</span> 2&gt;/dev/null</span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `cat <span class="variable">$tempfile</span>`; <span class="keyword">do</span></span><br><span class="line">  strings -a <span class="variable">$file</span> | awk <span class="string">'/^gets$|^strcpy$|^strcat$|^sprintf$/\</span></span><br><span class="line"><span class="string">  &#123; printf ("%-10s \t %-50s \n"), $1, file &#125;'</span> <span class="string">"file=<span class="variable">$file</span>"</span> -</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></p>
-<h4 id="系统自带文件产生SUID"><a href="#系统自带文件产生SUID" class="headerlink" title="系统自带文件产生SUID"></a>系统自带文件产生SUID</h4><p>cheat_sheet: <code>nmap</code>、<code>vim</code>、<code>find</code>、<code>bash</code>、<code>more</code>、<code>less</code>、<code>nano</code>、<code>cp</code>这些文件的提权方式与<code>sudoers</code>错误配置提权方式相同, 如有不会可参考<a href="https://exexute.github.io/2019/03/26/sudoers-get-root-cheatsheet/" target="_blank" rel="noopener">sudoers_get_root_cheatsheet</a></p>
-<h4 id="对第三方suid文件进行模糊测试"><a href="#对第三方suid文件进行模糊测试" class="headerlink" title="对第三方suid文件进行模糊测试"></a>对第三方suid文件进行模糊测试</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设第三方suid文件位于: /opt/giac/bin目录下</span></span><br><span class="line">$ cut -f2 vul.txt|sed -e <span class="string">'/giac/!d'</span> - &gt;ssuid</span><br><span class="line">$ <span class="built_in">cd</span> /opt/giac/bin</span><br><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `cat ssuid`; <span class="keyword">do</span></span><br><span class="line">	ls <span class="variable">$file</span></span><br><span class="line">	./file `prel -e <span class="string">'print "A"x2048'</span>`</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p>1.<a href="https://pen-testing.sans.org/resources/papers/gcih/discovering-local-suid-exploit-105447" target="_blank" rel="noopener">discovering-local-suid-exploit-105447</a><br>2.<a href="https://www.linuxnix.com/suid-set-suid-linuxunix/" target="_blank" rel="noopener">suid-set-suid-linuxunix</a></p>
+<h2 id="SUID文件的查找及利用"><a href="#SUID文件的查找及利用" class="headerlink" title="SUID文件的查找及利用"></a>SUID文件的查找及利用</h2><p>1.linux中RUID、EUID两个概念被用于表示账号的权限, RUID表示当前用户的真实ID, 即uid; EUID表示当前账户的有效ID, 通常情况下等于RUID, 当在linux系统中执行操作时, 内核会先检查RUID、EUID是否有对应操作的权限, 然后再执行操作.  在一些特殊的场景下EUID不等于RUID, 如:运行设置了SUID或SGID标志位的程序, 此时EUID将会设置为文件所有者的uid.</p>
+<p>2.linux中文件的<code>x</code>、<code>s</code>两类标志位表示文件的可执行权限, 其中s表示该文件使用文件所有者的权限执行.</p>
+<p>3.在shell中运行命令时, shell会fork出一个子进程a, 子进程a继承当前账号的信息, 然后通过exec调用待执行的命令和对应的参数. 此时如果待执行命令设置类SUID标志位将以命令所有者的权限运行命令, 实现EUID的切换.</p>
+<h3 id="查找具有SUID的可执行文件"><a href="#查找具有SUID的可执行文件" class="headerlink" title="查找具有SUID的可执行文件"></a>查找具有SUID的可执行文件</h3><p><strong>sys_suid_find</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -perm -4001 -user root -<span class="built_in">type</span> f 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p>该命令常用于查找设置类SUID标志位的系统文件, 这类文件的利用方式已经比较成熟, 这类文件需要放在linux基线中进行检查, 以确保系统的安全.</p>
+<p><strong>self_suid_find</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">tempfile=<span class="string">"/tmp/vul.txt"</span></span><br><span class="line"><span class="built_in">trap</span> <span class="string">"rm <span class="variable">$tempfile</span>"</span> 0</span><br><span class="line">find / \( -<span class="built_in">type</span> f -a -user root -a -perm -4001 \) -<span class="built_in">print</span> 1&gt; <span class="variable">$tempfile</span> 2&gt;/dev/null</span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `cat <span class="variable">$tempfile</span>`; <span class="keyword">do</span></span><br><span class="line">  strings -a <span class="variable">$file</span> | awk <span class="string">'/^gets$|^strcpy$|^strcat$|^sprintf$/\</span></span><br><span class="line"><span class="string">  &#123; printf ("%-10s \t %-50s \n"), $1, file &#125;'</span> <span class="string">"file=<span class="variable">$file</span>"</span> -</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></p>
+<p>上述脚本常用于查找设置类SUID的自定义文件, 这类文件通常是定制化开发的, 无成熟的利用方式, 可通过<code>strings</code>命令检查文件中可能存在漏洞的字符串.</p>
+<h3 id="系统自带文件产生SUID"><a href="#系统自带文件产生SUID" class="headerlink" title="系统自带文件产生SUID"></a>系统自带文件产生SUID</h3><p>cheat_sheet: <code>nmap</code>、<code>vim</code>、<code>find</code>、<code>bash</code>、<code>more</code>、<code>less</code>、<code>nano</code>、<code>cp</code>这些文件的提权方式与<code>sudoers</code>错误配置提权方式相同, 如有不会可参考<a href="https://exexute.github.io/2019/03/26/sudoers-get-root-cheatsheet/" target="_blank" rel="noopener">sudoers_get_root_cheatsheet</a></p>
+<h3 id="对第三方suid文件进行模糊测试"><a href="#对第三方suid文件进行模糊测试" class="headerlink" title="对第三方suid文件进行模糊测试"></a>对第三方suid文件进行模糊测试</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设第三方suid文件位于: /opt/giac/bin目录下</span></span><br><span class="line">$ cut -f2 vul.txt|sed -e <span class="string">'/giac/!d'</span> - &gt;ssuid</span><br><span class="line">$ <span class="built_in">cd</span> /opt/giac/bin</span><br><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `cat ssuid`; <span class="keyword">do</span></span><br><span class="line">	ls <span class="variable">$file</span></span><br><span class="line">	./file `prel -e <span class="string">'print "A"x2048'</span>`</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p>1.<a href="https://pen-testing.sans.org/resources/papers/gcih/discovering-local-suid-exploit-105447" target="_blank" rel="noopener">discovering-local-suid-exploit-105447</a><br>2.<a href="https://www.linuxnix.com/suid-set-suid-linuxunix/" target="_blank" rel="noopener">suid-set-suid-linuxunix</a><br>3.<a href="https://null-byte.wonderhowto.com/how-to/use-misconfigured-suid-bit-escalate-privileges-get-root-0173929/" target="_blank" rel="noopener">use-misconfigured-suid-big-escalate-privileges-get-root</a></p>
 
       
 
@@ -497,6 +520,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -509,23 +540,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">open ssl</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -537,7 +556,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
+                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -549,11 +568,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
+                <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -561,7 +576,35 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">hydra</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -578,26 +621,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">hydra</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
               </li>
             
             <div class="clearfix"></div>

