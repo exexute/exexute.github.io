@@ -9,7 +9,7 @@
   <title>Vulnhub Challenging: Raven | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
-<meta name="keywords" content="wordpress爆破,ssh爆破,udf提权,sudoers配置错误">
+<meta name="keywords" content="wordpress,ssh,udf,escalate_privilege">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vulnhub Challenging: Raven">
 <meta property="og:url" content="http://yoursite.com/2018/12/08/Vulnhub-Challenging-Raven/index.html">
@@ -26,7 +26,7 @@
 <meta property="og:image" content="http://i1.bvimg.com/671004/1b2167602e4efc0f.png">
 <meta property="og:image" content="http://i1.bvimg.com/671004/872511302b76108c.png">
 <meta property="og:image" content="http://i1.bvimg.com/671004/98579fede17c3d4a.png">
-<meta property="og:updated_time" content="2018-12-08T02:30:13.400Z">
+<meta property="og:updated_time" content="2019-04-11T01:20:54.545Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vulnhub Challenging: Raven">
 <meta name="twitter:description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
@@ -73,9 +73,9 @@
 	        
 				<li><a href="/categories/思路">thought</a></li>
 	        
-				<li><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
+				<li><a href="/categories/cve">cve-analysys</a></li>
 	        
-				<li><a href="/categories/ctf">ctf</a></li>
+				<li><a href="/categories/ctf">writeup</a></li>
 	        
 				<li><a href="/categories/tools">tools</a></li>
 	        
@@ -173,9 +173,9 @@
 		        
 					<li style="width: 12.5%"><a href="/categories/思路">thought</a></li>
 		        
-					<li style="width: 12.5%"><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
+					<li style="width: 12.5%"><a href="/categories/cve">cve-analysys</a></li>
 		        
-					<li style="width: 12.5%"><a href="/categories/ctf">ctf</a></li>
+					<li style="width: 12.5%"><a href="/categories/ctf">writeup</a></li>
 		        
 					<li style="width: 12.5%"><a href="/categories/tools">tools</a></li>
 		        
@@ -253,27 +253,6 @@
       
 
       
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
     </div>
     <div class="article-info article-info-index">
       
@@ -283,19 +262,19 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">wordpress爆破</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">wordpress</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ssh爆破</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ssh</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">udf提权</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">udf</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">sudoers配置错误</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
         		</li>
       		
 		</ul>
@@ -317,57 +296,6 @@
       
 
       
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
-        </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/08/Vulnhub-Challenging-Raven/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
       <div class="clearfix"></div>
     </div>
   </div>
@@ -386,8 +314,8 @@
     </a>
   
   
-    <a href="/2018/12/07/Vulnhub-Wakanda/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Vulnhub Wakanda 1</div>
+    <a href="/2018/12/07/Vulnhub-Challengeing-Wakanda/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vulnhub Challenging: Wakanda 1</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -406,6 +334,19 @@
             </div>
         </div>
         
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-number">1.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#端口扫描"><span class="toc-number">2.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#80端口"><span class="toc-number">3.</span> <span class="toc-text">80端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ssh爆破"><span class="toc-number">4.</span> <span class="toc-text">ssh爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进shell-搜信息"><span class="toc-number">5.</span> <span class="toc-text">进shell, 搜信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mysql服务-读库-udf提权"><span class="toc-number">6.</span> <span class="toc-text">mysql服务, 读库, udf提权</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#读库-破解hash"><span class="toc-number">6.1.</span> <span class="toc-text">读库, 破解hash</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#udf提权"><span class="toc-number">6.2.</span> <span class="toc-text">udf提权</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sudoers文件配置有误导致提权"><span class="toc-number">7.</span> <span class="toc-text">sudoers文件配置有误导致提权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拿到3个flag"><span class="toc-number">8.</span> <span class="toc-text">拿到3个flag</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
         
     </div>
 </aside>
@@ -448,10 +389,10 @@
 		isTag: false,
 		isCategory: false,
 		open_in_new: true,
-		toc_hide_index: true,
+		toc_hide_index: false,
 		root: "/",
 		innerArchive: true,
-		showTags: false
+		showTags: true
 	}
 </script>
 
@@ -517,26 +458,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -557,19 +478,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse rbash</a>
+                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pcap analyzer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -577,15 +510,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">sysud64提权</a>
+                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -598,6 +527,34 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">服务提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">sysud64提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -637,15 +594,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -681,7 +638,119 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
+                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo没话</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">思路</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">suid</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">find_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ports</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">service</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">udf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">tcpdump</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
             
             <div class="clearfix"></div>
@@ -752,7 +821,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">毕业于东北大学&lt;br&gt;热爱编程与黑客&lt;br&gt;偷偷的在北京混饭吃</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">毕业于东北大学&lt;br&gt;研究方向:渗透、自动化渗透</div>
   	  	
     	</section>
     

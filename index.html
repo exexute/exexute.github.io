@@ -57,9 +57,9 @@
 	        
 				<li><a href="/categories/思路">thought</a></li>
 	        
-				<li><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
+				<li><a href="/categories/cve">cve-analysys</a></li>
 	        
-				<li><a href="/categories/ctf">ctf</a></li>
+				<li><a href="/categories/ctf">writeup</a></li>
 	        
 				<li><a href="/categories/tools">tools</a></li>
 	        
@@ -157,9 +157,9 @@
 		        
 					<li style="width: 12.5%"><a href="/categories/思路">thought</a></li>
 		        
-					<li style="width: 12.5%"><a href="/categories/" cve="" analysys""="">cve analysys</a></li>
+					<li style="width: 12.5%"><a href="/categories/cve">cve-analysys</a></li>
 		        
-					<li style="width: 12.5%"><a href="/categories/ctf">ctf</a></li>
+					<li style="width: 12.5%"><a href="/categories/ctf">writeup</a></li>
 		        
 					<li style="width: 12.5%"><a href="/categories/tools">tools</a></li>
 		        
@@ -184,6 +184,112 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Vulnhub-Challenging-WebDeveloper" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/">Vulnhub-Challenging-WebDeveloper</a>
+    </h1>
+  
+
+        
+        <a href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/" class="archive-article-date">
+  	<time datetime="2019-04-08T13:39:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简介</p>
+<ol>
+<li>扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台</li>
+<li>修改插件源码写入木马获取webshell</li>
+<li>webshell查敏感文件获取第权限账号</li>
+<li>tcpdump提权获取root权限</li>
+<li>靶机总结</li>
+</ol>
+        
+          <a class="article-more-a" href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">wordpress</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">pcap_analyze</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/">查看全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Vulnhub-Challenging-Born2Root-2" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
@@ -206,7 +312,7 @@
       
         <p>简介<br>此靶机尚未完成, 目前遇到了问题, 无法继续进行, 先做简要记录.</p>
         
-          <a class="article-more-a" href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/#more">read all >></a>
+          <a class="article-more-a" href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/#more">more >></a>
         
       
 
@@ -221,6 +327,10 @@
 			 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">joomla</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
         		</li>
       		
 		</ul>
@@ -302,7 +412,7 @@
 <li>vi逃逸rbash, sudoers配置提权限</li>
 </ul>
         
-          <a class="article-more-a" href="/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/#more">more >></a>
         
       
 
@@ -316,19 +426,19 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">steghide</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse rbash</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">sysud64提权</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">steghide</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse_rbash</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
         		</li>
       		
 		</ul>
@@ -402,7 +512,7 @@
         <p>简介<br>SUID是一种特殊的授权方式, 从攻击者视角来说, SUID文件分为两类: 系统自带文件、第三方文件; 系统自带文件是企业中基线检查的重点, 因此通常无法很好的利用, 但第三方文件可操作空间就比较大了.<br>但由于现阶段水平不够支撑来分析第三方程序的问题, 因此将主要用作SUID文件的<code>cheat sheet</code>, 关于分析第三方文件SUID的问题将在日后添加, 文末第一篇文章专门讲如何挖掘第三方SUID文件的漏洞.</p>
 <p>ps://SUID提权技术已经发展很久了, linux系统厂商已经做了内核层的防范, 常规提权方式已无法提权, 因此需开动脑筋构造新奇的提权方案.</p>
         
-          <a class="article-more-a" href="/2019/03/27/How-hacking-with-SUID/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/27/How-hacking-with-SUID/#more">more >></a>
         
       
 
@@ -411,7 +521,33 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">cheatsheet</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">suid</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
@@ -468,7 +604,7 @@
         <p>简介<br>sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.</p>
 <p>ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.<br>
         
-          <a class="article-more-a" href="/2019/03/26/sudoers-get-root-cheatsheet/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/26/sudoers-get-root-cheatsheet/#more">more >></a>
         
       
 
@@ -560,7 +696,7 @@
         <p>简介<br>find命令是linux自带的一款工具用来查找文件, 由于linux中多用户、用户组等特性, 因此文件也具有上述属性, 而linux中文件的权限的控制有一定的入门难度, 因此存在某一部分管理员或失误、或客观需要配置了易受攻击的文件权限, 可用来进行提权操作.<br>本文记录find命令在hacking过程中的使用, 包括各种场景化. </p>
 <p>持续更新中….<br>
         
-          <a class="article-more-a" href="/2019/03/26/linux-find-hacking/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/26/linux-find-hacking/#more">more >></a>
         
       
 
@@ -574,7 +710,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">find</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">search_file</a>
         		</li>
       		
 		</ul>
@@ -647,7 +783,7 @@
       
         <p>简介<br>jenkins是一款开源的ci/cd工具, 由于devops的兴起, jenkins为了更好的实现devops于是在第二版中增加了<code>pipeline</code>机制, 用于编排编译发布任务的流程.<br>jenkins由Groovy语言编写, 具备生产环境所需的稳定性和高性能, 因此广泛用于各大互联网厂商.<br>本文介绍jenkins同类型的三个漏洞: cve-2019-1003000、cve-2019-1003001、cve-2019-1003002, 三处漏洞均为绕过沙箱导致RCE.<br>
         
-          <a class="article-more-a" href="/2019/03/25/cve-2019-1003000-jenkins系列RCE漏洞分析/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/25/cve-2019-1003000-jenkins系列RCE漏洞分析/#more">more >></a>
         
       
 
@@ -661,11 +797,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">绕过沙箱</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sandbox</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">RCE</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">rce</a>
         		</li>
       		
 		</ul>
@@ -677,7 +813,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/cve-analysys//" class="article-tag-list-link color3">cve analysys</a>
+        			<a href="/categories/cve//" class="article-tag-list-link color4">cve</a>
         		</li>
       		
 		</ul>
@@ -738,7 +874,7 @@
       
         <p>简介<br>元类, 一个神奇的概念, 从陌生到熟悉到深陷其魅力仅仅花费我3天时间.<br>元类是什么？<br>维基百科说, 元类是一种实体的类的类, 普通的类定义特定实体的属性及行为, 元类定义特定的类的属性及行为.<br>python说, 元类是继承自<code>type</code>的类.<br>owef说, 元类是ORM框架、自动切换代理IP、单例模式等场景中常见的一种类.<br>为了更好的理解并应用元类, 必须懂其意、知其形、善其变, 方可称大师.<br>(本文非入门贴, 近用于记录元类的相关知识和应用场景)<br>
         
-          <a class="article-more-a" href="/2019/03/25/python-MetaClass/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/25/python-MetaClass/#more">more >></a>
         
       
 
@@ -752,7 +888,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">metaclass</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
         		</li>
       		
 		</ul>
@@ -825,7 +961,7 @@
       
         <p>简介<br>CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.<br>倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如: 产品采用前后端分离架构，无法从服务器端下发token、增加验证码会影响用户体验、产品拥有多个域名本身需要跨域、产品有些接口需要被第三方程序调用, 无法设置referer、公司实行有大中台小前台的产品架构<br>漏洞该业务线修复还是平台修复等种种问题.<br>为了解决甲方爸爸们的困扰, 特写此CSRF防御方案解决以上提出的问题</p>
         
-          <a class="article-more-a" href="/2019/03/21/csrf-prevention/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/21/csrf-prevention/#more">more >></a>
         
       
 
@@ -839,11 +975,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">csrf</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">甲方安全</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">甲方</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">防御方案</a>
         		</li>
       		
 		</ul>
@@ -916,7 +1052,7 @@
       
         <p>简介：<br>最近遇到一个比较有意思的人, 问了我一个比较有意思的问题: 我有一个OA系统, 该如何获取系统的权限？<br>这个问题本身并没有什么意思, 但当我告诉他扫端口,、找服务、拿权限的时候, 他问我都有哪些端口和服务可以拿权限, 忽然间我发现自己忙于学习新知识却忽略了对已学知识的总结, 以至于学习的基础端口服务漏洞、大数据组件漏洞等无法脱口而出, 很尴尬啊, 只好把我的博客扔给他让他自己去找了.<br>本文将专门记录渗透中遇到的各种端口及服务的渗透思路, 并进行归类.（waitting for update）<br>
         
-          <a class="article-more-a" href="/2019/03/20/port-service-vul/#more">read all >></a>
+          <a class="article-more-a" href="/2019/03/20/port-service-vul/#more">more >></a>
         
       
 
@@ -930,7 +1066,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">主机攻击思路</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">services</a>
         		</li>
       		
 		</ul>
@@ -952,93 +1088,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/03/20/port-service-vul/">查看全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-dirb最佳实践" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/20/dirb最佳实践/">dirb实战</a>
-    </h1>
-  
-
-        
-        <a href="/2019/03/20/dirb最佳实践/" class="archive-article-date">
-  	<time datetime="2019-03-20T00:51:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>简介：<br>dirb是kali自带的一款目录爆破工具, 小巧、灵活，可胜任多种场景下的url爆破, 包括: 自定义http请求头、设置认证信息、多扩展名爆破等, 但不支持多线程, 速度上有欠缺. kali中内置了一系列的url字典, 位于<code>/usr/share/wordlists/dirb/</code>目录下, 关于不同类型的WEB站点适合使用哪些字典, 将在实践中逐渐添加至本文.<br>如有错误之处, 请qq联系本渣: 1547147759.<br>
-        
-          <a class="article-more-a" href="/2019/03/20/dirb最佳实践/#more">read all >></a>
-        
-      
-
-      
-    </p></div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">url爆破</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/tools//" class="article-tag-list-link color1">tools</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/03/20/dirb最佳实践/">查看全文 >></a>
         </p>
       
 
@@ -1100,10 +1149,10 @@
 		isTag: false,
 		isCategory: false,
 		open_in_new: true,
-		toc_hide_index: true,
+		toc_hide_index: false,
 		root: "/",
 		innerArchive: true,
-		showTags: false
+		showTags: true
 	}
 </script>
 
@@ -1169,26 +1218,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -1209,19 +1238,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+                <a href="javascript:void(0)" class="js-tag color2">wordpress爆破</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+                <a href="javascript:void(0)" class="js-tag color1">ssh爆破</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse rbash</a>
+                <a href="javascript:void(0)" class="js-tag color1">udf提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">sudoers配置错误</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pcap analyzer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1229,15 +1270,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">sysud64提权</a>
+                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1250,6 +1287,34 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">服务提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">sysud64提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">jenkins's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">crontab's vul</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">csrf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">甲方</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1289,15 +1354,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">主机攻击思路</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">metaclass</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1333,7 +1398,119 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">tcpdump提权</a>
+                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo没话</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">思路</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">suid</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">find_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ports</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">service</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">udf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">tcpdump</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
             
             <div class="clearfix"></div>
@@ -1404,7 +1581,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">毕业于东北大学&lt;br&gt;热爱编程与黑客&lt;br&gt;偷偷的在北京混饭吃</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">毕业于东北大学&lt;br&gt;研究方向:渗透、自动化渗透</div>
   	  	
     	</section>
     
