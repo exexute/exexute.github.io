@@ -6,16 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>categories | owefsad&#39;s blog</title>
+  <title>HTB_Linux_irked | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="categories">
-<meta property="og:url" content="http://yoursite.com/categories/index.html">
+  <meta name="description" content="简介由于使用的是免费版的HTB靶机环境, 因此极卡, ssh连上时间不超过1分钟就断, 扫描速度更是不能快, 针对这种网络环境极差的目标, 考虑使用masscan调整速率快速扫描端口, 然后用nmap进行端口详情扫描. 该靶机让我认识到了irc这种古老、经典的历史产物.靶机状态: 待suid提权">
+<meta name="keywords" content="escalate_privilege,cve,unrealircd,suid,steghide">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB_Linux_irked">
+<meta property="og:url" content="http://yoursite.com/2019/04/15/HTB-Linux-irked/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="简介由于使用的是免费版的HTB靶机环境, 因此极卡, ssh连上时间不超过1分钟就断, 扫描速度更是不能快, 针对这种网络环境极差的目标, 考虑使用masscan调整速率快速扫描端口, 然后用nmap进行端口详情扫描. 该靶机让我认识到了irc这种古老、经典的历史产物.靶机状态: 待suid提权">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-08T04:49:48.776Z">
+<meta property="og:updated_time" content="2019-04-15T06:05:02.098Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="categories">
+<meta name="twitter:title" content="HTB_Linux_irked">
+<meta name="twitter:description" content="简介由于使用的是免费版的HTB靶机环境, 因此极卡, ssh连上时间不超过1分钟就断, 扫描速度更是不能快, 针对这种网络环境极差的目标, 考虑使用masscan调整速率快速扫描端口, 然后用nmap进行端口详情扫描. 该靶机让我认识到了irc这种古老、经典的历史产物.靶机状态: 待suid提权">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -183,27 +187,38 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="page-" class="article article-type-page " itemscope="" itemprop="blogPost">
+            <article id="post-HTB-Linux-irked" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      categories
+      HTB_Linux_irked
     </h1>
   
 
         
-        <a href="/categories/index.html" class="archive-article-date">
-  	<time datetime="2018-12-08T04:49:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-08</time>
+        <a href="/2019/04/15/HTB-Linux-irked/" class="archive-article-date">
+  	<time datetime="2019-04-15T05:32:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>简介<br>由于使用的是免费版的HTB靶机环境, 因此极卡, ssh连上时间不超过1分钟就断, 扫描速度更是不能快, 针对这种网络环境极差的目标, 考虑使用masscan调整速率快速扫描端口, 然后用nmap进行端口详情扫描. 该靶机让我认识到了irc这种古老、经典的历史产物.<br>靶机状态: 待suid提权<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>ircd</li>
+<li>steghide</li>
+<li>suid</li>
+</ul>
+<h2 id="ircd"><a href="#ircd" class="headerlink" title="ircd"></a>ircd</h2><p><strong>UnrealIRCd</strong> 使用<code>masscan</code>快速判断开放的端口并用<code>nmap</code>进行详细扫描, 发现运行的服务<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ masscan -p0-65535 --rate=2000 10.10.10.117</span><br><span class="line"><span class="comment"># 发现7个开放的tcp端口</span></span><br><span class="line">$ nmap --script vuln -p22,80,65534,43465,8087,6697,111 -A 10.10.10.117</span><br></pre></td></tr></table></figure></p>
+<p><a href="htb_irked_nmap.png">masscan_nmap_find_service</a></p>
+<p>使用<code>searchsploit</code>搜索扫描出来的所有服务, 发现<code>UnrealIRCd</code>存在一个后门命令执行和远程命令下载、执行漏洞.</p>
+<h2 id="steghide"><a href="#steghide" class="headerlink" title="steghide"></a>steghide</h2><p><a href="htb_irked_file_irked.png">find_other_account_readable_file</a><br><strong>shell</strong> 利用<code>CVE-2010-2075</code>获取shell, 搜索文件之后发现<code>/home/djmardov/Documents/.backup</code>文件, 拿到文件内密码后, 登陆ssh发现无法登陆。<br><strong>steghide</strong> 之前在80端口找到图片irked.jpg, 于是尝试隐写<code>wget 10.10.10.117/irked.jpg -O /tmp/irked.jpg;steghide extract -sf /tmp/irked.jpg</code>, 将上一步的密码输入, 得到一个密码。<br><strong>bash</strong> 利用密码进入djmardov账户, 开始提权.<br><a href="htb_irked_user_level0.png">login_djmardov</a></p>
+<h2 id="suid"><a href="#suid" class="headerlink" title="suid"></a>suid</h2><p><strong>suid</strong> 进入低权限账号之后, 先开始手工收集信息查找可提权内容, 包括: <code>uname -a</code>、<code>sudo -l</code>、<code>find /root -prem -004 -type f 2&gt;/dev/null</code>、<code>crontab -l</code>、<code>find / -perm -4001 -type f 2&gt;/dev/null</code>等, 查找基本的内核、配置、文件、计划任务是否有可直接利用的点. 发现一处自定义的suid文件<code></code>, 开始找该文件的漏洞.</p>
+
       
 
       
@@ -211,7 +226,45 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">cve</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">unrealircd</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">suid</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">steghide</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -222,6 +275,16 @@
 </article>
 
   
+<nav id="article-nav">
+  
+  
+    <a href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Vulnhub-Challenging-WebDeveloper</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -243,7 +306,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ircd"><span class="toc-number">2.</span> <span class="toc-text">ircd</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#steghide"><span class="toc-number">3.</span> <span class="toc-text">steghide</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#suid"><span class="toc-number">4.</span> <span class="toc-text">suid</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -287,7 +350,7 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
