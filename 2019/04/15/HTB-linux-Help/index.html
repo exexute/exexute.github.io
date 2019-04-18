@@ -9,17 +9,22 @@
   <title>HTB_linux_Help | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 查找提权方案中">
-<meta name="keywords" content="cve,file">
+<meta name="keywords" content="cve,任意文件上传">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTB_linux_Help">
 <meta property="og:url" content="http://yoursite.com/2019/04/15/HTB-linux-Help/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 查找提权方案中">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-17T16:05:29.680Z">
+<meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_Help_masscan_nmap.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_webshell.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_userflag.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_suid.png">
+<meta property="og:updated_time" content="2019-04-18T16:45:20.523Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB_linux_Help">
 <meta name="twitter:description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 查找提权方案中">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_Help_masscan_nmap.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -209,7 +214,24 @@
       
         <p>简介<br>help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题.</p>
 <p>靶机状态: 查找提权方案中<br><a id="more"></a></p>
-<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>helpdeskz</li>
+<li>提权</li>
+</ul>
+<p>端口扫描之后发现开放22、80、3000三个端口, 80和3000分别是apache和nodejs, 均有利用价值.<br><img src="HTB_linux_Help_masscan_nmap.png" alt="masscan_nmap"></p>
+<h2 id="helpdeskz"><a href="#helpdeskz" class="headerlink" title="helpdeskz"></a>helpdeskz</h2><p>访问80端口发现是一个<code>helpdeskz</code>的开源程序, 查exploit-db后发现在2016和2017年分别发现任意文件上传、sql注入和文件下载漏洞, 根据任意文件上传poc中的提示上传文件后提示<strong>文件不被允许</strong>. 此时已经<strong>想放弃</strong>了, 然后在官网论坛中得到一个提示: 不要用exploit-db中公开的poc脚本, 仔细阅读源码。 于是下载对应版本的helpdeskz程序, 开始查看提交tickets处的代码, 发现虽然提示文件不被允许但是文件已经被上传到服务器中, 可通过exploit-db中提供的poc脚本爆破文件名. 然后得到webshell<br><img src="HTB_linux_help_webshell.png" alt="web_shell"></p>
+<p>然后获得<code>user.txt</code>, 拿到用户flag.<br><img src="HTB_linux_help_userflag.png" alt="user.txt"></p>
+<h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><p>这个靶机中上传的webshell会被定期清理掉, 因此很难维持访问.<br>提权思路:</p>
+<ul>
+<li>文件(硬编码、suid)</li>
+<li>计划任务</li>
+<li>配置(sudoers)</li>
+<li>服务（mysql、redis等）</li>
+<li>进程</li>
+</ul>
+<p>提权的时候可以说是绞尽脑汁, 获取webshell后先查suid文件, 发现几个可疑的suid文件<br><img src="HTB_linux_help_suid.png" alt="suid_file"></p>
+<p>然后线索断掉了, 始终未找到提权的方法.</p>
+
       
 
       
@@ -226,7 +248,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">file</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">任意文件上传</a>
         		</li>
       		
 		</ul>
@@ -255,6 +277,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2019/04/19/HTB-linux-chaos/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          HTB-linux-chaos
+        
+      </div>
+    </a>
   
   
     <a href="/2019/04/15/Malware-analysis-php-1/" id="article-nav-older" class="article-nav-link-wrap">
@@ -285,7 +316,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#helpdeskz"><span class="toc-number">2.</span> <span class="toc-text">helpdeskz</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提权"><span class="toc-number">3.</span> <span class="toc-text">提权</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -419,15 +450,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">file</a>
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">imaps</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">脑洞</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -439,7 +478,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -451,15 +490,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -475,6 +510,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
@@ -487,19 +526,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">rce</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -515,7 +554,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">services</a>
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -523,7 +562,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
               </li>
              
               <li class="article-tag-list-item">
