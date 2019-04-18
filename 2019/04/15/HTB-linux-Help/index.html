@@ -8,22 +8,23 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>HTB_linux_Help | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 查找提权方案中">
+  <meta name="description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 已完成">
 <meta name="keywords" content="cve,任意文件上传">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTB_linux_Help">
 <meta property="og:url" content="http://yoursite.com/2019/04/15/HTB-linux-Help/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 查找提权方案中">
+<meta property="og:description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 已完成">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_Help_masscan_nmap.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_webshell.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_userflag.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_suid.png">
-<meta property="og:updated_time" content="2019-04-18T16:45:20.523Z">
+<meta property="og:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_help_rootflag.png">
+<meta property="og:updated_time" content="2019-04-18T19:02:08.251Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB_linux_Help">
-<meta name="twitter:description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 查找提权方案中">
+<meta name="twitter:description" content="简介help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题. 靶机状态: 已完成">
 <meta name="twitter:image" content="http://yoursite.com/2019/04/15/HTB-linux-Help/HTB_linux_Help_masscan_nmap.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
@@ -213,10 +214,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>简介<br>help官方评分为4.2, 第一步常规思路扫目录发现helpdeskz, 查找CVE后通过文件上传漏洞+文件名爆破获取webshell获取user.txt, 但是获取root.txt时遇到了问题, suid发现了几个从未遇到的程序, 暂时未利用成功; 文件、配置、服务暂未发现问题.</p>
-<p>靶机状态: 查找提权方案中<br><a id="more"></a></p>
+<p>靶机状态: 已完成<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
 <li>helpdeskz</li>
-<li>提权</li>
+<li>Kernel</li>
 </ul>
 <p>端口扫描之后发现开放22、80、3000三个端口, 80和3000分别是apache和nodejs, 均有利用价值.<br><img src="HTB_linux_Help_masscan_nmap.png" alt="masscan_nmap"></p>
 <h2 id="helpdeskz"><a href="#helpdeskz" class="headerlink" title="helpdeskz"></a>helpdeskz</h2><p>访问80端口发现是一个<code>helpdeskz</code>的开源程序, 查exploit-db后发现在2016和2017年分别发现任意文件上传、sql注入和文件下载漏洞, 根据任意文件上传poc中的提示上传文件后提示<strong>文件不被允许</strong>. 此时已经<strong>想放弃</strong>了, 然后在官网论坛中得到一个提示: 不要用exploit-db中公开的poc脚本, 仔细阅读源码。 于是下载对应版本的helpdeskz程序, 开始查看提交tickets处的代码, 发现虽然提示文件不被允许但是文件已经被上传到服务器中, 可通过exploit-db中提供的poc脚本爆破文件名. 然后得到webshell<br><img src="HTB_linux_help_webshell.png" alt="web_shell"></p>
@@ -231,6 +232,7 @@
 </ul>
 <p>提权的时候可以说是绞尽脑汁, 获取webshell后先查suid文件, 发现几个可疑的suid文件<br><img src="HTB_linux_help_suid.png" alt="suid_file"></p>
 <p>然后线索断掉了, 始终未找到提权的方法.</p>
+<h2 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h2><p>仔细看一下上面的提权步骤就可以发现, 本渣忘记做内核提权的检查了.<br><strong>方法</strong> 进入靶机, 通过<code>uname -a</code>查看内核信息, 然后把这对信息丢到google上搜索, 直接看到<code>CVE-2017-16995</code>, 在靶机上编译exp即可实现提权.<br><strong>tips</strong> exp原意是产生一个root shell的, 但是运行之后发现并没有shell产生, 于是修改exp将运行bash的命令改为读取root.txt的命令, 成功拿到flag<br><img src="HTB_linux_help_rootflag.png" alt="root_flag"></p>
 
       
 
@@ -316,7 +318,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#helpdeskz"><span class="toc-number">2.</span> <span class="toc-text">helpdeskz</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提权"><span class="toc-number">3.</span> <span class="toc-text">提权</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#helpdeskz"><span class="toc-number">2.</span> <span class="toc-text">helpdeskz</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提权"><span class="toc-number">3.</span> <span class="toc-text">提权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kernel"><span class="toc-number">4.</span> <span class="toc-text">Kernel</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -466,15 +468,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -490,6 +492,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
@@ -502,19 +512,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -526,11 +524,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -539,6 +533,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
               </li>
              
               <li class="article-tag-list-item">
