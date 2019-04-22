@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: imaps | owefsad&#39;s blog</title>
+  <title>hacktools for windows | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/imaps/index.html">
+  <meta name="description" content="简介">
+<meta name="keywords" content="smbclient">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hacktools for windows">
+<meta property="og:url" content="http://yoursite.com/2019/04/22/hacktools-for-windows/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="简介">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-22T14:19:39.211Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="hacktools for windows">
+<meta name="twitter:description" content="简介">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -182,79 +187,136 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-hacktools-for-windows" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/04/19/HTB-linux-chaos/" class="archive-article-date">
-  	<time datetime="2019-04-18T16:25:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-19</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/04/19/HTB-linux-chaos/">HTB-linux-chaos</a>
+    <h1 class="article-title" itemprop="name">
+      hacktools for windows
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/04/22/hacktools-for-windows/" class="archive-article-date">
+  	<time datetime="2019-04-22T14:18:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简介<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>SMB</li>
+</ul>
+<h2 id="SMB"><a href="#SMB" class="headerlink" title="SMB"></a>SMB</h2><ul>
+<li>smbclient</li>
+</ul>
+<h3 id="smbclient使用教程"><a href="#smbclient使用教程" class="headerlink" title="smbclient使用教程"></a>smbclient使用教程</h3><p>smbclient是一款linux下用于访问samba服务器共享资源的工具. 在内网渗透过程中, 可在linux中用于访问samba服务器共享的文件, 且拥有认证samba协议、打包下载共享文件等功能.<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ smbclient</span><br><span class="line">usage:</span><br><span class="line">  smbclient [options] service &lt;password&gt;</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line">  -L 列出服务器的共享目录</span><br><span class="line">  -U|--user =username 指定登陆的用户名</span><br><span class="line">  -W|--workgroup =worgroup 指定工作组/所属域的名字</span><br><span class="line">  -N|--no-pass 指定不需要密码, 用于判断是否支持匿名登陆</span><br><span class="line">  -T|--tar&lt;c|x&gt;IXFqgbNan 用tar命令对服务器上的所有共享文件打包, 需要指定打包参数</span><br></pre></td></tr></table></figure></p>
+<p><strong>demo</strong> <a href="https://exexute.github.io/2019/04/21/HTB-windows-Netmon/" target="_blank" rel="noopener">netmon靶机</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">wordpress</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">imaps</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">脑洞</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">smbclient</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        			<a href="/categories/tools//" class="article-tag-list-link color1">tools</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2019/04/22/windows内网渗透思路/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          windows内网渗透思路
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2019/04/21/HTB-windows-Netmon/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">HTB_windows_Netmon</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-number">2.</span> <span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#smbclient使用教程"><span class="toc-number">2.1.</span> <span class="toc-text">smbclient使用教程</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -279,9 +341,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: false,
