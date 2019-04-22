@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>wpscan最佳实践 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介">
+  <meta name="description" content="简介wordpress是一款开源的博客站点, 开发大佬常用来写个人博客、公司用它放公司技术文章等等, 由于使用量大所以wp备受安全人员的关注(cve多).渗透wordpress最好的工具一个是searchsploit用来查找wordpress的已知cve和利用脚本, 另一个是wpscan用来对wordpress站点做自动化渗透, 包括: 插件爆破与漏扫、用户发现与爆破等等吧(目前最常用这两个功能)">
 <meta name="keywords" content="wordpress">
 <meta property="og:type" content="article">
 <meta property="og:title" content="wpscan最佳实践">
 <meta property="og:url" content="http://yoursite.com/2018/12/09/wpscan最佳实践/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介">
+<meta property="og:description" content="简介wordpress是一款开源的博客站点, 开发大佬常用来写个人博客、公司用它放公司技术文章等等, 由于使用量大所以wp备受安全人员的关注(cve多).渗透wordpress最好的工具一个是searchsploit用来查找wordpress的已知cve和利用脚本, 另一个是wpscan用来对wordpress站点做自动化渗透, 包括: 插件爆破与漏扫、用户发现与爆破等等吧(目前最常用这两个功能)">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-11T01:15:52.335Z">
+<meta property="og:updated_time" content="2019-04-22T23:46:56.048Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="wpscan最佳实践">
-<meta name="twitter:description" content="简介">
+<meta name="twitter:description" content="简介wordpress是一款开源的博客站点, 开发大佬常用来写个人博客、公司用它放公司技术文章等等, 由于使用量大所以wp备受安全人员的关注(cve多).渗透wordpress最好的工具一个是searchsploit用来查找wordpress的已知cve和利用脚本, 另一个是wpscan用来对wordpress站点做自动化渗透, 包括: 插件爆破与漏扫、用户发现与爆破等等吧(目前最常用这两个功能)">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -207,8 +207,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br><a id="more"></a></p>
-<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2>
+        <p>简介<br>wordpress是一款开源的博客站点, 开发大佬常用来写个人博客、公司用它放公司技术文章等等, 由于使用量大所以wp备受安全人员的关注(cve多).<br>渗透wordpress最好的工具一个是<code>searchsploit</code>用来查找wordpress的已知cve和利用脚本, 另一个是<code>wpscan</code>用来对wordpress站点做自动化渗透, 包括: 插件爆破与漏扫、用户发现与爆破等等吧(目前最常用这两个功能)</p>
+<p>本文的目的是写一片wpscan使用方法的最佳实践, 但是现在联系量好不够, 无法做到<strong>最佳</strong><br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>最佳实践</li>
+<li>基本命令</li>
+</ul>
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2>
       
 
       
@@ -289,7 +294,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最佳实践"><span class="toc-number">2.</span> <span class="toc-text">最佳实践</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -463,10 +468,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ssh</a>
               </li>
              
@@ -479,11 +480,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -495,31 +508,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -531,7 +524,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -543,15 +548,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">services</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -559,11 +560,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
