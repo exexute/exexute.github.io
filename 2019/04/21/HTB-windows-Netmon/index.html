@@ -18,7 +18,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/04/21/HTB-windows-Netmon/HTB_Windows_Netmon_mnmap.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/21/HTB-windows-Netmon/HTB_Windows_Netmon_smbclient.png">
-<meta property="og:updated_time" content="2019-04-21T04:30:40.004Z">
+<meta property="og:updated_time" content="2019-04-23T05:27:22.803Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB_windows_Netmon">
 <meta name="twitter:description" content="简介PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 该靶机通过ftp匿名访问与PRTG CVE-2018-9267漏洞的组合, 实现从搜索信息登陆到利用cve创建管理员账号读取最终flag, 思路一般, 但是这里用到的猜登陆密码、PRTG软件十分贴近真实环境, 作为我打的第一个windows靶机, 还是">
@@ -217,6 +217,10 @@
 <h2 id="ftp"><a href="#ftp" class="headerlink" title="ftp"></a>ftp</h2><p>拿到普通用户flag之后, 开始用ftp配合PRTG文件的数据目录<code>ProgramData/Paessler/PRTG Network Monitor/</code>搜索PRTG站点相关的信息, 然后找到了配置文件, 查看配置文件之后发现<code>prtgadmin</code>账号和加密后的密码, 天真的我开始找如何破解, 这一找找了好几个小时, 然后看到一个bak后缀的配置文件, bak是backup的意思, 所以查看该文件, 发现了一组账号和密码<code>prtgadmin</code>, <code>PrTg@admin2018</code>. 经过尝试发现可用<code>PrTg@admin@2019</code>进入PRTG WEB站点.</p>
 <p>这里必须给自己提个醒, 搜集信息阶段的重点是搜集信息, 遇到需要深入探究的信息先放一边, 搜集完之后再深入做爆破等尝试.</p>
 <h2 id="cve-smbclient"><a href="#cve-smbclient" class="headerlink" title="cve+smbclient"></a>cve+smbclient</h2><p>经过之前的信息收集, 在exploit-db上找到了PRTG 18.2.38之前版本中的一个RCE漏洞, 但是需要登陆才能触发, 结合ftp搜集阶段收集的账号信息, 成功触发rce, 创建administrator权限的账号, 然后利用smbclient登陆445端口的smb服务查看对应的flag即可, 最后在Desktop中找到root.txt<br><img src="HTB_Windows_Netmon_smbclient.png" alt="root.txt"></p>
+<p><strong>mnmap</strong></p>
+<pre><code class="sh">masscan -p0-65535 --rate=<span class="variable">$2</span> <span class="variable">$1</span> 2&gt;/dev/null | awk -F<span class="string">' '</span> <span class="string">'{print $4}'</span>| awk -F<span class="string">'/'</span> <span class="string">'BEGIN {ans=""} {if(ans=="") ans=$1; else ans=ans","$1;} END{print ans}'</span> | xargs -I {} nmap -sS -sV --script vuln -A -p{} <span class="variable">$1</span>
+</code></pre>
+<p>nmap扫描参数根据个人喜好自行添加</p>
 
       
 
@@ -444,10 +448,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
               </li>
              
@@ -472,15 +472,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -497,6 +497,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">udf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -520,10 +524,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
               </li>
              
@@ -532,11 +532,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -545,6 +541,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -564,11 +568,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">services</a>
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -580,11 +584,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -656,7 +660,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
         <ul class="search-ul">
           
             <li class="search-li">
+              <a href="https://thehacktoday.com" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>thehacktoday</a>
+            </li>
+          
+            <li class="search-li">
               <a href="https://www.vulnhub.com" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>vulnhub</a>
+            </li>
+          
+            <li class="search-li">
+              <a href="https://www.hackthebox.eu" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>hackthebox</a>
             </li>
           
             <li class="search-li">
@@ -664,7 +676,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             </li>
           
             <li class="search-li">
-              <a href="https://thehacktoday.com" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>thehacktoday</a>
+              <a href="https://www.justinoblak.com" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>justinoblak</a>
+            </li>
+          
+            <li class="search-li">
+              <a href="https://www.n0tr00t.com/archives.html" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>n0tr00t</a>
             </li>
           
         </ul>
