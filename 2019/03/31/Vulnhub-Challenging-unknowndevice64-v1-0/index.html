@@ -9,7 +9,7 @@
   <title>Vulnhub-Challenging-unknowndevice64-v1.0 | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
-<meta name="keywords" content="escalate_privilege,steghide,reverse_rbash,sudoers">
+<meta name="keywords" content="escalate_privilege,steghide,sudoers,reverse_rbash">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vulnhub-Challenging-unknowndevice64-v1.0">
 <meta property="og:url" content="http://yoursite.com/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/index.html">
@@ -258,11 +258,11 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse_rbash</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse_rbash</a>
         		</li>
       		
 		</ul>
@@ -464,6 +464,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
               </li>
              
@@ -472,11 +476,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">脑洞</a>
+                <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -500,14 +504,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">udf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -520,7 +516,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">udf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -528,7 +532,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -544,11 +556,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -568,7 +580,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -576,19 +588,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">search_file</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -8,19 +8,19 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>HTB-linux-chaos | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩. 靶机状态: 获取webmail账号和密码">
-<meta name="keywords" content="wordpress,imaps,脑洞">
+  <meta name="description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩. 靶机状态: 反弹shell提权中">
+<meta name="keywords" content="wordpress,imaps,decrypt,latex">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTB-linux-chaos">
 <meta property="og:url" content="http://yoursite.com/2019/04/19/HTB-linux-chaos/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩. 靶机状态: 获取webmail账号和密码">
+<meta property="og:description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩. 靶机状态: 反弹shell提权中">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_nmap.png">
-<meta property="og:updated_time" content="2019-04-18T17:00:46.540Z">
+<meta property="og:updated_time" content="2019-04-24T15:01:48.044Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB-linux-chaos">
-<meta name="twitter:description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩. 靶机状态: 获取webmail账号和密码">
+<meta name="twitter:description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩. 靶机状态: 反弹shell提权中">
 <meta name="twitter:image" content="http://yoursite.com/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_nmap.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
@@ -206,9 +206,11 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>简介<br>这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩.</p>
-<p>靶机状态: 获取webmail账号和密码<br><a id="more"></a></p>
+<p>靶机状态: 反弹shell提权中<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
 <li>80端口转imaps</li>
+<li>decrypt进latex服务</li>
+<li>反弹shell得user flag</li>
 </ul>
 <h2 id="80端口转imaps"><a href="#80端口转imaps" class="headerlink" title="80端口转imaps"></a>80端口转imaps</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo nmap -sS -sV 10.10.10.120</span><br></pre></td></tr></table></figure>
 <p><img src="HTB_linux_chaos_nmap.png" alt="nmap"><br>发现http和email两类端口, 其中pop3和imap都是用来收取邮件的, 一般需要凭证, 因此先查看http端口80和10000.</p>
@@ -217,6 +219,9 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wpscan --url http://10.10.10.120/wp/wordpress/</span><br></pre></td></tr></table></figure>
 <p><strong>脑洞</strong> 扫描之后发现一个账户<code>human</code>, 于是考虑爆破human的账号, 用<code>rockyou.txt</code>爆破发现字典太大，无法短时间内爆破成功, 后来查writeup发现这里获取的human是wordpress加密文章的密码.</p>
 <p><strong>webmail</strong> 加密文章中写着webmail的用户名和密码, 于是用<code>hydra -l ayush -p jiujitsu pop3://10.10.10.120</code>查看用户名和密码是否正确, 这里通过更换协议发现pop3s和imaps可登陆. 于是准备读取邮件内容继续渗透.</p>
+<h2 id="decrypt进latex服务"><a href="#decrypt进latex服务" class="headerlink" title="decrypt进latex服务"></a>decrypt进latex服务</h2><p>第一步拿到webmail账号后, 开始着手获取邮件(目前唯一的线索), 通过<strong>foxmail客户端</strong>配置imap服务器端地址, 然后在<strong>草稿箱</strong>中找到一封为发出的邮件, 根据邮件内容提示和加密脚本提示, 获取到aes的<strong>IV</strong>参数和密码解密得到真正的邮件内容, 将线索指向一个<strong><a href="chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3">url</a></strong>,  由于无其他WEB服务, 因此推测此处需要添加host然后通过域名访问.<br>访问之后获取一个在线生成pdf的服务, 并根据提示找到可用的模版<strong>test3</strong></p>
+<p>最后根据latex执行perl反弹shell命令获取<strong>www-data</strong>权限的shell.</p>
+<h2 id="反弹shell得user-flag"><a href="#反弹shell得user-flag" class="headerlink" title="反弹shell得user flag"></a>反弹shell得user flag</h2><p>进入shell之后, 开始信息收集, 包括: 内核、服务、计划任务、配置、文件.<br><strong>内核信息</strong> </p>
 
       
 
@@ -238,7 +243,11 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">脑洞</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">decrypt</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">latex</a>
         		</li>
       		
 		</ul>
@@ -306,7 +315,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#80端口转imaps"><span class="toc-number">2.</span> <span class="toc-text">80端口转imaps</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#80端口转imaps"><span class="toc-number">2.</span> <span class="toc-text">80端口转imaps</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#decrypt进latex服务"><span class="toc-number">3.</span> <span class="toc-text">decrypt进latex服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#反弹shell得user-flag"><span class="toc-number">4.</span> <span class="toc-text">反弹shell得user flag</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -440,6 +449,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
               </li>
              
@@ -448,11 +461,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">脑洞</a>
+                <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -476,14 +489,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">udf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -496,7 +501,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">udf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -504,7 +517,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -520,11 +541,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -544,7 +565,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -552,19 +573,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">search_file</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
