@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>cve_2014_0160_心脏滴血漏洞分析 | owefsad&#39;s blog</title>
+  <title>Tag: tty | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2014年的一个漏洞, 通过利用OpenSSL协议1.0.1版本中的BUG读取远程服务器内存中的数据, 漏洞主要设计tls与dtls中的心跳数据包. 因此, 漏洞影响使用OpenSSL 1.0.1版本、开启tls或dtls验证的服务器. 目录 漏洞简介及成因 poc 修复方案及开发注意事项">
-<meta name="keywords" content="内存越界访问,openssl">
-<meta property="og:type" content="article">
-<meta property="og:title" content="cve_2014_0160_心脏滴血漏洞分析">
-<meta property="og:url" content="http://yoursite.com/2019/03/05/cve-2014-0160-心脏滴血漏洞分析/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="owefsad&#39;s blog">
+<meta property="og:url" content="http://yoursite.com/tags/tty/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="2014年的一个漏洞, 通过利用OpenSSL协议1.0.1版本中的BUG读取远程服务器内存中的数据, 漏洞主要设计tls与dtls中的心跳数据包. 因此, 漏洞影响使用OpenSSL 1.0.1版本、开启tls或dtls验证的服务器. 目录 漏洞简介及成因 poc 修复方案及开发注意事项">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-11T01:18:38.373Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="cve_2014_0160_心脏滴血漏洞分析">
-<meta name="twitter:description" content="2014年的一个漏洞, 通过利用OpenSSL协议1.0.1版本中的BUG读取远程服务器内存中的数据, 漏洞主要设计tls与dtls中的心跳数据包. 因此, 漏洞影响使用OpenSSL 1.0.1版本、开启tls或dtls验证的服务器. 目录 漏洞简介及成因 poc 修复方案及开发注意事项">
+<meta name="twitter:title" content="owefsad&#39;s blog">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -183,156 +178,79 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-cve-2014-0160-心脏滴血漏洞分析" class="article article-type-post " itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      cve_2014_0160_心脏滴血漏洞分析
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2019/04/27/how-to-get-a-tty-from-reverse-shell/" class="archive-article-date">
+  	<time datetime="2019-04-27T02:39:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-27</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/04/27/how-to-get-a-tty-from-reverse-shell/">how to get a tty from reverse shell</a>
     </h1>
   
 
-        
-        <a href="/2019/03/05/cve-2014-0160-心脏滴血漏洞分析/" class="archive-article-date">
-  	<time datetime="2019-03-04T23:51:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>2014年的一个漏洞, 通过利用OpenSSL协议1.0.1版本中的BUG读取远程服务器内存中的数据, 漏洞主要设计tls与dtls中的心跳数据包. 因此, 漏洞影响使用OpenSSL 1.0.1版本、开启tls或dtls验证的服务器.</p>
-<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
-<li>漏洞简介及成因</li>
-<li>poc</li>
-<li>修复方案及开发注意事项</li>
-</ul>
-<a id="more"></a>
-<h3 id="漏洞简介"><a href="#漏洞简介" class="headerlink" title="漏洞简介"></a>漏洞简介</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">漏洞编号: CVE-2014-0160</span><br><span class="line">漏洞类型: remote, 内存越界访问</span><br><span class="line">漏洞危害: 服务器信息泄漏</span><br><span class="line">影响范围: OpenSSl 1.0.1、OpenSSl 1.0.1a、OpenSSL 1.0.1f、OpenSSl 1.0.2-beta</span><br><span class="line">漏洞描述: OpenSSl在实现TLS(传输层安全协议)和DTLS(数据报传输安全协议)的心跳包处理逻辑时, 未校验心跳包中数据长度字段是否与心跳的数据的长度一致, 直接使用心跳数据包的数据长度字段申请响应心跳包数据的长度并用请求心跳包的数据填充相应心跳包中的数据，导致多申请的内存未被重写其中的数据直接返回造成了信息泄漏.</span><br></pre></td></tr></table></figure>
-<h3 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h3><ol>
-<li>内存中的数据只会被覆盖不会被删除;</li>
-<li>ssl协议通过心跳机制减少重复创建tcp连接所带来的资源消耗;</li>
-<li>openssl 1.0.1版本实现心跳数据包处理时, 未校验心跳数据包的数据长度字段值是否与数据长度相同, 根据数据长度字段直接申请响应数据包所需的内存;</li>
-<li>OpenSSL 1.0.1版本实现心跳数据包处理时, 未对申请到的内存进行初始化操作;</li>
-<li>OpenSSL 1.0.1版本实现心跳数据包处理时, 将心跳请求包中数据写到响应数据包中;<br>基于上述5点事实, 只需构造出心跳数据长度字段的值大于心跳数据占用长度的心跳请求数据包即可触发具有漏洞的服务器泄漏对应的内存数据.</li>
-</ol>
-<h2 id="openssl漏洞分析"><a href="#openssl漏洞分析" class="headerlink" title="openssl漏洞分析"></a>openssl漏洞分析</h2><ol>
-<li>tls实现中产生的漏洞在源码文件’ssl/t1_lib.c’的<code>tls1_process_heartbeat</code>函数中, 源代码如下(dtls中的漏洞成因与tls中的漏洞成因类似)：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 漏洞主要的3处函数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数一：n2s函数通过指针p读取客户端心跳包协议中的心跳包长度并赋值给payload</span></span><br><span class="line">n2s(p, payload);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数二：直接通过客户端心跳包中的长度申请内存, 未校验与心跳数据是否一致</span></span><br><span class="line">buffer = OPENSSL_malloc(<span class="number">1</span> + <span class="number">2</span> + payload + padding);</span><br><span class="line"></span><br><span class="line"><span class="comment">//函数三： bp-申请到的服务器心跳包内存; p1-客户端心跳包内容; payload-心跳包长度; 其中payload大于p1中数据的内容</span></span><br><span class="line"><span class="built_in">memcpy</span>(bp, pl, payload);</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="修复方案及开发注意事项"><a href="#修复方案及开发注意事项" class="headerlink" title="修复方案及开发注意事项"></a>修复方案及开发注意事项</h2><p>修复方案: 升级OpenSSL版本; 如果<strong>无法</strong>及时<strong>升级</strong>OpenSSL程序, 可先禁用tls和dtls;<br>开发注意事项:</p>
-<ol>
-<li>申请之后的内存(堆、栈)尽可能的进行初始化; 如果对性能要求过于严苛则忽略;</li>
-<li>申请到的内存在写入的时候要尽可能将其写满, 可填充’0x00’.</li>
-</ol>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="http://0x4c43.cn/2018/0701/heartbleed-vulnerability-analysis/" target="_blank" rel="noopener">http://0x4c43.cn/2018/0701/heartbleed-vulnerability-analysis/</a><br><a href="http://cea.ceaj.org/CN/abstract/abstract34416.shtml" target="_blank" rel="noopener">http://cea.ceaj.org/CN/abstract/abstract34416.shtml</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">内存越界访问</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">cheatsheet</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">openssl</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">tty</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">reverse_shell</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/cve//" class="article-tag-list-link color4">cve</a>
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2019/03/12/WMI-persistent/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          WMI_persistent
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/12/25/kong安装lua-waf之最佳实践/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">kong安装lua waf之最佳实践</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#目录"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#漏洞简介"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#漏洞成因"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞成因</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#openssl漏洞分析"><span class="toc-number">2.</span> <span class="toc-text">openssl漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修复方案及开发注意事项"><span class="toc-number">3.</span> <span class="toc-text">修复方案及开发注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章"><span class="toc-number">4.</span> <span class="toc-text">参考文章</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -357,9 +275,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: false,
