@@ -16,7 +16,7 @@
 <meta property="og:description" content="简介靶机状态: 获取user.txt中…">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_mnmap.png">
-<meta property="og:updated_time" content="2019-05-07T15:39:16.436Z">
+<meta property="og:updated_time" content="2019-05-07T16:23:17.668Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB-windows-querier">
 <meta name="twitter:description" content="简介靶机状态: 获取user.txt中…">
@@ -211,8 +211,30 @@
 <h2 id="找方向"><a href="#找方向" class="headerlink" title="找方向"></a>找方向</h2><blockquote>
 <p>MSRPC、NetBIOS、SMB、MSSQL、WinRM</p>
 </blockquote>
-<p><img src="HTB_windows_querier_mnmap.png" alt="mnmap"><br>拿到靶机先扫描一波tcp端口<code>./mnmap.sh 10.10.10.125 1000</code>, 扫完之后很懵逼, 没怎么打过windows靶机一时不知道怎么收集信息怎么深入到下一步了.<br>139端口为NetBIOS<br>445端口属于SMB<br>1433端口mssql<br>5985、47001端口WinRM<br>135、49664-49671端口MSRPC</p>
-<p>从1433端口的详细信息中找到主机名QUERIER、域HTB、DNS域HTB.LOCAL这些信息, 操作系统最有可能是xp、win7、Server2012. 一时间无从下手啊, 直接上去爆1433回报率太低, 139、445历史rce利用不成功, ssdp/upnp的cve也未利用成功, RPC是最有希望的一组端口了, 但是不熟悉RPC的利用, 决定去google查对应端口的利用</p>
+<p><img src="HTB_windows_querier_mnmap.png" alt="mnmap"><br>拿到靶机先扫描一波tcp端口<code>./mnmap.sh 10.10.10.125 1000</code>, 扫完之后很懵逼, 没怎么打过windows靶机一时不知道怎么收集信息怎么深入到下一步了.<br>139端口为NetBIOS服务、445端口属于SMB服务、1433端口mssql服务、5985和47001端口为WinRM服务、135和49664-49671端口为MSRPC服务, 从1433端口的详细信息中找到<strong>主机名QUERIER</strong>、<strong>域HTB</strong>、<strong>DNS域HTB.LOCAL</strong>,  操作系统最有可能是xp、win7、Server2012。</p>
+<p>对所有端口进行检查之后, 依然无法获取有效信息, 从讨论区看到了大致思路但是由于无法找到xlsm文件, 因此暂搁置.</p>
+<p>讨论区提示信息及思路:</p>
+<ol>
+<li>爆破mssql</li>
+<li>端口像rabbit hole</li>
+<li>http api无法获取到任务信息</li>
+<li>先利用139端口在利用1433端口</li>
+<li>在1**端口上发现数据</li>
+<li>*.xlsm文件</li>
+<li>发现c<strong>*</strong>.xlsm文件</li>
+<li>trusty go-to 3v1l h@xx0r tool</li>
+<li><em>.xlsm文件中发现</em>ui name、m***o</li>
+<li>使用***map从NetBIOS/SMB中发现信息</li>
+<li>拥有用户m<strong>*<em>vc, 通过G</em></strong>y可以启用x<strong>*</strong>l</li>
+<li>使用im<strong>*</strong>t sql client, 连接机器失败, 获得错误un<strong>**</strong>d d<em>**</em>n；通过在命令中删除密码字段然后在提示时输入密码解决 或者 使用”\”进行绕过解决.</li>
+<li>枚举所有端口, 然后会发现一个普通端口, 尝试连接, 然后会发现一个xlsm文件</li>
+<li>登陆mssql后, 使用xp_cmdshell捕获ntlm失败，通过Giddy靶机的解决方案来解决</li>
+<li>登陆mssql后, 使用xp_cmdshell执行命令读取user.txt， 通过xp_cmdshelll上传文件可以像root权限迈进</li>
+<li>提示信息<br>1) Enumerate the hell out of SMB and any/all files you come into contact with<br>2) When I feel like laughing, I get a little Giddy<br>3) November Telecaster Lightning Manchester. Get those hashes, theres a great module in metasploit for this<br>4) Impacket will make sense if you did steps 1-3 right<br>5) Windows XP surely had a command shell, right?</li>
+<li>For anyone fighting with this box - use basic tools (not “The Framework”) for exploitation. In the end you need only 2 tools and one script to root it (script is optional part)<br>1) If you think it should work, maybe you are not using your tool correctly. Screwdriver can be hammer but you need to know which end you should use<br>2) \ != /;!|$ -&gt; !|\$;<br>3) Be aware of mighty Defender</li>
+<li>smbmap -H 10.10.10.125 访问被拒绝, 需要登陆凭证</li>
+</ol>
+<p>Way: 连接某一普通端口, 找到xlsm格式的文件, 从xlsm格式的文件上找到宏里的账号信息, 用找到的信息登陆mssql, 用xp_cmdshell读取user.txt获取user权限, 用xm_cmdshell上传文件开始获取root权限</p>
 
       
 
@@ -397,11 +419,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+                <a href="javascript:void(0)" class="js-tag color4">cve</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cve</a>
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -417,14 +443,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ftp</a>
               </li>
              
@@ -437,6 +455,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -445,15 +471,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -469,7 +487,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -481,42 +507,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">email</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">firefox_decrypt</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
               </li>
              
@@ -525,11 +515,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -545,14 +535,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
               </li>
              
@@ -561,7 +543,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -569,7 +563,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -585,11 +583,35 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">email</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">firefox_decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
