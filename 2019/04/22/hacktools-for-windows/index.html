@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-22T23:31:48.726Z">
+<meta property="og:updated_time" content="2019-05-12T14:47:53.817Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hacktools for windows">
 <meta name="twitter:description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
@@ -208,12 +208,23 @@
 <a id="more"></a>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
 <li>SMB</li>
+<li>RPC</li>
+<li>MsSql</li>
 </ul>
 <h2 id="SMB"><a href="#SMB" class="headerlink" title="SMB"></a>SMB</h2><ul>
 <li>smbclient</li>
+<li>smbmap</li>
+<li>smbserver.py</li>
+<li>Responder</li>
 </ul>
-<h3 id="smbclient使用教程"><a href="#smbclient使用教程" class="headerlink" title="smbclient使用教程"></a>smbclient使用教程</h3><p>smbclient是一款linux下用于访问samba服务器共享资源的工具. 在内网渗透过程中, 可在linux中用于访问samba服务器共享的文件, 且拥有认证samba协议、打包下载共享文件等功能.<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ smbclient</span><br><span class="line">usage:</span><br><span class="line">  smbclient [options] service &lt;password&gt;</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line">  -L 列出服务器的共享目录</span><br><span class="line">  -U|--user =username 指定登陆的用户名</span><br><span class="line">  -W|--workgroup =worgroup 指定工作组/所属域的名字</span><br><span class="line">  -N|--no-pass 指定不需要密码, 用于判断是否支持匿名登陆</span><br><span class="line">  -T|--tar&lt;c|x&gt;IXFqgbNan 用tar命令对服务器上的所有共享文件打包, 需要指定打包参数</span><br></pre></td></tr></table></figure></p>
+<h3 id="smbclient"><a href="#smbclient" class="headerlink" title="smbclient"></a>smbclient</h3><p>smbclient是一款linux下用于访问samba服务器共享资源的工具. 在内网渗透过程中, 可在linux中用于访问samba服务器共享的文件, 且拥有认证samba协议、打包下载共享文件等功能. smbclient与kali中的pth-smbclient的用法相同<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ smbclient</span><br><span class="line">usage:</span><br><span class="line">  smbclient [options] service &lt;password&gt;</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line">  -L 列出服务器的共享目录</span><br><span class="line">  -U|--user =username 指定登陆的用户名</span><br><span class="line">  -W|--workgroup =worgroup 指定工作组/所属域的名字</span><br><span class="line">  -N|--no-pass 指定不需要密码, 用于判断是否支持匿名登陆</span><br><span class="line">  -T|--tar&lt;c|x&gt;IXFqgbNan 用tar命令对服务器上的所有共享文件打包, 需要指定打包参数</span><br><span class="line"></span><br><span class="line">$ smbclient -U &lt;username&gt; -L &lt;target ip&gt;</span><br><span class="line">$ smbclient -U &lt;username&gt; //&lt;target ip&gt;/&lt;sharename&gt;</span><br></pre></td></tr></table></figure></p>
 <p><strong>demo</strong> <a href="https://exexute.github.io/2019/04/21/HTB-windows-Netmon/" target="_blank" rel="noopener">netmon靶机</a></p>
+<h3 id="smbmap"><a href="#smbmap" class="headerlink" title="smbmap"></a>smbmap</h3><h2 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h2><ul>
+<li>rpcclient</li>
+</ul>
+<h2 id="MsSql"><a href="#MsSql" class="headerlink" title="MsSql"></a>MsSql</h2><ul>
+<li>mssqlclient</li>
+</ul>
 
       
 
@@ -295,7 +306,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-number">2.</span> <span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#smbclient使用教程"><span class="toc-number">2.1.</span> <span class="toc-text">smbclient使用教程</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-number">2.</span> <span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#smbclient"><span class="toc-number">2.1.</span> <span class="toc-text">smbclient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#smbmap"><span class="toc-number">2.2.</span> <span class="toc-text">smbmap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RPC"><span class="toc-number">3.</span> <span class="toc-text">RPC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MsSql"><span class="toc-number">4.</span> <span class="toc-text">MsSql</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -493,6 +504,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
@@ -505,6 +520,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">rce</a>
               </li>
              
@@ -513,11 +532,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -529,7 +544,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -537,7 +552,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -545,15 +560,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">waf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -561,19 +568,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -605,11 +612,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">malware_ayalysis</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">php_shell</a>
+                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -618,6 +621,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mssql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">malware_ayalysis</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">php_shell</a>
               </li>
             
             <div class="clearfix"></div>
