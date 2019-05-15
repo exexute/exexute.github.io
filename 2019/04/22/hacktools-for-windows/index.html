@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-12T14:47:53.817Z">
+<meta property="og:updated_time" content="2019-05-14T15:37:39.007Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hacktools for windows">
 <meta name="twitter:description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
@@ -210,6 +210,8 @@
 <li>SMB</li>
 <li>RPC</li>
 <li>MsSql</li>
+<li>chromepass</li>
+<li>Firefox Decrypt</li>
 </ul>
 <h2 id="SMB"><a href="#SMB" class="headerlink" title="SMB"></a>SMB</h2><ul>
 <li>smbclient</li>
@@ -225,6 +227,14 @@
 <h2 id="MsSql"><a href="#MsSql" class="headerlink" title="MsSql"></a>MsSql</h2><ul>
 <li>mssqlclient</li>
 </ul>
+<h2 id="提取保存的凭证"><a href="#提取保存的凭证" class="headerlink" title="提取保存的凭证"></a>提取保存的凭证</h2><p><strong>chromepass</strong></p>
+<p>chromepass用来提取chrome浏览器中保存的url、账号、密码等信息, 目前可用于win、linux系统, mac下尚未支持; 运行chromepass提取密码时需要关闭chrome浏览器及其后台进程。<br>原理: chrome中保存的密码被保存在应用数据的sqlite3数据库中, 数据库文件为”Login Data”, 路径一般为: <code>%local_app_data%\Google\Chrome\User Data\Default</code>, windows下保存的密码会进行一次加密, 通过win32crypt包进行解密即可.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python chromepass.py -d</span><br></pre></td></tr></table></figure>
+<p><strong>Firefox_Decrypt</strong></p>
+<p>Firefox_Decrypt用来提取Firefox浏览器、Thunderbird邮件客户端、Seabird中保存的url、账号、密码等信息, 目前支持python 2.7、python 3.6+, 在windows上只能使用python3.6+.<br>原理: 加载Firefox的nss3.dll, 用dll中的接口查询Firefox中保存的密码, 密码保存在json文件或sqlite3数据库文件中. 密码文件为””.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python firefox_decrypt.py</span><br></pre></td></tr></table></figure>
+<h2 id="Windows内核攻击"><a href="#Windows内核攻击" class="headerlink" title="Windows内核攻击"></a>Windows内核攻击</h2><p><a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noopener">SessionGopher</a><br><a href="https://github.com/GDSSecurity/Windows-Exploit-Suggester" target="_blank" rel="noopener">Windows-Exploit-Suggester</a><br><a href="https://github.com/pentestmonkey/windows-privesc-check" target="_blank" rel="noopener">windows-privesc-check</a><br><a href="https://github.com/enjoiz/Privesc" target="_blank" rel="noopener">Privesc</a><br><a href="https://github.com/411Hall/JAWS" target="_blank" rel="noopener">JAWS</a><br><a href="https://github.com/rasta-mouse/Sherlock" target="_blank" rel="noopener">Sherlock</a><br><a href="https://github.com/silentsignal/wpc-ps" target="_blank" rel="noopener">wpc-ps</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a><br><a href="https://github.com/AlessandroZ/BeRoot" target="_blank" rel="noopener">BeRoot</a></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://medium.com/@rahmatnurfauzi/windows-privilege-escalation-scripts-techniques-30fa37bd194" target="_blank" rel="noopener">@rahmatnurfauzi-wpe</a><br><a href="https://www.fuzzysecurity.com/tutorials/16.html" target="_blank" rel="noopener">Windows Privilege Escalation Fundamentals</a><br><a href="https://sushant747.gitbooks.io/total-oscp-guide/privilege_escalation_windows.html" target="_blank" rel="noopener">total-oscp-guide</a></p>
 
       
 
@@ -306,7 +316,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-number">2.</span> <span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#smbclient"><span class="toc-number">2.1.</span> <span class="toc-text">smbclient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#smbmap"><span class="toc-number">2.2.</span> <span class="toc-text">smbmap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RPC"><span class="toc-number">3.</span> <span class="toc-text">RPC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MsSql"><span class="toc-number">4.</span> <span class="toc-text">MsSql</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-number">2.</span> <span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#smbclient"><span class="toc-number">2.1.</span> <span class="toc-text">smbclient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#smbmap"><span class="toc-number">2.2.</span> <span class="toc-text">smbmap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RPC"><span class="toc-number">3.</span> <span class="toc-text">RPC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MsSql"><span class="toc-number">4.</span> <span class="toc-text">MsSql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提取保存的凭证"><span class="toc-number">5.</span> <span class="toc-text">提取保存的凭证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Windows内核攻击"><span class="toc-number">6.</span> <span class="toc-text">Windows内核攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章"><span class="toc-number">7.</span> <span class="toc-text">参考文章</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -460,14 +470,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pip</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -484,11 +486,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">joomla</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -496,19 +506,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -520,19 +522,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -544,15 +538,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
               </li>
              
               <li class="article-tag-list-item">
