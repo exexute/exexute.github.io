@@ -16,10 +16,13 @@
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-30T15:19:30.045Z">
+<meta property="og:image" content="http://yoursite.com/2019/04/22/windows内网渗透思路/alwaysinstallelasted_gpedit.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/22/windows内网渗透思路/alwaysinstallelasted_regedit.png">
+<meta property="og:updated_time" content="2019-05-30T15:34:07.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pentesting test in windows">
 <meta name="twitter:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/22/windows内网渗透思路/alwaysinstallelasted_gpedit.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -250,7 +253,10 @@
 <p>其中, mssql-svc为用户名, QUERIER为MsSql所在机器的主机名, 后面的三段为NTLM Hash.</p>
 <p>拿到NTLM Hash后, 开始进行一些列的横向渗透, 考虑爆破NTLM Hash值、用NTLM Hash登陆MsSql、SMB等.<br>关于如何利用NTLM Hash进行横向渗透的内容, 请参考<a href="https://www.hacklikeapornstar.com/all-pth-techniques/" target="_blank" rel="noopener">path-to-hash</a>及其他互联网内容.</p>
 <h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://medium.com/@markmotig/how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478" target="_blank" rel="noopener">how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478</a><br><a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/wendels-small-hacking-tricks-microsoft-sql-server-edition/" target="_blank" rel="noopener">wendels-small-hacking-tricks-microsoft-sql-server-edition</a><br><a href="https://www.cnblogs.com/ichunqiu/p/7249516.html" target="_blank" rel="noopener">详述MSSQL服务在渗透测试中的利用</a><br><a href="https://github.com/SpiderLabs/Responder" target="_blank" rel="noopener">Responder</a><br><a href="https://medium.com/ethical-hacking-blog/mssql-connectivity-with-sqsh-debec7188104" target="_blank" rel="noopener">mssql-client: sqsh</a><br><a href="https://blog.netspi.com/hacking-sql-server-stored-procedures-part-3-sqli-and-user-impersonation/" target="_blank" rel="noopener">攻击mssql的存储过程</a><br><a href="https://www.4armed.com/blog/llmnr-nbtns-poisoning-using-responder/" target="_blank" rel="noopener">llmnr-nbtns-poisoning-using-responder</a></p>
-<h3 id="0x11-SMB"><a href="#0x11-SMB" class="headerlink" title="0x11 SMB"></a>0x11 SMB</h3><p>Windows进入数据库后, 考虑从数据库中搜集信息、读数据库服务器上的操作系统文件进行信息收集、写文件插入WEB木马或覆盖计划任务、执行操作系统命令收集信息、利用存储过程与UNC获取NTLM Hash进行横向渗透等。<br>MsSql目前为止最新版本为2017。</p>
+<!--
+### 0x11 SMB
+Server Message Block是WIndows下的一个协议，
+-->
 <blockquote>
 <p>二、权限提升</p>
 </blockquote>
@@ -284,10 +290,12 @@
 <h3 id="0x26-错误配置"><a href="#0x26-错误配置" class="headerlink" title="0x26 错误配置"></a>0x26 错误配置</h3><p>Windows系统的复杂性导致了出现错误配置的可能行，该部分对系统的错误配置可能导致提权的方法进行研究和总结。</p>
 <h4 id="AlwaysInstallElevated"><a href="#AlwaysInstallElevated" class="headerlink" title="AlwaysInstallElevated"></a>AlwaysInstallElevated</h4><p>该配置译为永远以高权限安装，在Windows 2000及以上可用；该配置是msi安装程序的安装配置，如果指了AlwaysInstallElevalted, 则普通用户安装msi文件时，将以本地系统管理员(NT AUTHORITY\SYSTEM)的权限进行安装，可安装提权msi程序进行提权。该配置默认为未配置，微软<strong>强烈建议</strong>不要开启此配置，所以请关闭此配置。<br>查看该配置状态的方法：</p>
 <ol>
-<li>打开cmd运行gpedit.msc，在”计算机配置(Computer Configuration)” - “管理模版(Administrative Templates)” - “windows组件(Windows Components)” - “Windows Installer”中可以找到”永远以高权限进行安装(Always install with elevated)”，右键选中”属性”即可看到当前配置</li>
-<li>查注册表”HKEY_CURRENT_USER”和”HKEY_LOCAL_MACHINE”中的”Software” - “Policies” - “Microsoft” - “Windows” - “Installer”下是否有”EnableAdminTSRemote”键，如果存在且值不等于0则可以提权；否则无法提权。</li>
+<li><p>打开cmd运行gpedit.msc，在”计算机配置(Computer Configuration)” - “管理模版(Administrative Templates)” - “windows组件(Windows Components)” - “Windows Installer”中可以找到”永远以高权限进行安装(Always install with elevated)”，右键选中”属性”即可看到当前配置<br><img src="alwaysinstallelasted_gpedit.png" alt="gpedit"></p>
+</li>
+<li><p>查注册表”HKEY_CURRENT_USER”和”HKEY_LOCAL_MACHINE”中的”Software” - “Policies” - “Microsoft” - “Windows” - “Installer”下是否有”EnableAdminTSRemote”键，如果存在且值不等于0则可以提权；否则无法提权。<br><img src="alwaysinstallelasted_regedit.png" alt="regedit"></p>
+</li>
 </ol>
-<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://secvue.com/using-powerup-with-unquoted-service-paths/" target="_blank" rel="noopener">using-powerup-with-unquoted-service-paths</a><br><a href="https://www.gracefulsecurity.com/privesc-unquoted-service-path/" target="_blank" rel="noopener">privesc-unquoted-service-path</a><br>youtube - Windows Privilege Escalation<br><a href="https://pentestlab.blog/tag/cpassword/" target="_blank" rel="noopener">Group Policy Preferences</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a></p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://secvue.com/using-powerup-with-unquoted-service-paths/" target="_blank" rel="noopener">using-powerup-with-unquoted-service-paths</a><br><a href="https://www.gracefulsecurity.com/privesc-unquoted-service-path/" target="_blank" rel="noopener">privesc-unquoted-service-path</a><br>youtube - Windows Privilege Escalation<br><a href="https://pentestlab.blog/tag/cpassword/" target="_blank" rel="noopener">Group Policy Preferences</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a><br><a href="https://www.hackingarticles.in/windows-privilege-escalation-alwaysinstallelevated/" target="_blank" rel="noopener">windows-privilege-escalation-alwaysinstallelevated</a></p>
 
       
 
@@ -377,7 +385,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x10-MsSql-Escalate-Privilege"><span class="toc-number">1.1.</span> <span class="toc-text">0x10 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">1.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">1.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x11-SMB"><span class="toc-number">1.2.</span> <span class="toc-text">0x11 SMB</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x20-内核"><span class="toc-number">1.3.</span> <span class="toc-text">0x20 内核</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x21-服务"><span class="toc-number">1.4.</span> <span class="toc-text">0x21 服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#不带引号的服务路径"><span class="toc-number">1.4.1.</span> <span class="toc-text">不带引号的服务路径</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x22-dll"><span class="toc-number">1.5.</span> <span class="toc-text">0x22. dll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x23-注册表"><span class="toc-number">1.6.</span> <span class="toc-text">0x23 注册表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x24-计划任务"><span class="toc-number">1.7.</span> <span class="toc-text">0x24 计划任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x25-文件"><span class="toc-number">1.8.</span> <span class="toc-text">0x25. 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#从浏览器文件中提取凭证"><span class="toc-number">1.8.1.</span> <span class="toc-text">从浏览器文件中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#从远控工具中提取凭证"><span class="toc-number">1.8.2.</span> <span class="toc-text">从远控工具中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#组策略首选项文件"><span class="toc-number">1.8.3.</span> <span class="toc-text">组策略首选项文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows密钥文件"><span class="toc-number">1.8.4.</span> <span class="toc-text">Windows密钥文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x26-错误配置"><span class="toc-number">1.9.</span> <span class="toc-text">0x26 错误配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AlwaysInstallElevated"><span class="toc-number">1.9.1.</span> <span class="toc-text">AlwaysInstallElevated</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章-1"><span class="toc-number">1.9.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x10-MsSql-Escalate-Privilege"><span class="toc-number">1.1.</span> <span class="toc-text">0x10 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">1.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">1.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x20-内核"><span class="toc-number">1.2.</span> <span class="toc-text">0x20 内核</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x21-服务"><span class="toc-number">1.3.</span> <span class="toc-text">0x21 服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#不带引号的服务路径"><span class="toc-number">1.3.1.</span> <span class="toc-text">不带引号的服务路径</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x22-dll"><span class="toc-number">1.4.</span> <span class="toc-text">0x22. dll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x23-注册表"><span class="toc-number">1.5.</span> <span class="toc-text">0x23 注册表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x24-计划任务"><span class="toc-number">1.6.</span> <span class="toc-text">0x24 计划任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x25-文件"><span class="toc-number">1.7.</span> <span class="toc-text">0x25. 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#从浏览器文件中提取凭证"><span class="toc-number">1.7.1.</span> <span class="toc-text">从浏览器文件中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#从远控工具中提取凭证"><span class="toc-number">1.7.2.</span> <span class="toc-text">从远控工具中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#组策略首选项文件"><span class="toc-number">1.7.3.</span> <span class="toc-text">组策略首选项文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows密钥文件"><span class="toc-number">1.7.4.</span> <span class="toc-text">Windows密钥文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x26-错误配置"><span class="toc-number">1.8.</span> <span class="toc-text">0x26 错误配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AlwaysInstallElevated"><span class="toc-number">1.8.1.</span> <span class="toc-text">AlwaysInstallElevated</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章-1"><span class="toc-number">1.8.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -511,10 +519,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ftp</a>
               </li>
              
@@ -527,11 +531,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -540,6 +544,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -559,15 +567,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -579,15 +583,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -599,11 +603,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -619,19 +627,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -643,11 +651,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -655,31 +663,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">email</a>
+                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
+                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">rbash</a>
+                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">firefox_decrypt</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
+                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -711,19 +707,31 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
+                <a href="javascript:void(0)" class="js-tag color1">email</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
+                <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
+                <a href="javascript:void(0)" class="js-tag color1">rbash</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
+                <a href="javascript:void(0)" class="js-tag color1">firefox_decrypt</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">序列化与反序列化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ss-manager</a>
               </li>
              
               <li class="article-tag-list-item">
