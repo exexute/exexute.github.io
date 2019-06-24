@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   
   <meta name="renderer" content="webkit">
@@ -9,13 +9,14 @@
   <title>How Hacking in SMB | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简介">
+<meta name="keywords" content="smb,smb_tools">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How Hacking in SMB">
 <meta property="og:url" content="http://yoursite.com/2019/06/12/How-Hacking-in-SMB/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
 <meta property="og:description" content="简介">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-06-12T13:25:18.348Z">
+<meta property="og:updated_time" content="2019-06-14T09:58:03.968Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="How Hacking in SMB">
 <meta name="twitter:description" content="简介">
@@ -182,7 +183,7 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-How-Hacking-in-SMB" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-How-Hacking-in-SMB" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
@@ -202,8 +203,38 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br><a id="more"></a></p>
-<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2>
+        <p>简介</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>工具</li>
+<li>思路&amp;难点</li>
+</ul>
+<blockquote>
+<p>工具</p>
+</blockquote>
+<ul>
+<li>enum4linux</li>
+<li>smbmap</li>
+<li>smbclient</li>
+<li>rpcclient</li>
+<li>nbtscan</li>
+<li>nmblookup</li>
+</ul>
+<h3 id="enum4linux1"><a href="#enum4linux1" class="headerlink" title="enum4linux1"></a>enum4linux<a href="https://labs.portcullis.co.uk/tools/enum4linux/" target="_blank" rel="noopener">1</a></h3><p>(翻译自官方介绍)enum4linux是一款用于枚举windows、samba主机信息的工具, 通过对Samba工具rpcclient、rcpclient、net、nmblookup和smbclient进行封装提供的一款自动化工具。工具用perl编写，目的是成为linux版的enum.exe。<br><strong>特性:</strong></p>
+<ul>
+<li>循环遍历RID (Windows 2000系统需要将RestrictAnonymous设置为1)</li>
+<li>查看用户列表 (Windows 2000系统需要将RestrictAnonymous设置为0)</li>
+<li>组成员列表信息</li>
+<li>枚举共享目录</li>
+<li>检查主机是否工作在工作组或AD域内</li>
+<li>检查主机操作系统的类型</li>
+<li>检索密码策略(通过<a href="https://labs.portcullis.co.uk/tools/polenum/" target="_blank" rel="noopener">polenum</a>)</li>
+</ul>
+<p>循环遍历RID的目的:<br>RID(Relative Identifies, 相对标识符)是SID的最后一部分内容, </p>
+<p><strong>Usage</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$ enum4linux -h</span><br><span class="line"></span><br><span class="line">Usage: ./enum4linux.pl [options] ip</span><br><span class="line">Options are (like <span class="string">"enum"</span>):</span><br><span class="line">    -U        获取用户列表</span><br><span class="line">    -M        获取机器列表</span><br><span class="line">    -S        获取共享列表</span><br><span class="line">    -P        获取密码策略信息</span><br><span class="line">    -G        获取用户组/组成员列表</span><br><span class="line">    -d        获取详细描述, 与-U和-S搭配使用， -Ud、-Sd</span><br><span class="line">    -u user   指定进行枚举时使用的用户, 默认为空</span><br><span class="line">    -p pass   指定进行枚举时使用的密码, 默认为空</span><br><span class="line"></span><br><span class="line">The following options from enum.exe aren<span class="string">'t implemented: -L, -N, -D, -f</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Additional options:</span></span><br><span class="line"><span class="string">    -a        执行所有的简单枚举, 包括(-U -S -G -P -r -o -n -i). 默认为-a</span></span><br><span class="line"><span class="string">    -h        打印帮助信息并退出</span></span><br><span class="line"><span class="string">    -r        通过循环RID枚举用户</span></span><br><span class="line"><span class="string">    -R range  指定RID枚举的范围, 默认为500-550, 1000-1050, 该选项包含-r选项</span></span><br><span class="line"><span class="string">    -K n      持续搜索RID, 直到n个连续的RID都没有匹配到用户。可对DC使用该选项</span></span><br><span class="line"><span class="string">    -l        通过389/TCP端口获取一些信息，仅对DC使用</span></span><br><span class="line"><span class="string">    -s file   指定用于SMB共享目录爆破的字典文件</span></span><br><span class="line"><span class="string">    -k user   指定远程机器上存在的用户(default: administrator,guest,krbtgt,domain admins,root,bin,none)，指定的用户用来通过"lookupsid known_username"查找SID，格式为: "-k admin,user1,user2"</span></span><br><span class="line"><span class="string">    -o        获取操作系统信息</span></span><br><span class="line"><span class="string">    -i        Get printer information</span></span><br><span class="line"><span class="string">    -w wrkg   指定工作组，通常由工具自动发现</span></span><br><span class="line"><span class="string">    -n        执行nmblookup扫描 (similar to nbtstat)</span></span><br><span class="line"><span class="string">    -v        打印脚本运行过程中执行的完整命令信息</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>实践</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ enum4linux 10.10.10.137</span><br></pre></td></tr></table></figure></p>
+<h4 id="smbmap"><a href="#smbmap" class="headerlink" title="smbmap"></a>smbmap</h4><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://www.hackingarticles.in/smb-penetration-testing-port-445/" target="_blank" rel="noopener">SMB Penetration Testing (Port 445)</a><br><a href="https://www.cybrary.it/0p3n/easily-exploit-poorly-configured-smb/" target="_blank" rel="noopener">How to Exploit a Poorly Configured SMB</a><br><a href="https://www.hackingarticles.in/a-little-guide-to-smb-enumeration/" target="_blank" rel="noopener">a-little-guide-to-smb-enumeration</a><br><a href="https://labs.portcullis.co.uk/tools/enum4linux/" target="_blank" rel="noopener">enum4linux</a><br><a href="https://highon.coffee/blog/enum4linux-cheat-sheet/" target="_blank" rel="noopener">enum4linux-cheat-sheet</a></p>
+
       
 
       
@@ -211,7 +242,33 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">smb</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">smb_tools</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -223,6 +280,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2019/06/20/HTB-linux-WriteUp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          HTB-linux-WriteUp
+        
+      </div>
+    </a>
   
   
     <a href="/2019/06/12/How-Hacking-in-LDAP/" id="article-nav-older" class="article-nav-link-wrap">
@@ -253,7 +319,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#enum4linux1"><span class="toc-number">1.1.</span> <span class="toc-text">enum4linux1</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#smbmap"><span class="toc-number">1.1.1.</span> <span class="toc-text">smbmap</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考链接"><span class="toc-number">2.</span> <span class="toc-text">参考链接</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -367,7 +433,39 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
+                <a href="javascript:void(0)" class="js-tag color4">privilege_escalate</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">cve</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">unrealircd</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">suid</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">smb</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">zone_transfer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -376,6 +474,46 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">magento</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cmsms</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">path</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hijacking</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ftp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smbclient</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -399,59 +537,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cve</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">unrealircd</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">suid</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ftp</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">smbclient</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">mimikatz</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smb_tools</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -487,14 +577,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
@@ -507,11 +589,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -531,11 +621,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -551,15 +649,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hijacking</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -567,15 +657,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -645,13 +739,25 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">php_shell</a>
               </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LFI</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">privilege__privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
         </div>
         <ul class="search-ul">
           <p q-show="jsonFail" style="padding: 20px; font-size: 12px;">
-            缺失模块。<br>1、请确保node版本大于6.2<br>2、在博客根目录（注意不是yilia根目录）执行以下命令：<br> npm i hexo-generator-json-content --save<br><br>
+            缺失模块。<br/>1、请确保node版本大于6.2<br/>2、在博客根目录（注意不是yilia根目录）执行以下命令：<br/> npm i hexo-generator-json-content --save<br/><br/>
             3、在根目录_config.yml里添加配置：
 <pre style="font-size: 12px;" q-show="jsonFail">
   jsonContent:
@@ -800,5 +906,5 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
 
 </div>
   </div>
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"mode":{"use":"live2d-widget-model-hibiki"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"mode":{"use":"live2d-widget-model-hibiki"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false});</script></body>
 </html>
