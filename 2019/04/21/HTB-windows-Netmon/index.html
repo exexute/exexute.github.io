@@ -8,18 +8,21 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>HTB_windows_Netmon | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 在小型公司中较常见">
+  <meta name="description" content="简介PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 该靶机通过ftp匿名访问与PRTG CVE-2018-9267漏洞的组合, 实现从搜索信息登陆到利用cve创建管理员账号读取最终flag, 思路一般, 但是这里用到的猜登陆密码、PRTG软件十分贴近真实环境, 作为我打的第一个windows靶机, 还是">
 <meta name="keywords" content="privilege_escalate,cve,ftp,smbclient,PRTG">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTB_windows_Netmon">
 <meta property="og:url" content="http://yoursite.com/2019/04/21/HTB-windows-Netmon/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 在小型公司中较常见">
+<meta property="og:description" content="简介PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 该靶机通过ftp匿名访问与PRTG CVE-2018-9267漏洞的组合, 实现从搜索信息登陆到利用cve创建管理员账号读取最终flag, 思路一般, 但是这里用到的猜登陆密码、PRTG软件十分贴近真实环境, 作为我打的第一个windows靶机, 还是">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-06-24T01:33:09.000Z">
+<meta property="og:image" content="http://yoursite.com/2019/04/21/HTB-windows-Netmon/HTB_Windows_Netmon_mnmap.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/21/HTB-windows-Netmon/HTB_Windows_Netmon_smbclient.png">
+<meta property="og:updated_time" content="2019-07-01T15:45:04.230Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB_windows_Netmon">
-<meta name="twitter:description" content="PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 在小型公司中较常见">
+<meta name="twitter:description" content="简介PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 该靶机通过ftp匿名访问与PRTG CVE-2018-9267漏洞的组合, 实现从搜索信息登陆到利用cve创建管理员账号读取最终flag, 思路一般, 但是这里用到的猜登陆密码、PRTG软件十分贴近真实环境, 作为我打的第一个windows靶机, 还是">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/21/HTB-windows-Netmon/HTB_Windows_Netmon_mnmap.png">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -203,20 +206,22 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<div id="hbe-security">
-  <div class="hbe-input-container">
-  <input type="password" class="hbe-form-control" id="pass" placeholder="WP将在靶机下线之后开放, 除非你有密码:)" />
-    <label for="pass">WP将在靶机下线之后开放, 除非你有密码:)</label>
-    <div class="bottom-line"></div>
-  </div>
-</div>
-<div id="decryptionError" style="display: none;">Incorrect Password!</div>
-<div id="noContentError" style="display: none;">No content to display!</div>
-<div id="encrypt-blog" style="display:none">
-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
-</div>
-<script src="/lib/crypto-js.js"></script><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">
+        <p>简介<br>PRTG是windows下机器性能监控的一款软件, 与zabbix、promethues属于同类产品, 在办公网、开放网、生产网中大面积部署, 该靶机通过ftp匿名访问与PRTG CVE-2018-9267漏洞的组合, 实现从搜索信息登陆到利用cve创建管理员账号读取最终flag, 思路一般, 但是这里用到的猜登陆密码、PRTG软件十分贴近真实环境, 作为我打的第一个windows靶机, 还是很赞的.</p>
+<p>靶机状态: 已完成.<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>ftp</li>
+<li>cve+smbclient</li>
+</ul>
+<p>最近组合了一下masscan和nmap, 好像之前的文章也提到了, 但是没有放代码, 本文末贴上该代码. 依旧是先扫端口<code>./mnmap.sh 10.10.10.152 1000</code><br><img src="HTB_Windows_Netmon_mnmap.png" alt="masscan_nmap"><br>端口大致分为: ftp、web、smb、msrpc四类, 操作系统应该是server 2008 R2</p>
+<p><strong>smb</strong> 有smb端口的化, 肯定要试试cve-2017-0144(永恒之蓝, ms17-010) 这个漏洞了, 万一进去了呢, 但让不会有人出这么傻的靶机, 真实环境下就有可能了哦. smb最终无法直接利用, 考虑后续用smbclient访问共享文件系统.<br><strong>msrpc</strong> msrpc不是太熟悉, google之后发现135上的DCOM接口可能存在漏洞, 尝试之后也失败<br><strong>ftp</strong> 拿到windows自己的ftp服务, 自然是优先匿名登陆, 然后找rce cve利用一下了, 然后在ftp里, 找到了user.txt, 获取普通用户flag</p>
+<h2 id="ftp"><a href="#ftp" class="headerlink" title="ftp"></a>ftp</h2><p>拿到普通用户flag之后, 开始用ftp配合PRTG文件的数据目录<code>ProgramData/Paessler/PRTG Network Monitor/</code>搜索PRTG站点相关的信息, 然后找到了配置文件, 查看配置文件之后发现<code>prtgadmin</code>账号和加密后的密码, 天真的我开始找如何破解, 这一找找了好几个小时, 然后看到一个bak后缀的配置文件, bak是backup的意思, 所以查看该文件, 发现了一组账号和密码<code>prtgadmin</code>, <code>PrTg@admin2018</code>. 经过尝试发现可用<code>PrTg@admin@2019</code>进入PRTG WEB站点.</p>
+<p>这里必须给自己提个醒, 搜集信息阶段的重点是搜集信息, 遇到需要深入探究的信息先放一边, 搜集完之后再深入做爆破等尝试.</p>
+<h2 id="cve-smbclient"><a href="#cve-smbclient" class="headerlink" title="cve+smbclient"></a>cve+smbclient</h2><p>经过之前的信息收集, 在exploit-db上找到了PRTG 18.2.38之前版本中的一个RCE漏洞, 但是需要登陆才能触发, 结合ftp搜集阶段收集的账号信息, 成功触发rce, 创建administrator权限的账号, 然后利用smbclient登陆445端口的smb服务查看对应的flag即可, 最后在Desktop中找到root.txt<br><img src="HTB_Windows_Netmon_smbclient.png" alt="root.txt"></p>
+<p><strong>mnmap</strong></p>
+<pre><code class="sh">masscan -p0-65535 --rate=<span class="variable">$2</span> <span class="variable">$1</span> 2&gt;/dev/null | awk -F<span class="string">' '</span> <span class="string">'{print $4}'</span>| awk -F<span class="string">'/'</span> <span class="string">'BEGIN {ans=""} {if(ans=="") ans=$1; else ans=ans","$1;} END{print ans}'</span> | xargs -I {} nmap -sS -sV --script vuln -A -p{} <span class="variable">$1</span>
+</code></pre>
+<p>nmap扫描参数根据个人喜好自行添加</p>
+
       
 
       
@@ -313,7 +318,7 @@ U2FsdGVkX184Au05YStHvAibgOUZgdIpLMYv+OUkPcw19k+QYJbEGIerFJL43/uPF9gYHpi54lg1XFzS
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ftp"><span class="toc-number">2.</span> <span class="toc-text">ftp</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cve-smbclient"><span class="toc-number">3.</span> <span class="toc-text">cve+smbclient</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -427,27 +432,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">privilege_escalate</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cve</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">unrealircd</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">suid</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -459,31 +444,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">smb</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">zone_transfer</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LFI</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hijacking</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cmsms</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">path</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">hijacking</a>
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -500,18 +461,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ftp</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">smbclient</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -535,6 +484,74 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件下载</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">privilege_escalate</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">cve</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">unrealircd</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">suid</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">smb</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">zone_transfer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LFI</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Hijacking</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">任意文件上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cmsms</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">path</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hijacking</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ftp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smbclient</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">mimikatz</a>
               </li>
              
@@ -543,15 +560,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pip</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -559,11 +568,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pip</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">wordpress</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -575,23 +592,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">freefloat</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">exp_dev</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">cover_seh</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -607,14 +624,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">rce</a>
               </li>
              
@@ -623,7 +632,67 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">crontab</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">latex</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">waf</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">services</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -632,10 +701,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">decrypt</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">latex</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -660,54 +725,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">slmail</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">exp_dev</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">waf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">services</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">暴力破解</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
               </li>
              
               <li class="article-tag-list-item">
