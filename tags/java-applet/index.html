@@ -6,26 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Vulnhub-Challenging-WebDeveloper | owefsad&#39;s blog</title>
+  <title>Tag: java_applet | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介  扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台 修改插件源码写入木马获取webshell webshell查敏感文件获取第权限账号 tcpdump提权获取root权限 靶机总结">
-<meta name="keywords" content="sudoers,privilege_escalate,wordpress,pcap_analyze">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Vulnhub-Challenging-WebDeveloper">
-<meta property="og:url" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="owefsad&#39;s blog">
+<meta property="og:url" content="http://yoursite.com/tags/java-applet/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介  扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台 修改插件源码写入木马获取webshell webshell查敏感文件获取第权限账号 tcpdump提权获取root权限 靶机总结">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/nmap.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/pcap_pwd.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/weevely_get_reverse_shell.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/webdeveloper_login.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/tcpdump_get_root.png">
-<meta property="og:updated_time" content="2019-06-24T01:41:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vulnhub-Challenging-WebDeveloper">
-<meta name="twitter:description" content="简介  扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台 修改插件源码写入木马获取webshell webshell查敏感文件获取第权限账号 tcpdump提权获取root权限 靶机总结">
-<meta name="twitter:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/nmap.png">
+<meta name="twitter:title" content="owefsad&#39;s blog">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -189,163 +178,71 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Vulnhub-Challenging-WebDeveloper" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Vulnhub-Challenging-WebDeveloper
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2019/07/02/ClientSideAttack/" class="archive-article-date">
+  	<time datetime="2019-07-02T14:45:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-02</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/07/02/ClientSideAttack/">ClientSideAttack</a>
     </h1>
   
 
-        
-        <a href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/" class="archive-article-date">
-  	<time datetime="2019-04-08T13:39:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>简介</p>
-<ol>
-<li>扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台</li>
-<li>修改插件源码写入木马获取webshell</li>
-<li>webshell查敏感文件获取第权限账号</li>
-<li>tcpdump提权获取root权限</li>
-<li>靶机总结</li>
-</ol>
-<a id="more"></a>
-<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
-<li>nmap扫端口定方向</li>
-<li>wordpress得shell</li>
-</ul>
-<h2 id="nmap端口扫描确定方向"><a href="#nmap端口扫描确定方向" class="headerlink" title="nmap端口扫描确定方向"></a>nmap端口扫描确定方向</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -sC -p- -A 172.16.88.194</span><br></pre></td></tr></table></figure>
-<p><img src="nmap.png" alt="nmap"><br>22端口, openssh-7.6p1 无可用CVE, 考虑爆破, 暂时搁置<br>80端口, Apache-httpd-2.4.29 无可用CVE, 考虑80端口WEB服务漏洞挖掘getshell</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dirb http://172.16.88.194 /usr/share/wordlists/dirb/big.txt -f -w</span><br></pre></td></tr></table></figure>
-<p>发现<code>ipdata</code>目录中有<code>analyze.cap</code>文件, 下载之后进行数据包分析, 发现post请求包中含有wordpress账号密码<br><img src="pcap_pwd.png" alt="pcap_ayalyze"><br>uname: webdeveloper<br>pass: Te5eQg&amp;4sBS!Yr$)wf%(DcAd</p>
-<p>拿到密码后, 首先尝试ssh登陆, 无果后开始利用wordpress渗透.</p>
-<h2 id="wordpress-getshell"><a href="#wordpress-getshell" class="headerlink" title="wordpress getshell"></a>wordpress getshell</h2><p>之前打靶机的时候遇到过wordpress站点, 但一直没有进行总结, 所以这次遇到的时候还是蒙蔽来好久, wordpress的主题(Themes)、插件(Plugins)中有editor功能可以用在线编辑文件(包括php文件), 因此可以直接修改文件插入木马getshell.<br>这次使用该功能时发现了一个有意思的情况: 插件未激活时, 可编辑php文件; 插件激活后无法编辑php文件. 因此通过停用插件插入木马然后启用插件实现getshell.</p>
-<h3 id="编辑插件php代码获得shell"><a href="#编辑插件php代码获得shell" class="headerlink" title="编辑插件php代码获得shell"></a>编辑插件php代码获得shell</h3><p><img src="weevely_get_reverse_shell.png" alt="weevely_get_reverse_shell"></p>
-<h3 id="搜索站点文件-发现敏感信息"><a href="#搜索站点文件-发现敏感信息" class="headerlink" title="搜索站点文件, 发现敏感信息"></a>搜索站点文件, 发现敏感信息</h3><p>通过<code>ps aux</code>查看进程发现存在以mysql用户权限运行的mysqld进程, 因此可以考虑从mysql服务进行提权. 于是开始搜web目录下的config文件, 在<code>/var/www/html/wp-config.php</code>中找到数据库的账号和密码: <code>webdeveloper</code>, <code>MasterOfTheUniverse</code></p>
-<p>发现账号密码后, 尝试ssh登陆,成功进入webdeveloper账户. 进入账户后, 查看用户ID， 发现当前用户位普通用户, 需要提权.<br><img src="webdeveloper_login.png" alt="webdeveloper_login"></p>
-<h3 id="利用sudoers配置提权"><a href="#利用sudoers配置提权" class="headerlink" title="利用sudoers配置提权"></a>利用sudoers配置提权</h3><p>获得普通用户权限后, 需要尝试提权, 提权首先要找的是sudoers配置、suid文件、crontab任务, 通过<code>sudo -l</code>命令查看webdeveloper用户可用root权限执行的命令, 发现tcpdump。 tcpdump 4.0版本之后，可以在捕获到数据包时执行操作系统命令, 创建修改root账户密码的shell脚本并赋予执行权限, 然后运行tcpdump抓包, 用另一台机器ping这台靶机即可触发payload并获取root权限.<br><img src="tcpdump_get_root.png" alt="tcpdump_get_root"> </p>
-<h2 id="靶机总结"><a href="#靶机总结" class="headerlink" title="靶机总结"></a>靶机总结</h2><p>靶机偏入门, 扫目录找到pcap包, 查pcap包发现账号密码, 用密码尝试登陆ssh、wordpress获得wordpress后台, wordpress插件修改源码插入木马, weevely连接木马拿到webshell, WEB站点配置文件搜索发现低权限账号的密码, 登陆ssh查配置发现tcpdump, 用tcpdump抓包提权获取root权限.<br>如果对这些技术比较熟悉的话, 40分钟内应该可以搞定.</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">privilege_escalate</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">wordpress</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">pcap_analyze</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">java_applet</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2019/04/15/HTB-Linux-irked/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          HTB_Linux_irked
-        
-      </div>
-    </a>
   
   
-    <a href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Vulnhub-Challenging-Born2Root-2</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nmap端口扫描确定方向"><span class="toc-number">2.</span> <span class="toc-text">nmap端口扫描确定方向</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#wordpress-getshell"><span class="toc-number">3.</span> <span class="toc-text">wordpress getshell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#编辑插件php代码获得shell"><span class="toc-number">3.1.</span> <span class="toc-text">编辑插件php代码获得shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#搜索站点文件-发现敏感信息"><span class="toc-number">3.2.</span> <span class="toc-text">搜索站点文件, 发现敏感信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用sudoers配置提权"><span class="toc-number">3.3.</span> <span class="toc-text">利用sudoers配置提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#靶机总结"><span class="toc-number">4.</span> <span class="toc-text">靶机总结</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -370,9 +267,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: false,

