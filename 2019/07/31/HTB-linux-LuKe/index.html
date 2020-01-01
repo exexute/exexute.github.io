@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>HTB linux LuKe | owefsad&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The article has been encrypted, please enter your password to view.">
+  <meta name="description" content="简介靶机凭借信息收集就可以完成，唯一的一个点是node增加jwt token，通过google查到medium上一篇文章，根据上面介绍的方法成功获得靶机的flag。 靶机状态: rooted.">
 <meta name="keywords" content="jwt">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTB linux LuKe">
 <meta property="og:url" content="http://yoursite.com/2019/07/31/HTB-linux-LuKe/index.html">
 <meta property="og:site_name" content="owefsad&#39;s blog">
-<meta property="og:description" content="The article has been encrypted, please enter your password to view.">
+<meta property="og:description" content="简介靶机凭借信息收集就可以完成，唯一的一个点是node增加jwt token，通过google查到medium上一篇文章，根据上面介绍的方法成功获得靶机的flag。 靶机状态: rooted.">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-31T16:04:02.198Z">
+<meta property="og:updated_time" content="2019-12-15T03:28:41.993Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTB linux LuKe">
-<meta name="twitter:description" content="The article has been encrypted, please enter your password to view.">
+<meta name="twitter:description" content="简介靶机凭借信息收集就可以完成，唯一的一个点是node增加jwt token，通过google查到medium上一篇文章，根据上面介绍的方法成功获得靶机的flag。 靶机状态: rooted.">
   
     <link rel="alternative" href="/atom.xml" title="owefsad&#39;s blog" type="application/atom+xml">
   
@@ -203,20 +203,31 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<div id="hbe-security">
-  <div class="hbe-input-container">
-  <input type="password" class="hbe-form-control" id="pass" placeholder="wp将在靶机下线之后开放" />
-    <label for="pass">wp将在靶机下线之后开放</label>
-    <div class="bottom-line"></div>
-  </div>
-</div>
-<div id="decryptionError" style="display: none;">Incorrect Password!</div>
-<div id="noContentError" style="display: none;">No content to display!</div>
-<div id="encrypt-blog" style="display:none">
-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
-</div>
-<script src="/lib/crypto-js.js"></script><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">
+        <p>简介<br>靶机凭借信息收集就可以完成，唯一的一个点是node增加jwt token，通过google查到medium上一篇文章，根据上面介绍的方法成功获得靶机的flag。</p>
+<p>靶机状态: rooted.</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>nmap</li>
+<li>gobuster</li>
+<li>jwt</li>
+</ul>
+<blockquote>
+<p>nmap</p>
+</blockquote>
+<p>拿到ip之后，通过nmap扫描端口, 发现存在3个WEB端口<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sC -sV -oA Luke 10.10.10.137</span><br><span class="line"><span class="comment"># Nmap 7.70 scan initiated Sun Jun 23 17:36:14 2019 as: nmap -sC -sV -oA Luke 10.10.10.137</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> 10.10.10.137</span><br><span class="line">Host is up (0.63s latency).</span><br><span class="line">Not shown: 995 closed ports</span><br><span class="line">PORT     STATE SERVICE    VERSION</span><br><span class="line">21/tcp   open  ftp        vsftpd 3.0.3+ (ext.1)</span><br><span class="line">| ftp-anon: Anonymous FTP login allowed (FTP code 230)</span><br><span class="line">|_drwxr-xr-x    2 0        0             512 Apr 14 12:35 webapp</span><br><span class="line">| ftp-syst:</span><br><span class="line">|   STAT:</span><br><span class="line">| FTP server status:</span><br><span class="line">|      Connected to 10.10.15.44</span><br><span class="line">|      Logged <span class="keyword">in</span> as ftp</span><br><span class="line">|      TYPE: ASCII</span><br><span class="line">|      No session upload bandwidth <span class="built_in">limit</span></span><br><span class="line">|      No session download bandwidth <span class="built_in">limit</span></span><br><span class="line">|      Session timeout <span class="keyword">in</span> seconds is 300</span><br><span class="line">|      Control connection is plain text</span><br><span class="line">|      Data connections will be plain text</span><br><span class="line">|      At session startup, client count was 2</span><br><span class="line">|      vsFTPd 3.0.3+ (ext.1) - secure, fast, stable</span><br><span class="line">|_End of status</span><br><span class="line">22/tcp   open  ssh?</span><br><span class="line">80/tcp   open  http       Apache httpd 2.4.38 ((FreeBSD) PHP/7.3.3)</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: TRACE</span><br><span class="line">|_http-server-header: Apache/2.4.38 (FreeBSD) PHP/7.3.3</span><br><span class="line">|_http-title: Luke</span><br><span class="line">3000/tcp open  http       Node.js Express framework</span><br><span class="line">|_http-title: Site doesn<span class="string">'t have a title (application/json; charset=utf-8).</span></span><br><span class="line"><span class="string">8000/tcp open  tcpwrapped</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span></span><br><span class="line"><span class="string"># Nmap done at Sun Jun 23 17:40:37 2019 -- 1 IP address (1 host up) scanned in 262.37 seconds</span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>gobuster</p>
+</blockquote>
+<p>拿到3个WEB服务后，开始枚举服务，浏览器访问之后，确认80端口为php WEB站点，3000端口为node js站点，8000端口为Ajenti站点；利用gobuster分别对3000端口和80端口进行uri爆破，同时在google上搜索公开的Ajenti漏洞<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ gobuster dir -u http://10.10.10.137:3000 -w wordlists/SecLists/Discovery/Web-Content/common.txt -t 1</span><br><span class="line"></span><br><span class="line">$ gobuster dir -u http://10.10.10.137 -w wordlists/dirbuster/directory-list-2.3-medium.txt -t 1</span><br></pre></td></tr></table></figure></p>
+<p>然后在80端口找到config.php文件, 拿到数据库连接串<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$dbHost = <span class="string">'localhost'</span>; $dbUsername = <span class="string">'root'</span>; $dbPassword = <span class="string">'Zk6heYCyv6ZE9Xcg'</span>; $db = <span class="string">"login"</span>; $conn = <span class="keyword">new</span> mysqli($dbHost, $dbUsername, $dbPassword,$db) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">"Connect failed: %s\n"</span>. $conn -&gt; error);</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>jwt</p>
+</blockquote>
+<p>利用dbPassword登陆3000端口，获取jwt token<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">post <span class="number">10.10</span><span class="number">.10</span><span class="number">.137</span>:<span class="number">3000</span>/login</span><br><span class="line">&#123;<span class="string">"username"</span>:<span class="string">"admin"</span>, <span class="string">"password"</span>:<span class="string">"Zk6heYCyv6ZE9Xcg"</span>&#125;</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">"success"</span>:true,<span class="string">"message"</span>:<span class="string">"Authentication successful!"</span>,<span class="string">"token"</span>:<span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNTY0NDEwMjA5LCJleHAiOjE1NjQ0OTY2MDl9.QvWg8Xa1QsNcUlv19G37JWCD7omdRmlSN8GnVj-YAHs"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>token为jwt token，因此查找如何在node中添加jwt token, 然后在<a href="https://medium.com/dev-bits/a-guide-for-adding-jwt-token-based-authentication-to-your-single-page-nodejs-applications-c403f7cf04f4" target="_blank" rel="noopener">add jwt to nodejs</a>这篇文章中找到利用jwt token访问的方法。然后在3000端口的/users接口中找到如下用户：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#123;&quot;ID&quot;:&quot;1&quot;,&quot;name&quot;:&quot;Admin&quot;,&quot;Role&quot;:&quot;Superuser&quot;&#125;,&#123;&quot;ID&quot;:&quot;2&quot;,&quot;name&quot;:&quot;Derry&quot;,&quot;Role&quot;:&quot;Web Admin&quot;&#125;,&#123;&quot;ID&quot;:&quot;3&quot;,&quot;name&quot;:&quot;Yuri&quot;,&quot;Role&quot;:&quot;Beta Tester&quot;&#125;,&#123;&quot;ID&quot;:&quot;4&quot;,&quot;name&quot;:&quot;Dory&quot;,&quot;Role&quot;:&quot;Supporter&quot;&#125;]</span><br></pre></td></tr></table></figure></p>
+<p>通过访问/users/<username>可以查看到用户对应的密码，利用找到的密码登陆80端口的/management接口，找到config.json文件，从config.json文件中找到Ajenti服务的用户名”root”和密码”KpMasng6S5EtTy9Z”</username></p>
+<p>登陆Ajenti之后，通过notepad工具读取user.txt和root.txt</p>
+
       
 
       
@@ -297,7 +308,7 @@ U2FsdGVkX19bocOnS2c7N/U+ZtrqLLwVIuND9mxlCVsbC9g7nTwiiKWHFSHXCzBsqphug3wfpcwKKLHk
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文章目录"><span class="toc-number">1.</span> <span class="toc-text">文章目录</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -327,7 +338,7 @@ U2FsdGVkX19bocOnS2c7N/U+ZtrqLLwVIuND9mxlCVsbC9g7nTwiiKWHFSHXCzBsqphug3wfpcwKKLHk
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 owefsad
+    		&copy; 2020 owefsad
     	</div>
       	<div class="footer-right">
 		<span id="busuanzi_container_site_uv">访客数:<span id="busuanzi_value_site_uv"></span>人</span>
@@ -411,62 +422,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">magento</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">excel macros</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">smb share</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mssql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ntlmhash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Group Policy Preferences</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件下载</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">java_applet</a>
               </li>
              
@@ -491,23 +446,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">gogs</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">代码注入</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">虚拟主机</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">SSH私钥登陆</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">vault</a>
+                <a href="javascript:void(0)" class="js-tag color5">文件下载</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -527,11 +466,27 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">misc</a>
+                <a href="javascript:void(0)" class="js-tag color5">gogs</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">ELK</a>
+                <a href="javascript:void(0)" class="js-tag color3">git信息搜集</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">代码注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">虚拟主机</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">SSH私钥登陆</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">vault</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -539,11 +494,27 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">privilete_escalate</a>
+                <a href="javascript:void(0)" class="js-tag color1">sql注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">OS命令执行</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">jwt</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">privilete_escalate</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">magento</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -559,11 +530,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">sql注入</a>
+                <a href="javascript:void(0)" class="js-tag color3">mremoteng_decrypt</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">OS命令执行</a>
+                <a href="javascript:void(0)" class="js-tag color4">qemu_nbd</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">VHD</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mount_smb_share</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -576,6 +555,26 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">PRTG</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">excel macros</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">smb share</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mssql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ntlmhash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Group Policy Preferences</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -611,10 +610,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">反序列化漏洞</a>
               </li>
              
@@ -627,7 +622,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">pip</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -639,10 +642,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ssh</a>
               </li>
              
@@ -651,19 +650,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">jenkins</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">crontab</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">wmi</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -679,15 +682,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">甲方安全</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">rce</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -699,15 +706,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">url_brute</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">rce</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sandbox</a>
+                <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -723,23 +738,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">tty</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
+                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">services</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheetsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -752,6 +755,34 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">OSCP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CVE-2007-2447</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">misc</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">ELK</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">logstash</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CVE-2018-17246</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -807,6 +838,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">eval</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">exec</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">crunch</a>
               </li>
              
@@ -824,14 +863,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">PassTheHash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">eval</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">exec</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -888,6 +919,26 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">php_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">MS08-067</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">windows</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">MS11-046</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Sherlock</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Elastix</a>
               </li>
             
             <div class="clearfix"></div>
