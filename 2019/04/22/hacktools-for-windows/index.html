@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="smbclient,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
+<meta name="keywords" content="smbclient">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hacktools for windows">
+<meta property="og:url" content="https://exexute.github.io/2019/04/22/hacktools-for-windows/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:34:37.467Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="hacktools for windows">
+<meta name="twitter:description" content="简介总结用到的针对windows的渗透测试工具:smbclient 本文持续更新…">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/04/22/hacktools-for-windows/">
+
+
+
+
+
+  <title>hacktools for windows | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/04/22/hacktools-for-windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">hacktools for windows</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-22T22:18:55+08:00">
+                2019-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/工具/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>总结用到的针对windows的渗透测试工具:<br>smbclient</p>
+<p>本文持续更新…</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>Windows自带命令</li>
+<li>SMB</li>
+<li>RPC</li>
+<li>MS-Sql</li>
+<li>提取系统文件中保存的凭证</li>
+</ul>
+<blockquote>
+<p>Windows自带命令</p>
+</blockquote>
+<p><strong>信息收集</strong><br>1.收集系统信息: <code>systeminfo | findstr /B /C:&quot;OS Name&quot; /C:&quot;OS Version&quot;</code>、<code>systeminfo | findstr /B /C:&quot;OS 名称&quot; /C:&quot;OS 版本&quot;</code><br>2.hostname: <code>hostname</code><br>3.username: <code>echo %username%</code><br>4.列出主机用户: <code>net users</code><br>5.查看某一某户配置: <code>net users &lt;username&gt;
+6.网卡、路由、端口等信息:</code>ipconfig /all<code>、</code>route print<code>、</code>apr -A<code>、</code>netstat -ano<code>7.防火墙:</code>netsh firewall show state<code>、</code>netsh firewall show config<code>8.计划任务:</code>schtasks /query /fo LIST /v<code>9.进程:</code>schtasks /query /fo LIST /v<code>10.服务:</code>net start<code>11.驱动:</code>DRIVERQUERY<code>12.WMIC: 默认情况下, 一些windows不允许Administrators组之外的用户访问WMIC； XP不允许从低权限账户访问WMIC, Win7 Professional和win8 Enterprise的默认配置允许低权限用户使用WMIC并查询操作系统。
+13.查看已安装的补丁:</code>wmic qfe get Caption,Description,HotFixID,InstalledOn<code>、</code>wmic qfe get Caption,Description,HotFixID,InstalledOn | findstr /C:”K44707” /C:”KB44769”`</p>
+<blockquote>
+<p>SMB</p>
+</blockquote>
+<ul>
+<li>smbclient</li>
+<li>smbmap</li>
+<li>smbserver.py</li>
+<li>Responder</li>
+<li>impacket</li>
+<li>mount</li>
+</ul>
+<h4 id="smbclient"><a href="#smbclient" class="headerlink" title="smbclient"></a>smbclient</h4><p>smbclient是一款linux下用于访问samba服务器共享资源的工具. 在内网渗透过程中, 可在linux中用于访问samba服务器共享的文件, 且拥有认证samba协议、打包下载共享文件等功能. smbclient与kali中的pth-smbclient的用法相同<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ smbclient</span><br><span class="line">usage:</span><br><span class="line">  smbclient [options] service &lt;password&gt;</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line">  -L 列出服务器的共享目录</span><br><span class="line">  -U|--user =username 指定登陆的用户名</span><br><span class="line">  -W|--workgroup =worgroup 指定工作组/所属域的名字</span><br><span class="line">  -N|--no-pass 指定不需要密码, 用于判断是否支持匿名登陆</span><br><span class="line">  -T|--tar&lt;c|x&gt;IXFqgbNan 用tar命令对服务器上的所有共享文件打包, 需要指定打包参数</span><br><span class="line"></span><br><span class="line">$ smbclient -U &lt;username&gt; -L &lt;target ip&gt;</span><br><span class="line">$ smbclient -U &lt;username&gt; //&lt;target ip&gt;/&lt;sharename&gt;</span><br></pre></td></tr></table></figure></p>
+<p><strong>demo</strong> <a href="https://exexute.github.io/2019/04/21/HTB-windows-Netmon/">netmon靶机</a></p>
+<h4 id="smbmap"><a href="#smbmap" class="headerlink" title="smbmap"></a>smbmap</h4><h4 id="smbserver-py"><a href="#smbserver-py" class="headerlink" title="smbserver.py"></a>smbserver.py</h4><h4 id="Responder"><a href="#Responder" class="headerlink" title="Responder"></a>Responder</h4><h4 id="mount"><a href="#mount" class="headerlink" title="mount"></a>mount</h4><blockquote>
+<p>RPC</p>
+</blockquote>
+<ul>
+<li>rpcclient</li>
+</ul>
+<blockquote>
+<p>MsSql</p>
+</blockquote>
+<ul>
+<li>mssqlclient</li>
+</ul>
+<blockquote>
+<p>提取保存的凭证</p>
+</blockquote>
+<ul>
+<li>chromepass</li>
+<li>Firefox_Decrypt</li>
+<li>oletools</li>
+</ul>
+<h4 id="chromepass"><a href="#chromepass" class="headerlink" title="chromepass"></a>chromepass</h4><p>chromepass用来提取chrome浏览器中保存的url、账号、密码等信息, 目前可用于win、linux系统, mac下尚未支持; 运行chromepass提取密码时需要关闭chrome浏览器及其后台进程。<br>原理: chrome中保存的密码被保存在应用数据的sqlite3数据库中, 数据库文件为”Login Data”, 路径一般为: <code>%local_app_data%\Google\Chrome\User Data\Default</code>, windows下保存的密码会进行一次加密, 通过win32crypt包进行解密即可.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python chromepass.py -d</span><br></pre></td></tr></table></figure>
+<h4 id="Firefox-Decrypt"><a href="#Firefox-Decrypt" class="headerlink" title="Firefox_Decrypt"></a>Firefox_Decrypt</h4><p>Firefox_Decrypt用来提取Firefox浏览器、Thunderbird邮件客户端、Seabird中保存的url、账号、密码等信息, 目前支持python 2.7、python 3.6+, 在windows上只能使用python3.6+.<br>原理: 加载Firefox的nss3.dll, 用dll中的接口查询Firefox中保存的密码, 密码保存在json文件或sqlite3数据库文件中. 密码文件为””.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python firefox_decrypt.py</span><br></pre></td></tr></table></figure>
+<h4 id="mremoteng-decrypt"><a href="#mremoteng-decrypt" class="headerlink" title="mremoteng-decrypt"></a>mremoteng-decrypt</h4><h2 id="Windows内核攻击"><a href="#Windows内核攻击" class="headerlink" title="Windows内核攻击"></a>Windows内核攻击</h2><p><a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noopener">SessionGopher</a><br><a href="https://github.com/GDSSecurity/Windows-Exploit-Suggester" target="_blank" rel="noopener">Windows-Exploit-Suggester</a><br><a href="https://github.com/pentestmonkey/windows-privesc-check" target="_blank" rel="noopener">windows-privesc-check</a><br><a href="https://github.com/enjoiz/Privesc" target="_blank" rel="noopener">Privesc</a><br><a href="https://github.com/411Hall/JAWS" target="_blank" rel="noopener">JAWS</a><br><a href="https://github.com/rasta-mouse/Sherlock" target="_blank" rel="noopener">Sherlock</a><br><a href="https://github.com/silentsignal/wpc-ps" target="_blank" rel="noopener">wpc-ps</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a><br><a href="https://github.com/AlessandroZ/BeRoot" target="_blank" rel="noopener">BeRoot</a></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://medium.com/@rahmatnurfauzi/windows-privilege-escalation-scripts-techniques-30fa37bd194" target="_blank" rel="noopener">@rahmatnurfauzi-wpe</a><br><a href="https://www.fuzzysecurity.com/tutorials/16.html" target="_blank" rel="noopener">Windows Privilege Escalation Fundamentals</a><br><a href="https://sushant747.gitbooks.io/total-oscp-guide/privilege_escalation_windows.html" target="_blank" rel="noopener">total-oscp-guide</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/smbclient/" rel="tag"># smbclient</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/21/HTB-windows-Netmon/" rel="next" title="HTB_windows_Netmon">
+                <i class="fa fa-chevron-left"></i> HTB_windows_Netmon
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/22/windows内网渗透思路/" rel="prev" title="Pentesting test in windows">
+                Pentesting test in windows <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#smbclient"><span class="nav-number">1.0.1.</span> <span class="nav-text">smbclient</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#smbmap"><span class="nav-number">1.0.2.</span> <span class="nav-text">smbmap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#smbserver-py"><span class="nav-number">1.0.3.</span> <span class="nav-text">smbserver.py</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Responder"><span class="nav-number">1.0.4.</span> <span class="nav-text">Responder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mount"><span class="nav-number">1.0.5.</span> <span class="nav-text">mount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#chromepass"><span class="nav-number">1.0.6.</span> <span class="nav-text">chromepass</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Firefox-Decrypt"><span class="nav-number">1.0.7.</span> <span class="nav-text">Firefox_Decrypt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mremoteng-decrypt"><span class="nav-number">1.0.8.</span> <span class="nav-text">mremoteng-decrypt</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows内核攻击"><span class="nav-number">2.</span> <span class="nav-text">Windows内核攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

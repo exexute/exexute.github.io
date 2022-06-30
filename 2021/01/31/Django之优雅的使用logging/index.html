@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Django,logging,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Django默认使用python内置的logging模块来记录日志，其内置的日志处理模块实现了常用的日志处理功能，帮助开发者快速的使用日志功能，让开发者专注于编写业务逻辑代码，本文介绍如何在Django中优雅的处理日志。">
+<meta name="keywords" content="Python,Django,logging">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django之优雅的使用logging">
+<meta property="og:url" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="Django默认使用python内置的logging模块来记录日志，其内置的日志处理模块实现了常用的日志处理功能，帮助开发者快速的使用日志功能，让开发者专注于编写业务逻辑代码，本文介绍如何在Django中优雅的处理日志。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_1.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_2.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_3.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_4.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_5.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_6.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_7.png">
+<meta property="og:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_8.png">
+<meta property="og:updated_time" content="2022-06-24T14:17:21.218Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django之优雅的使用logging">
+<meta name="twitter:description" content="Django默认使用python内置的logging模块来记录日志，其内置的日志处理模块实现了常用的日志处理功能，帮助开发者快速的使用日志功能，让开发者专注于编写业务逻辑代码，本文介绍如何在Django中优雅的处理日志。">
+<meta name="twitter:image" content="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/django_log_sample_1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/">
+
+
+
+
+
+  <title>Django之优雅的使用logging | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2021/01/31/Django之优雅的使用logging/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django之优雅的使用logging</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-31T07:17:38+08:00">
+                2021-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发/" itemprop="url" rel="index">
+                    <span itemprop="name">开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Django默认使用python内置的logging模块来记录日志，其内置的日志处理模块实现了常用的日志处理功能，帮助开发者快速的使用日志功能，让开发者专注于编写业务逻辑代码，本文介绍如何在Django中优雅的处理日志。</p>
+<a id="more"></a>
+<p>Django中使用python内置的logging模块来记录日志，因此，我们可以直接在Django中使用logging的日志功能，包括：</p>
+<ul>
+<li>日志输出到文件</li>
+<li>日志输出到流</li>
+<li>远程输出日志至tcp sockets</li>
+<li>远程输出日志到UDP sockets</li>
+<li>远程输出日志到邮件地址</li>
+<li>日志输出到syslog</li>
+<li>远程输出日志到Windows NT/2000/XP的事件日志</li>
+<li>日志输出到内存中的制定buffer</li>
+<li>通过”GET”或”POST”远程输出到HTTP服务器</li>
+</ul>
+<p>为了更好的处理程序中出现的异常情况，需要记录日志并发送至统一的日志管理平台，目前标准的日志记录方案之一是<code>file + filebeat + ELK</code>，本文不对该方案做任何介绍，仅介绍django项目中如何记录日志。</p>
+<h2 id="创建并初始化项目"><a href="#创建并初始化项目" class="headerlink" title="创建并初始化项目"></a>创建并初始化项目</h2><p>创建Django项目：<code>django-admin startproject django_sample</code>，目录结构如图<br><img src="django_log_sample_1.png" alt="创建项目"></p>
+<p>进入项目目录，安装django依赖项：<code>pip install django</code>，如图<br><img src="django_log_sample_2.png" alt="安装依赖"></p>
+<p>安装django app：<code>python manage.py startapp log_sample_normal</code>，如图<br><img src="django_log_sample_3.png" alt="创建app"></p>
+<p>创建视图：打开<code>log_sample_normal/views.py</code>文件，写入如下代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> JsonResponse</span><br><span class="line"><span class="keyword">from</span> django.views <span class="keyword">import</span> View</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SampleLogEndPoint</span><span class="params">(View)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> JsonResponse(&#123;<span class="string">'status'</span>: <span class="number">201</span>, <span class="string">'msg'</span>: <span class="string">'success'</span>&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>为了访问上述视图，需要创建url到视图文件的路由，首先，创建<code>log_sample_normal/urls.py</code>文件，写入如下代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.urls <span class="keyword">import</span> path</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> log_sample_normal.views <span class="keyword">import</span> SampleLogEndPoint</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(<span class="string">'sample_log'</span>, SampleLogEndPoint.as_view())</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>上述代码创建了app内部<code>sample_log</code>到视图<code>SampleLogEndPoint</code>之间的映射，接下来，我们将<code>urlpatterns</code>注册到项目<code>django_sample</code>中。</p>
+<p>打开<code>django_sample/urls.py</code>文件，添加如下代码：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib <span class="keyword">import</span> admin</span><br><span class="line"><span class="keyword">from</span> django.urls <span class="keyword">import</span> path</span><br><span class="line"><span class="comment"># 新增该行代码</span></span><br><span class="line"><span class="keyword">from</span> django.urls <span class="keyword">import</span> include</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(<span class="string">'admin/'</span>, admin.site.urls),</span><br><span class="line">    <span class="comment"># 新增该行代码</span></span><br><span class="line">    path(<span class="string">'log/'</span>, include(<span class="string">'log_sample_normal.urls'</span>)),</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>目前为止，已经完成了项目的基础配置，接下来，启动django项目并尝试访问创建的视图：<code>python manage.py runserver</code><br><img src="django_log_sample_4.png" alt="启动项目"></p>
+<p>访问视图，结果如下<br><img src="django_log_sample_5.png" alt="访问视图"></p>
+<h2 id="日志的基本配置"><a href="#日志的基本配置" class="headerlink" title="日志的基本配置"></a>日志的基本配置</h2><p>django中默认的日志配置位于<code>django/utils/log.py</code>文件中，Django项目在启动时，调用该文件的<code>configure_logging</code>方法并传入<code>django_sample.settings</code>包中的<code>LOGGING</code>字段作为<code>logging_settings</code>参数，格式为dict。</p>
+<p>因此，只需要在<code>django_sample.setting</code>包中配置<code>LOGGING</code>字段即可。为了避免<code>django_sample/settings.py</code>文件过大导致配置文件难以维护，我们将<code>django_sample/settings.py</code>文件改为<code>django_sample/settings</code>包，默认配置放入<code>django.py</code>文件，日志相关的配置放入<code>logging.py</code>文件，如下：<br><img src="django_log_sample_6.png" alt="访问视图"></p>
+<p>创建<code>django_sample/settings/logging.py</code>文件并写入配置<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">LOGGING = &#123;</span><br><span class="line">    <span class="string">'version'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'disable_existing_loggers'</span>: <span class="keyword">False</span>,</span><br><span class="line">    <span class="string">'handlers'</span>: &#123;</span><br><span class="line">        <span class="string">'console'</span>: &#123;</span><br><span class="line">            <span class="string">'class'</span>: <span class="string">'logging.StreamHandler'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">'root'</span>: &#123;</span><br><span class="line">        <span class="string">'handlers'</span>: [<span class="string">'console'</span>],</span><br><span class="line">        <span class="string">'level'</span>: <span class="string">'WARNING'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>将<code>django_sample/settings/django.py</code>和<code>django_sample/settings/logging.py</code>下的配置导入setting包的<code>__init__.py</code>文件<br><img src="django_log_sample_7.png" alt="setting包配置"></p>
+<h2 id="日志写入文件"><a href="#日志写入文件" class="headerlink" title="日志写入文件"></a>日志写入文件</h2><p>logging中存在很多handler，可根据需要进行配置和调用，此处以写入固定大小的文件为例。</p>
+<p>在<code>logs/sample_log.log</code>文件中创建<code>file</code>handler并创建<code>sample_log</code>的logger<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">LOGGING = &#123;</span><br><span class="line">    <span class="string">'version'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'disable_existing_loggers'</span>: <span class="keyword">False</span>,</span><br><span class="line">    <span class="string">'handlers'</span>: &#123;</span><br><span class="line">        <span class="string">'console'</span>: &#123;</span><br><span class="line">            <span class="string">'class'</span>: <span class="string">'logging.StreamHandler'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">'file'</span>: &#123;</span><br><span class="line">            <span class="string">'class'</span>: <span class="string">'logging.handlers.RotatingFileHandler'</span>,</span><br><span class="line">            <span class="string">'filename'</span>: <span class="string">'logs/sample_log.log'</span>,</span><br><span class="line">            <span class="string">'backupCount'</span>: <span class="number">5</span>,</span><br><span class="line">            <span class="string">'maxBytes'</span>: <span class="number">128</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">'root'</span>: &#123;</span><br><span class="line">        <span class="string">'handlers'</span>: [<span class="string">'console'</span>],</span><br><span class="line">        <span class="string">'level'</span>: <span class="string">'WARNING'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">'loggers'</span>: &#123;</span><br><span class="line">        <span class="string">'sample_log'</span>: &#123;</span><br><span class="line">            <span class="string">'handlers'</span>: [<span class="string">'file'</span>],</span><br><span class="line">            <span class="string">'level'</span>: <span class="string">'INFO'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在视图<code>SampleLogEndPoint</code>中获取<code>sample_log</code>的logger实例并记录日志<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> JsonResponse</span><br><span class="line"><span class="keyword">from</span> django.views <span class="keyword">import</span> View</span><br><span class="line"><span class="comment"># 增加该行</span></span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="comment"># 增加该行</span></span><br><span class="line">logger = logging.getLogger(<span class="string">'sample_log'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SampleLogEndPoint</span><span class="params">(View)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="comment"># 增加该行</span></span><br><span class="line">        logger.info(<span class="string">'access to SampleLogEndPoint'</span>)</span><br><span class="line">        <span class="keyword">return</span> JsonResponse(&#123;<span class="string">'status'</span>: <span class="number">201</span>, <span class="string">'msg'</span>: <span class="string">'success'</span>&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>访问<code>http://127.0.0.1:8000/log/sample_log</code>触发日志，生成文件<br><img src="django_log_sample_8.png" alt="日志秀文件"></p>
+<h2 id="Django中内置的logger"><a href="#Django中内置的logger" class="headerlink" title="Django中内置的logger"></a>Django中内置的logger</h2><p>Django中预定义了<code>django</code>和<code>django.server</code>两个日志记录器，所有<code>django.*</code>的日志记录器记录的日志将由<code>django</code>处理。</p>
+<p><strong>django.request ¶</strong><br>该logger记录与处理HTTP请求相关的信息，包括状态码<code>5xx</code>和<code>4xx</code><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">http_method_not_allowed</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">    logger.warning(</span><br><span class="line">        <span class="string">'Method Not Allowed (%s): %s'</span>, request.method, request.path,</span><br><span class="line">        extra=&#123;<span class="string">'status_code'</span>: <span class="number">405</span>, <span class="string">'request'</span>: request&#125;</span><br><span class="line">    )</span><br><span class="line"><span class="keyword">return</span> HttpResponseNotAllowed(self._allowed_methods())</span><br></pre></td></tr></table></figure></p>
+<p><strong>django.server ¶</strong><br>处理<code>runserver</code>启动的服务器接收到的HTTP请求相关的日志信息，5XX为<code>error</code>信息、4xx为<code>warn</code>信息，其它的为<code>info</code>信息。如果想要<strong>保存访问日志</strong>到文件中，可在<code>django_sample/settings/logging.py</code>文件中创建如下日志配置<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.utils.log <span class="keyword">import</span> DEFAULT_LOGGING</span><br><span class="line"></span><br><span class="line">LOGGING = &#123;</span><br><span class="line">    <span class="string">'version'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'disable_existing_loggers'</span>: <span class="keyword">False</span>,</span><br><span class="line">    <span class="string">'formatters'</span>: &#123;</span><br><span class="line">        <span class="comment"># 覆盖django.server的format</span></span><br><span class="line">        <span class="string">'django.server'</span>: DEFAULT_LOGGING[<span class="string">'formatters'</span>][<span class="string">'django.server'</span>]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">'handlers'</span>: &#123;</span><br><span class="line">        <span class="string">'console'</span>: &#123;</span><br><span class="line">            <span class="string">'class'</span>: <span class="string">'logging.StreamHandler'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">'file'</span>: &#123;</span><br><span class="line">            <span class="string">'class'</span>: <span class="string">'logging.handlers.RotatingFileHandler'</span>,</span><br><span class="line">            <span class="string">'filename'</span>: <span class="string">'logs/sample_log.log'</span>,</span><br><span class="line">            <span class="string">'backupCount'</span>: <span class="number">5</span>,</span><br><span class="line">            <span class="string">'maxBytes'</span>: <span class="number">128</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="comment"># 覆盖django.server的handler</span></span><br><span class="line">        <span class="string">'django.server'</span>: &#123;</span><br><span class="line">            <span class="string">'level'</span>: <span class="string">'INFO'</span>,</span><br><span class="line">            <span class="string">'class'</span>: <span class="string">'logging.handlers.RotatingFileHandler'</span>,</span><br><span class="line">            <span class="string">'filename'</span>: <span class="string">'logs/access.log'</span>,</span><br><span class="line">            <span class="string">'backupCount'</span>: <span class="number">5</span>,</span><br><span class="line">            <span class="string">'maxBytes'</span>: <span class="number">1024</span> * <span class="number">5</span>,</span><br><span class="line">            <span class="string">'formatter'</span>: <span class="string">'django.server'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">'root'</span>: &#123;</span><br><span class="line">        <span class="string">'handlers'</span>: [<span class="string">'console'</span>],</span><br><span class="line">        <span class="string">'level'</span>: <span class="string">'WARNING'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">'loggers'</span>: &#123;</span><br><span class="line">        <span class="string">'sample_log'</span>: &#123;</span><br><span class="line">            <span class="string">'handlers'</span>: [<span class="string">'file'</span>],</span><br><span class="line">            <span class="string">'level'</span>: <span class="string">'INFO'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="comment"># 覆盖默认django.server的logger</span></span><br><span class="line">        <span class="string">'django.server'</span>: &#123;</span><br><span class="line">            <span class="string">'handlers'</span>: [<span class="string">'django.server'</span>],</span><br><span class="line">            <span class="string">'level'</span>: <span class="string">'INFO'</span>,</span><br><span class="line">            <span class="string">'propagate'</span>: <span class="keyword">False</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>django.template ¶</strong><br>记录与Django模版渲染相关的日志，由于模板很少被用到，因此不进行该logger的分析。</p>
+<p><strong>django.db.backends ¶</strong><br>记录代码与数据库交互相关的日志，主要是执行的sql语句、查询参数及sql执行时间，但是不包括ORM框架初始化(e.g. SET TIMEZONE)或事务管理查询(e.g. BEGIN, COMMIT, and ROLLBACK)，如果需要查看这些日志，需要在数据库打开查询日志。</p>
+<p>该日志只有在<code>Debug=True</code>时，才会被打印，实现代码在<code>django/db/backends/utils.py</code>文件中<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@contextmanager</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">debug_sql</span><span class="params">(self, sql=None, params=None, use_last_executed_query=False, many=False)</span>:</span></span><br><span class="line">    start = time.monotonic()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">yield</span></span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        stop = time.monotonic()</span><br><span class="line">        duration = stop - start</span><br><span class="line">        <span class="keyword">if</span> use_last_executed_query:</span><br><span class="line">            sql = self.db.ops.last_executed_query(self.cursor, sql, params)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            times = len(params) <span class="keyword">if</span> many <span class="keyword">else</span> <span class="string">''</span></span><br><span class="line">        <span class="keyword">except</span> TypeError:</span><br><span class="line">            <span class="comment"># params could be an iterator.</span></span><br><span class="line">            times = <span class="string">'?'</span></span><br><span class="line">        self.db.queries_log.append(&#123;</span><br><span class="line">            <span class="string">'sql'</span>: <span class="string">'%s times: %s'</span> % (times, sql) <span class="keyword">if</span> many <span class="keyword">else</span> sql,</span><br><span class="line">            <span class="string">'time'</span>: <span class="string">'%.3f'</span> % duration,</span><br><span class="line">        &#125;)</span><br><span class="line">        logger.debug(</span><br><span class="line">            <span class="string">'(%.3f) %s; args=%s'</span>,</span><br><span class="line">            duration,</span><br><span class="line">            sql,</span><br><span class="line">            params,</span><br><span class="line">            extra=&#123;<span class="string">'duration'</span>: duration, <span class="string">'sql'</span>: sql, <span class="string">'params'</span>: params&#125;,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure></p>
+<p><strong>django.security.* ¶</strong><br>当发生应用安全相关的异常时，调用该日志记录器记录日志，这里不进行深入分析。</p>
+<p><strong>django.db.backends.schema ¶</strong><br>migrations框架在进行原数据操作时，调用该日志记录器记录日志。</p>
+<h2 id="Django提供的更多日志配置"><a href="#Django提供的更多日志配置" class="headerlink" title="Django提供的更多日志配置"></a>Django提供的更多日志配置</h2><p>Django提供了<code>AdminEmailHandler</code>日志处理器，该日志处理将发送日志数据到站点管理员的邮箱，默认情况下，<code>django.*</code>下所有<code>ERROR</code>或<code>CRITICAL</code>的日志都将调用该日志记录器记录日志。</p>
+<p>更多日志相关文档可参考<a href="https://docs.djangoproject.com/en/3.1/topics/logging/" target="_blank" rel="noopener">官方文档</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/logging/" rel="tag"># logging</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/12/21/django之自定义TokenAuthentication实现CSRF防御/" rel="next" title="DjangoRestFramework认证之自定义TokenAuthentication实现CSRF防御">
+                <i class="fa fa-chevron-left"></i> DjangoRestFramework认证之自定义TokenAuthentication实现CSRF防御
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/04/Django之优雅的使用分页/" rel="prev" title="Django之优雅的使用分页">
+                Django之优雅的使用分页 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建并初始化项目"><span class="nav-number">1.</span> <span class="nav-text">创建并初始化项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志的基本配置"><span class="nav-number">2.</span> <span class="nav-text">日志的基本配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志写入文件"><span class="nav-number">3.</span> <span class="nav-text">日志写入文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django中内置的logger"><span class="nav-number">4.</span> <span class="nav-text">Django中内置的logger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django提供的更多日志配置"><span class="nav-number">5.</span> <span class="nav-text">Django提供的更多日志配置</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

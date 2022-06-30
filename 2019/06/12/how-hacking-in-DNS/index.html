@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="dns,dng,nslookup,fierce,dnsenum,dnsrecon,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介:在渗透测试的过程中遇到一台DNS服务器时, 先检查DNS服务版本是否存在CVE漏洞, 然后进行DNS信息的枚举, 本文总结已有的DNS信息枚举方法、工具, 后续会探讨工具的原理、对工具的性能效果等进行对比。 状态: 总结工具使用方法。">
+<meta name="keywords" content="dns,dng,nslookup,fierce,dnsenum,dnsrecon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="how hacking in DNS">
+<meta property="og:url" content="https://exexute.github.io/2019/06/12/how-hacking-in-DNS/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介:在渗透测试的过程中遇到一台DNS服务器时, 先检查DNS服务版本是否存在CVE漏洞, 然后进行DNS信息的枚举, 本文总结已有的DNS信息枚举方法、工具, 后续会探讨工具的原理、对工具的性能效果等进行对比。 状态: 总结工具使用方法。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T15:04:08.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="how hacking in DNS">
+<meta name="twitter:description" content="简介:在渗透测试的过程中遇到一台DNS服务器时, 先检查DNS服务版本是否存在CVE漏洞, 然后进行DNS信息的枚举, 本文总结已有的DNS信息枚举方法、工具, 后续会探讨工具的原理、对工具的性能效果等进行对比。 状态: 总结工具使用方法。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/06/12/how-hacking-in-DNS/">
+
+
+
+
+
+  <title>how hacking in DNS | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/06/12/how-hacking-in-DNS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">how hacking in DNS</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-12T21:03:41+08:00">
+                2019-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介:<br>在渗透测试的过程中遇到一台DNS服务器时, 先检查DNS服务版本是否存在CVE漏洞, 然后进行DNS信息的枚举, 本文总结已有的DNS信息枚举方法、工具, 后续会探讨工具的原理、对工具的性能效果等进行对比。</p>
+<p>状态: 总结工具使用方法。</p>
+<a id="more"></a>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>DNS介绍</li>
+<li>工具</li>
+</ul>
+<blockquote>
+<p>DNS介绍</p>
+</blockquote>
+<p>DNS(Domain Name System, 域名系统)服务用来进行域名和IP地址之间的映射, DNS默认使用TCP和UDP的53端口, 每一级域名的长度限制是63个字符, 域名总长度不能超过253个字符。DNS记录包括Nameserver(NS)、Mail Exchanger(MX)、Start of Authority(SOA)、TXT等。</p>
+<h3 id="查找子域名的方法"><a href="#查找子域名的方法" class="headerlink" title="查找子域名的方法"></a>查找子域名的方法</h3><ul>
+<li>搜索引擎查找</li>
+<li>爆破子域名的A记录</li>
+<li>区域传送漏洞</li>
+</ul>
+<blockquote>
+<p>工具</p>
+</blockquote>
+<ul>
+<li>Dig</li>
+<li>Nslookup</li>
+<li>Fierce</li>
+<li>Dnstracer</li>
+<li>Dnsrecon</li>
+<li>Dnsmap</li>
+<li>Dnsenum</li>
+</ul>
+<h2 id="dig"><a href="#dig" class="headerlink" title="dig"></a>dig</h2><p>dig是一款灵活、易用、功能强大、支持指定DNS服务器及批量查询的域名查询工具。dig向DNS服务器提交查询并整理展示查询结果。dig默认使用/etc/resolv.conf文件查询指定域名的A、NS记录。</p>
+<h4 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h4><p>1.不指定参数时, dig将查询指定域名的A记录<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dig baidu.com</span><br></pre></td></tr></table></figure></p>
+<p>2.指定参数简化输出</p>
+<ul>
+<li>+nocmd: 从结果中移除+cmd部分的输出</li>
+<li>+noall: 从结果中移除额外的头部、flags、查询时间、消息大小等信息</li>
+<li>+answer: 返回查询结果的信息<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dig +nocmd baidu.com &lt;record&gt; +noall +answer</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>3.区域传送攻击<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ dig axfr @&lt;nameserver&gt; target</span><br><span class="line">$ dig +nocmd axfr @nsztm1.digi.ninja zonetransfer.me +noall +answer</span><br></pre></td></tr></table></figure></p>
+<h2 id="nslookup"><a href="#nslookup" class="headerlink" title="nslookup"></a>nslookup</h2><p>一款古老但强大的域名查询工具。具有交互、非交互两种模式，默认查询A记录。</p>
+<h4 id="实战-1"><a href="#实战-1" class="headerlink" title="实战"></a>实战</h4><p>1.不指定参数时, nslookup将查询指定域名的A记录(IP地址)<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 无参数</span></span><br><span class="line">$ nslookup beisen.com</span><br><span class="line">Server:         10.129.1.130</span><br><span class="line">Address:        10.129.1.130<span class="comment">#53</span></span><br><span class="line"></span><br><span class="line">Name:   beisen.com</span><br><span class="line">Address: 47.96.7.24</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ nslookup</span><br><span class="line">&gt; server &lt;dnsserver&gt;</span><br><span class="line">Default server: &lt;dnsserver&gt;</span><br><span class="line">Address: &lt;dnsserver&gt;<span class="comment">#53</span></span><br><span class="line">&gt; &lt;target IP&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.指定查询类型<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ nslookup -query=A baidu.com</span><br><span class="line">$ nslookup -query=NS baidu.com</span><br><span class="line">$ nslookup -query=MX baidu.com</span><br><span class="line">$ nslookup -query=SOA baidu.com</span><br><span class="line">$ nslookup -query=TXT baidu.com</span><br></pre></td></tr></table></figure></p>
+<p>3.查询所有的dns记录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ nslookup -query=ANY baidu.com</span><br><span class="line">Server:		192.168.99.1</span><br><span class="line">Address:	192.168.99.1<span class="comment">#53</span></span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line">baidu.com</span><br><span class="line">	origin = dns.baidu.com</span><br><span class="line">	mail addr = sa.baidu.com</span><br><span class="line">	serial = 2012140912</span><br><span class="line">	refresh = 300</span><br><span class="line">	retry = 300</span><br><span class="line">	expire = 2592000</span><br><span class="line">	minimum = 7200</span><br><span class="line">baidu.com	mail exchanger = 20 mx1.baidu.com.</span><br><span class="line">baidu.com	mail exchanger = 20 jpmx.baidu.com.</span><br><span class="line">baidu.com	mail exchanger = 10 mx.maillb.baidu.com.</span><br><span class="line">baidu.com	mail exchanger = 15 mx.n.shifen.com.</span><br><span class="line">baidu.com	mail exchanger = 20 mx50.baidu.com.</span><br><span class="line">Name:	baidu.com</span><br><span class="line">Address: 123.125.114.144</span><br><span class="line">baidu.com	text = <span class="string">"google-site-verification=GHb98-6msqyx_qqjGl5eRatD3QTHyVB6-xQ3gJB5UwM"</span></span><br><span class="line">baidu.com	text = <span class="string">"v=spf1 include:spf1.baidu.com include:spf2.baidu.com include:spf3.baidu.com a mx ptr -all"</span></span><br><span class="line">baidu.com	nameserver = ns7.baidu.com.</span><br><span class="line">baidu.com	nameserver = dns.baidu.com.</span><br><span class="line">baidu.com	nameserver = ns2.baidu.com.</span><br><span class="line">baidu.com	nameserver = ns4.baidu.com.</span><br><span class="line">baidu.com	nameserver = ns3.baidu.com.</span><br><span class="line">Name:	baidu.com</span><br><span class="line">Address: 220.181.38.148</span><br><span class="line"></span><br><span class="line">Authoritative answers can be found from:</span><br></pre></td></tr></table></figure></p>
+<h2 id="Fierce"><a href="#Fierce" class="headerlink" title="Fierce"></a>Fierce</h2><p>Fierce是一款具有区域传送漏洞检测、字典爆破子域名、反查IP段、查指定域名对应IP附近IP对应的域名信息等功能的的多线程工具。Fierce可尝试建立HTTP连接以确定子域名是否存在，该功能较耗资源。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fierce (C) Copywrite 2006,2007 - By RSnake at http://ha.ckers.org/fierce/</span></span><br><span class="line"><span class="comment"># 使用命令: fierce [-dns example.com] [OPTIONS]</span></span><br><span class="line">Options:</span><br><span class="line">    -connect [header.txt]         对非RFC1918地址进行HTTP连接（耗时长、流量大），默认返回服务器的响应头部。可通过文件指定HTTP请求头的Host信息，如：fierce -dns example.com -connect headers.txt</span><br><span class="line">    -delay &lt;number&gt;             指定两次查询之间的时间间隔</span><br><span class="line">    -dns &lt;domain&gt;               指定查询的域名</span><br><span class="line">    -dnsfile &lt;dnsfile.txt&gt;      用文件指定反向查询的DNS服务器列表</span><br><span class="line">    -dnsserver &lt;dnsserver&gt;      指定用来初始化SOA查询的DNS服务器。（仅用于出初始化，后续查询将使用目标的DNS服务器）</span><br><span class="line">    -file &lt;domain.txt&gt;          将结果输出至文件</span><br><span class="line">    -fulloutput                 与-connect结合，输出服务器返回的所有信息</span><br><span class="line">    -<span class="built_in">help</span>                       打印帮助信息</span><br><span class="line">    -nopattern                  不适用搜索模式查找主机。（此参数暂时没有用明白）</span><br><span class="line">    -range &lt;1.1.1.1/24&gt;         对内部IP范围做IP反查(此参数尚未用明白)。必须与dnsserver参数配合，指定内部DNS服务器，如： fierce -range 111.222.333.0-255 -dnsserver ns1.example.com</span><br><span class="line">    -search &lt;Search list&gt;       指定其他的域，在其他的域内进行查找（此参数没有用明白），如：   fierce -dns examplecompany.com -search corpcompany,blahcompany</span><br><span class="line">    -tcptimeout &lt;number&gt;        指定查询的超时时间</span><br><span class="line">    -threads [number]           指定扫描的线程数，默认单线程</span><br><span class="line">    -traverse [number]          指定扫描的上下IP范围，默认扫描上下5各个。</span><br><span class="line">    -version                    打印fierce版本</span><br><span class="line">    -wide                       扫描入口IP地址的C段。产生大流量、会收集到更多信息.</span><br><span class="line">    -wordlist &lt;sub.txt&gt;         使用指定的字典进行子域名爆破</span><br></pre></td></tr></table></figure></p>
+<h4 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h4><p>1.爆破子域名使用该命令爆破子域名时, Fierce将按顺序进行以下检测:</p>
+<ul>
+<li>查询ziroom.com的DNS服务器</li>
+<li>检测DNS服务器上是否存在区域传送漏洞</li>
+<li>检查指定的域名是否存在泛解析</li>
+<li>用自带字典爆破子域名<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ fierce -dns ziroom.com</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>疑问</strong> 判断泛解析的方法有哪些?</p>
+<p>2.指定字典爆破子域名<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ fierce -dns ziroom.com -wordlist subziroom.txt</span><br></pre></td></tr></table></figure></p>
+<p>3.查指定域名对应的IP段附近的域名信息<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ fierce -dns ziroom.com -traverse</span><br></pre></td></tr></table></figure></p>
+<p>4.查指定域名所在C段IP对应的域名信息<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ fierce -dns ziroom.com -wide</span><br></pre></td></tr></table></figure></p>
+<p>5.多线程、自定义超时时间<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过threads、tcptimeout、delay可调整扫描参数, 提高效率</span></span><br><span class="line">$ fierce -dns ziroom.com -threads 10 -tcptimeout 1 -delay 1</span><br></pre></td></tr></table></figure></p>
+<h2 id="Dnsenum"><a href="#Dnsenum" class="headerlink" title="Dnsenum"></a>Dnsenum</h2><p>一款由perl编写的查询各种DNS记录、检测区域传送漏洞、子域名爆破等且支持多线程、自定义DNS服务器、结果可导入其他工具的DNS信息收集工具。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">dnsenum.pl [Options] &lt;domain&gt;</span><br><span class="line">    注意: 爆破开关参数-f是可选的，需要指定字典文件</span><br><span class="line"></span><br><span class="line">一般选项:</span><br><span class="line">	--dnsserver &lt;server&gt;      使用指定的DNS服务器进行A、NS、MX记录查询</span><br><span class="line">	--enum                    快捷选项，类似于：--threads 5 -s 15 -w.</span><br><span class="line">	-h, --<span class="built_in">help</span>                显示帮助信息</span><br><span class="line">	--noreverse               不进行反向查询</span><br><span class="line">	--nocolor                 输出结果不显示颜色</span><br><span class="line">	--private                 将私有IP展示并保存到domain_ips.txt文件中</span><br><span class="line">	--subfile &lt;file&gt;          将有效的子域名写入到指定的文件中</span><br><span class="line">	-t, --timeout &lt;value&gt;     设定TCP、UDP的连接超时值(默认10秒，此选项在网络状况不好或者超好的情况下可以使用)</span><br><span class="line">	--threads &lt;value&gt;         指定执行不同查询使用的线程数</span><br><span class="line">	-v, --verbose             输出详细结果(输出所有的)</span><br><span class="line"></span><br><span class="line">谷歌爬取选项(因为我现在连接不了google，所以先忽略):</span><br><span class="line">	-p, --pages &lt;value&gt;     指定爬取谷歌搜索结果的前多少页, 默认为前5页。如果要设置该参数, 必须设置-s参数</span><br><span class="line">	-s, --scrap &lt;value&gt;     从谷歌爬取的子域名数量最多多少个, 默认为最多15个</span><br><span class="line"></span><br><span class="line">爆破选项:</span><br><span class="line">	-f, --file &lt;file&gt;       指定子域名字典文件进行爆破</span><br><span class="line">	-u, --update&lt;a|g|r|z&gt;   用有效的子域名更新-f指定的子域名文件</span><br><span class="line">	-a (all)                使用所有的结果(有效的、google抓取的、反向查询的、空间传送的)更子域名字典文件</span><br><span class="line">	-g                      使用Google抓取的结果更新指定的文件</span><br><span class="line">	-r                      使用反向查询的结果更新指定的文件</span><br><span class="line">	-z                      使用空间传送的结果更新指定的文件</span><br><span class="line">	-r, --recursion         对所有爆破到的有NS记录的子域进行递归查询</span><br><span class="line"></span><br><span class="line">whois网络范围选项:</span><br><span class="line">	-d, --delay &lt;value&gt;     设置两个whois查询之间的间隔，默认为3秒(此选项的目的在于调整发包速率，保证工具运行在最稳定的状态)</span><br><span class="line">	-w, --whois             在C段上执行whois查询 **警告**: 此选项生成大量的数据并需要大量的事件来执行反向查询</span><br><span class="line"></span><br><span class="line">反向查询选项:</span><br><span class="line">	-e, --exclude&lt;regexp&gt;   从反向查找的结果中排除正则中指定的PTR记录，此选项在针对无效主机名时有用</span><br><span class="line"></span><br><span class="line">输出选项:</span><br><span class="line">	-o --output &lt;file&gt;      输出为XML格式的文件，可以被导入到MagicTree工具中</span><br></pre></td></tr></table></figure></p>
+<h4 id="实践-1"><a href="#实践-1" class="headerlink" title="实践"></a>实践</h4><p>1.默认查询: 将分别查询A、NS、MX记录, 检测区域传送攻击<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dnsenum beisen.com</span><br></pre></td></tr></table></figure></p>
+<p>2.指定DNS服务器<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dnsenum -dnsserver 10.10.10.123 10.10.10.123</span><br></pre></td></tr></table></figure></p>
+<p>3.爆破子域名<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dnsenum 10.10.10.123 -file /opt/subbrute/names.txt</span><br></pre></td></tr></table></figure></p>
+<h2 id="Dnsrecon"><a href="#Dnsrecon" class="headerlink" title="Dnsrecon"></a>Dnsrecon</h2><p>Carlos Perez在2006年编写了该工具, 用于查询DNS记录(A, NS, SOA and MX)、所有NS服务器的区域传送漏洞检测、爆破子域名(A记录)、检查泛解析等。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ dnsrecom --<span class="built_in">help</span></span><br><span class="line">NAME</span><br><span class="line">       dnsrecon - DNS Enumueration and Scanning Tool</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">       dnsrecon &lt;options&gt;</span><br><span class="line"></span><br><span class="line">OPTION</span><br><span class="line">          -h, --<span class="built_in">help</span>          	    打印帮助信息并退出</span><br><span class="line">          -d, --domain &lt;domain&gt;     target-待枚举的域名</span><br><span class="line">          -r, --range &lt;range&gt;       需要反查爆破的IP列表, 格式: (first-last) or <span class="keyword">in</span> (range/bitmask).</span><br><span class="line">          -n, --name_server &lt;name&gt;  指定使用的DNS服务器域名或IP, 如果不指定, 将使用target的SOA记录地址</span><br><span class="line">          -D, --dictionary  &lt;file&gt;  指定爆破子域名使用的字典(建议使用绝对路径)</span><br><span class="line">          -f                        过滤爆破结果Filter out of Brute Force Domain lookup records that resolve to the wildcard defined IP Address when saving records.</span><br><span class="line">          -t, --<span class="built_in">type</span> &lt;types&gt;        指定进行枚举的类型:</span><br><span class="line">                 std      枚举通用DNS记录, 包括: SOA, NS, A, AAAA, MX and SRV <span class="keyword">if</span> AXRF on the NS Servers fail.</span><br><span class="line">                 rvl      反查给定的CIDR IP段</span><br><span class="line">                 brt      使用给定的字典枚举子域名</span><br><span class="line">                 srv      枚举SRV记录</span><br><span class="line">                 axfr     检查所有NS服务器上的区域传送漏洞</span><br><span class="line">                 goo      在google上查找子域名和hosts</span><br><span class="line">                 bing     在bing上查找子域名和hosts</span><br><span class="line">                 crt      对子域名进行crt.sh搜索</span><br></pre></td></tr></table></figure></p>
+<h4 id="实战-2"><a href="#实战-2" class="headerlink" title="实战"></a>实战</h4><p>1.直接查询<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dnsrecon -d baidu.com</span><br></pre></td></tr></table></figure></p>
+<p>2.指定NS服务器<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dnsrecon -d baidu.com -n 8.8.8.8</span><br></pre></td></tr></table></figure></p>
+<p>3.指定NS服务器并执行子域名爆破<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dnsrecon -d baidu.com -n 8.8.8.8 -D /opt/subbrute/names.txt</span><br></pre></td></tr></table></figure></p>
+<h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><p><a href="https://resources.infosecinstitute.com/dns-enumeration-techniques-in-linux/" target="_blank" rel="noopener">DNS Enumeration Techniques in Linux</a><br><a href="https://www.hackingarticles.in/4-ways-dns-enumeration/" target="_blank" rel="noopener">4 Ways to DNS Enumeration</a><br><a href="https://tools.kali.org/information-gathering/dnsenum" target="_blank" rel="noopener">dnsenum Package Description</a><br><a href="https://www.darkoperator.com/blog/2009/12/11/enumeration-thru-dns-and-metasploit.html" target="_blank" rel="noopener">DNS Enumeration with Metasploit</a><br><a href="https://github.com/nixawk/pentest-wiki/blob/master/1.Information-Gathering/How-to-gather-dns-information.md" target="_blank" rel="noopener">How to gather dns information ?</a><br><a href="https://www.rebootuser.com/?p=2189" target="_blank" rel="noopener">IP, DNS &amp; Domain Enumeration Cheatsheet</a><br><a href="https://blog.appsecco.com/a-penetration-testers-guide-to-sub-domain-enumeration-7d842d5570f6" target="_blank" rel="noopener">A penetration tester’s guide to subdomain enumeration</a><br><a href="https://danielpocock.com/a-quick-look-at-enum/" target="_blank" rel="noopener">A quick look at ENUM mapping telephone numbers to DNS</a><br><a href="https://securitytrails.com/blog/dns-toolbox" target="_blank" rel="noopener">DNS Toolbox: How to Perform a Full DNS Enumeration and Domain Research</a><br><a href="https://pentester.land/cheatsheets/2018/11/14/subdomains-enumeration-cheatsheet.html" target="_blank" rel="noopener">Subdomains Enumeration Cheat Sheet</a><br><a href="https://pentestlab.blog/tag/dns-enumeration/" target="_blank" rel="noopener">DNS Reconnaissance – DNSRecon</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/dns/" rel="tag"># dns</a>
+          
+            <a href="/tags/dng/" rel="tag"># dng</a>
+          
+            <a href="/tags/nslookup/" rel="tag"># nslookup</a>
+          
+            <a href="/tags/fierce/" rel="tag"># fierce</a>
+          
+            <a href="/tags/dnsenum/" rel="tag"># dnsenum</a>
+          
+            <a href="/tags/dnsrecon/" rel="tag"># dnsrecon</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/10/HTB-linux-FriendZone/" rel="next" title="HTB-linux-FriendZone">
+                <i class="fa fa-chevron-left"></i> HTB-linux-FriendZone
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/12/How-Hacking-in-AD/" rel="prev" title="How Hacking in AD">
+                How Hacking in AD <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查找子域名的方法"><span class="nav-number">1.1.</span> <span class="nav-text">查找子域名的方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dig"><span class="nav-number">2.</span> <span class="nav-text">dig</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实战"><span class="nav-number">2.0.1.</span> <span class="nav-text">实战</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#nslookup"><span class="nav-number">3.</span> <span class="nav-text">nslookup</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实战-1"><span class="nav-number">3.0.1.</span> <span class="nav-text">实战</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fierce"><span class="nav-number">4.</span> <span class="nav-text">Fierce</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实践"><span class="nav-number">4.0.1.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dnsenum"><span class="nav-number">5.</span> <span class="nav-text">Dnsenum</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实践-1"><span class="nav-number">5.0.1.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dnsrecon"><span class="nav-number">6.</span> <span class="nav-text">Dnsrecon</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实战-2"><span class="nav-number">6.0.1.</span> <span class="nav-text">实战</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考连接"><span class="nav-number">7.</span> <span class="nav-text">参考连接</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

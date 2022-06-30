@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="sudoers,privilege_escalation,steghide,reverse_rbash,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
+<meta name="keywords" content="sudoers,privilege_escalation,steghide,reverse_rbash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vulnhub-Challenging-unknowndevice64-v1.0">
+<meta property="og:url" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/open_port.png">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/web.png">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/h1dd3n.png">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/steghide.png">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/brainfuck_code.png">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/sudo_l.png">
+<meta property="og:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/sysud64.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:07.860Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vulnhub-Challenging-unknowndevice64-v1.0">
+<meta name="twitter:description" content="简介打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:  看到web页面中的key_is_h1dd3n.jpg的注释时, 没有想到去访问一下看看; 查看sysud64程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;  文章目录 端口扫描, 确定方向 steghide解隐写, 逆brainfuck得账号 vi逃逸rbash, sudoers配置提权限">
+<meta name="twitter:image" content="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/open_port.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/">
+
+
+
+
+
+  <title>Vulnhub-Challenging-unknowndevice64-v1.0 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/03/31/Vulnhub-Challenging-unknowndevice64-v1-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Vulnhub-Challenging-unknowndevice64-v1.0</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-31T08:37:17+08:00">
+                2019-03-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>打完之后回过头来看这个靶机, 其实挺简单的, 本渣卡在了两个地方:</p>
+<ol>
+<li>看到web页面中的<code>key_is_h1dd3n.jpg</code>的注释时, 没有想到去访问一下看看;</li>
+<li>查看<code>sysud64</code>程序的帮助文档后, 没有仔细看usage, 导致没有看到PROG、ARGS;</li>
+</ol>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>端口扫描, 确定方向</li>
+<li>steghide解隐写, 逆brainfuck得账号</li>
+<li>vi逃逸rbash, sudoers配置提权限</li>
+</ul>
+<a id="more"></a>
+<h2 id="端口扫描-确定方向"><a href="#端口扫描-确定方向" class="headerlink" title="端口扫描, 确定方向"></a>端口扫描, 确定方向</h2><p>拿到靶机ip之后, 依然是先开始扫描IP, 如下:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nmap -sS -Pn -p- -A 172.16.88.129</span><br></pre></td></tr></table></figure></p>
+<p><img src="open_port.png" alt="open_port"><br>其中: 1337端口为7.7版本的OpenSSH, 暂无法直接利用, 可爆破, 先搁置; 31337端口为python的简单WEB服务器, 无robots.txt文件, 为优先考虑点.</p>
+<h2 id="steghide解隐写-逆brainfuck得账号"><a href="#steghide解隐写-逆brainfuck得账号" class="headerlink" title="steghide解隐写, 逆brainfuck得账号"></a>steghide解隐写, 逆brainfuck得账号</h2><p>访问31337端口后, 发现如下页面:<br><img src="web.png" alt="web_page"></p>
+<p>查看页面源码发现注释<code>key_is_h1dd3n.jpg</code>, 这里我犯了个傻, 看到这个之后依然选择用dirb爆破目录, 然后一无所获, 这时才想到访问一下试试, 如下图:<br><img src="h1dd3n.png" alt="key_is_h1dd3n.jpg"></p>
+<p>拿到图片之后, 根据图片名字的提示, 这肯定是一个隐写术的题, 于是开始对jpg文件进行隐写术的检查. 经过一番尝试(binwalk、stegdetect、stegsolve、steghide)之后发现只有steghide需要输入密码<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ steghide info key_is_h1dd3n.jpg</span><br></pre></td></tr></table></figure></p>
+<p><img src="steghide.png" alt="key_is_h1dd3n.jpg"></p>
+<p>根据文件名提示输入<code>h1dd3n</code>解压stego文件(<code>steghide extract -sf key_is_h1dd3n.jpg</code>), 得到一串brainfuck代码, 如下图:</p>
+<p><img src="brainfuck_code.png" alt="brainfuck code"></p>
+<p>解码之后得到:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">username: ud64</span><br><span class="line">passwd: 1M!<span class="comment">#64@ud</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="Vi逃逸rbash-sudoers配置提权限"><a href="#Vi逃逸rbash-sudoers配置提权限" class="headerlink" title="Vi逃逸rbash, sudoers配置提权限"></a>Vi逃逸rbash, sudoers配置提权限</h2><p>用上面的额账号登陆ssh之后发现是个rbash, 根据rbash生存法则成功通过vi逃逸, 进入bash之后发现依然无法使用ls等基础命令, 于是添加环境变量<code>export PATH=$PATH:/bin:/usr/bin:/usr/local/bin</code><br>!(add_path)[add_path.png]</p>
+<p>先尝试<code>sudo -l</code>检查是否可通过sudoers配置提权, 然后惊奇的发现存在一个<code>sysud64</code>的程序<br><img src="sudo_l.png" alt="sudo -l"></p>
+<p>查看sysud64的帮助文档之后发现可直接执行<code>PROG</code>(根据直觉这应该是指program),于是尝试运行bash, 成功提权</p>
+<pre><code class="sh">$ sudo sysud64 -o /dev/null bash
+</code></pre>
+<p><img src="sysud64.png" alt="sysud64"></p>
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sudoers/" rel="tag"># sudoers</a>
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/steghide/" rel="tag"># steghide</a>
+          
+            <a href="/tags/reverse-rbash/" rel="tag"># reverse_rbash</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/27/privilege-escalate-with-SUID/" rel="next" title="privilege escalate with SUID">
+                <i class="fa fa-chevron-left"></i> privilege escalate with SUID
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/05/Vulnhub-Challenging-Born2Root-2/" rel="prev" title="Vulnhub-Challenging-Born2Root-2">
+                Vulnhub-Challenging-Born2Root-2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#端口扫描-确定方向"><span class="nav-number">2.</span> <span class="nav-text">端口扫描, 确定方向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#steghide解隐写-逆brainfuck得账号"><span class="nav-number">3.</span> <span class="nav-text">steghide解隐写, 逆brainfuck得账号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vi逃逸rbash-sudoers配置提权限"><span class="nav-number">4.</span> <span class="nav-text">Vi逃逸rbash, sudoers配置提权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束"><span class="nav-number">5.</span> <span class="nav-text">结束</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="smb,custom decrypt,stage,NTFS交换数据流隐写,HQK Reporting Service V1.2,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Nest是一台在靶机中找线索，根据线索找下一步线索的机器，像极了密室逃脱，不需要CVE即可完成。机器通过smb匿名共享访问获取初始用户，通过初始用户获取VB项目和user的账号密码，解密之后 拿到明文，通过隐写术获得”HQK Reporting Service V1.2“服务的debug权限，根据HqkLdap.exe了解到下一步的方向，找到Administrator用户的密钥，利用HqkLdap">
+<meta name="keywords" content="smb,custom decrypt,stage,NTFS交换数据流隐写,HQK Reporting Service V1.2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB Windows Nest">
+<meta property="og:url" content="https://exexute.github.io/2020/02/23/HTB-Windows-Nest/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="Nest是一台在靶机中找线索，根据线索找下一步线索的机器，像极了密室逃脱，不需要CVE即可完成。机器通过smb匿名共享访问获取初始用户，通过初始用户获取VB项目和user的账号密码，解密之后 拿到明文，通过隐写术获得”HQK Reporting Service V1.2“服务的debug权限，根据HqkLdap.exe了解到下一步的方向，找到Administrator用户的密钥，利用HqkLdap">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2020/02/23/HTB-Windows-Nest/infocard.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB Windows Nest">
+<meta name="twitter:description" content="Nest是一台在靶机中找线索，根据线索找下一步线索的机器，像极了密室逃脱，不需要CVE即可完成。机器通过smb匿名共享访问获取初始用户，通过初始用户获取VB项目和user的账号密码，解密之后 拿到明文，通过隐写术获得”HQK Reporting Service V1.2“服务的debug权限，根据HqkLdap.exe了解到下一步的方向，找到Administrator用户的密钥，利用HqkLdap">
+<meta name="twitter:image" content="https://exexute.github.io/2020/02/23/HTB-Windows-Nest/infocard.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/02/23/HTB-Windows-Nest/">
+
+
+
+
+
+  <title>HTB Windows Nest | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/02/23/HTB-Windows-Nest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB Windows Nest</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-23T00:48:51+08:00">
+                2020-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="infocard.png" alt="infocard"><br>Nest是一台在靶机中找线索，根据线索找下一步线索的机器，像极了密室逃脱，不需要CVE即可完成。<br>机器通过smb匿名共享访问获取初始用户，通过初始用户获取VB项目和user的账号密码，解密之后 拿到明文，通过隐写术获得”HQK Reporting Service V1.2“服务的debug权限，根据<code>HqkLdap.exe</code>了解到下一步的方向，找到Administrator用户的密钥，利用<code>HqkLdap.exe</code>中的解密算法获得Administrator的用户密码，拿到root.txt。</p>
+<p>机器中比较有趣的点在于使用NTFS Stream进行隐写。<br><a id="more"></a></p>
+<h2 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h2><p><strong>端口扫描</strong><br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nmap 7.70 scan initiated Mon Jan 27 08:41:07 2020 as: nmap -Pn -sC -sV --script vuln -p445,4386 -oA Nest/scan/Nest-vuln 10.10.10.178</span></span><br><span class="line">Nmap scan report <span class="keyword">for</span> localhost (10.10.10.178)</span><br><span class="line">Host is up (0.26s latency).</span><br><span class="line"></span><br><span class="line">PORT     STATE SERVICE       VERSION</span><br><span class="line">445/tcp  open  microsoft-ds?</span><br><span class="line">4386/tcp open  unknown</span><br><span class="line">| fingerprint-strings:</span><br><span class="line">|   DNSStatusRequestTCP, DNSVersionBindReqTCP, Kerberos, LANDesk-RC, LDAPBindReq, LDAPSearchReq, LPDString, NCP, NULL, RPCCheck, SMBProgNeg, SSLSessionReq, TLSSessionReq, TerminalServer, X11Probe:</span><br><span class="line">|     Reporting Service V1.2</span><br><span class="line">|   FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, RTSPRequest, SIPOptions:</span><br><span class="line">|     Reporting Service V1.2</span><br><span class="line">|     Unrecognised <span class="built_in">command</span></span><br><span class="line">|   Help:</span><br><span class="line">|     Reporting Service V1.2</span><br><span class="line">|     This service allows users to run queries against databases using the legacy HQK format</span><br><span class="line">|     AVAILABLE COMMANDS ---</span><br><span class="line">|     LIST</span><br><span class="line">|     SETDIR &lt;Directory_Name&gt;</span><br><span class="line">|     RUNQUERY &lt;Query_ID&gt;</span><br><span class="line">|     DEBUG &lt;Password&gt;</span><br><span class="line">|_    HELP &lt;Command&gt;</span><br><span class="line">1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :</span><br><span class="line">SF-Port4386-TCP:V=7.70%I=7%D=1/27%Time=5E2E31B4%P=x86_64-apple-darwin17.3.</span><br><span class="line">SF:0%r(NULL,21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(Gene</span><br><span class="line">SF:ricLines,3A,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;\r\nUnrec</span></span><br><span class="line"><span class="string">SF:ognised\x20command\r\n&gt;"</span>)%r(GetRequest,3A,<span class="string">"\r\nHQK\x20Reporting\x20Serv</span></span><br><span class="line"><span class="string">SF:ice\x20V1\.2\r\n\r\n&gt;\r\nUnrecognised\x20command\r\n&gt;"</span>)%r(HTTPOptions,3</span><br><span class="line">SF:A,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;\r\nUnrecognised\x2</span></span><br><span class="line"><span class="string">SF:0command\r\n&gt;"</span>)%r(RTSPRequest,3A,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1</span></span><br><span class="line"><span class="string">SF:\.2\r\n\r\n&gt;\r\nUnrecognised\x20command\r\n&gt;"</span>)%r(RPCCheck,21,<span class="string">"\r\nHQK\x</span></span><br><span class="line"><span class="string">SF:20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(DNSVersionBindReqTCP,21,<span class="string">"\</span></span><br><span class="line"><span class="string">SF:r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(DNSStatusRequestTC</span><br><span class="line">SF:P,21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(Help,F2,<span class="string">"\r</span></span><br><span class="line"><span class="string">SF:\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;\r\nThis\x20service\x20a</span></span><br><span class="line"><span class="string">SF:llows\x20users\x20to\x20run\x20queries\x20against\x20databases\x20using</span></span><br><span class="line"><span class="string">SF:\x20the\x20legacy\x20HQK\x20format\r\n\r\n---\x20AVAILABLE\x20COMMANDS\</span></span><br><span class="line"><span class="string">SF:x20---\r\n\r\nLIST\r\nSETDIR\x20&lt;Directory_Name&gt;\r\nRUNQUERY\x20&lt;Query_</span></span><br><span class="line"><span class="string">SF:ID&gt;\r\nDEBUG\x20&lt;Password&gt;\r\nHELP\x20&lt;Command&gt;\r\n&gt;"</span>)%r(SSLSessionReq,</span><br><span class="line">SF:21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(TLSSessionReq</span><br><span class="line">SF:,21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(Kerberos,21,</span><br><span class="line">SF:<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(SMBProgNeg,21,<span class="string">"\</span></span><br><span class="line"><span class="string">SF:r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(X11Probe,21,<span class="string">"\r\nH</span></span><br><span class="line"><span class="string">SF:QK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(FourOhFourRequest,3A,<span class="string">"</span></span><br><span class="line"><span class="string">SF:\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n\r\n&gt;\r\nUnrecognised\x20co</span></span><br><span class="line"><span class="string">SF:mmand\r\n&gt;"</span>)%r(LPDString,21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r</span></span><br><span class="line"><span class="string">SF:\n\r\n&gt;"</span>)%r(LDAPSearchReq,21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\</span></span><br><span class="line"><span class="string">SF:r\n\r\n&gt;"</span>)%r(LDAPBindReq,21,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r</span></span><br><span class="line"><span class="string">SF:\n\r\n&gt;"</span>)%r(SIPOptions,3A,<span class="string">"\r\nHQK\x20Reporting\x20Service\x20V1\.2\r\n</span></span><br><span class="line"><span class="string">SF:\r\n&gt;\r\nUnrecognised\x20command\r\n&gt;"</span>)%r(LANDesk-RC,21,<span class="string">"\r\nHQK\x20Rep</span></span><br><span class="line"><span class="string">SF:orting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(TerminalServer,21,<span class="string">"\r\nHQK\x20R</span></span><br><span class="line"><span class="string">SF:eporting\x20Service\x20V1\.2\r\n\r\n&gt;"</span>)%r(NCP,21,<span class="string">"\r\nHQK\x20Reporting\</span></span><br><span class="line"><span class="string">SF:x20Service\x20V1\.2\r\n\r\n&gt;"</span>);</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_samba-vuln-cve-2012-1182: Could not negotiate a connection:SMB: ERROR: Server disconnected the connection</span><br><span class="line">|_smb-vuln-ms10-054: <span class="literal">false</span></span><br><span class="line">|_smb-vuln-ms10-061: Could not negotiate a connection:SMB: Failed to receive bytes after 5 attempts: TIMEOUT</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"><span class="comment"># Nmap done at Mon Jan 27 08:45:06 2020 -- 1 IP address (1 host up) scanned in 239.92 seconds</span></span><br></pre></td></tr></table></figure></p>
+<p>445端口，SMB服务<br>4386端口，HQK Reporting Service V1.2服务（人工确认）</p>
+<h4 id="SMB匿名共享"><a href="#SMB匿名共享" class="headerlink" title="SMB匿名共享"></a>SMB匿名共享</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ smbmap.py -u guest -H 10.10.10.178</span><br><span class="line">[+] Finding open SMB ports....</span><br><span class="line">[+] User SMB session established on 10.10.10.178...</span><br><span class="line">[+] IP: 10.10.10.178:445	Name: bogon</span><br><span class="line">	Disk                                                  	Permissions	Comment</span><br><span class="line">	----                                                  	-----------	-------</span><br><span class="line">	ADMIN$                                            	NO ACCESS	Remote Admin</span><br><span class="line">	C$                                                	NO ACCESS	Default share</span><br><span class="line">	Data                                              	READ ONLY</span><br><span class="line">	IPC$                                              	NO ACCESS	Remote IPC</span><br><span class="line">	Secure$                                           	NO ACCESS</span><br><span class="line">	Users                                             	READ ONLY</span><br></pre></td></tr></table></figure>
+<p>使用smbclient查看Data和Users目录：<code>smbclient.py guest@10.10.10.178</code>或 <code>smbclient -U guest //10.10.10.178/Data</code></p>
+<p>从Data/Share/Template/HR目录中找到”Welcome Email.txt”文件，内容如下；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">We would like to extend a warm welcome to our newest member of staff, &lt;FIRSTNAME&gt; &lt;SURNAME&gt;</span><br><span class="line"></span><br><span class="line">You will find your home folder in the following location:</span><br><span class="line">\\HTB-NEST\Users\&lt;USERNAME&gt;</span><br><span class="line"></span><br><span class="line">If you have any issues accessing specific services or workstations, please inform the</span><br><span class="line">IT department and use the credentials below until all systems have been set up for you.</span><br><span class="line"></span><br><span class="line">Username: TempUser</span><br><span class="line">Password: welcome2019</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Thank you</span><br><span class="line">HR</span><br></pre></td></tr></table></figure>
+<p>未发现其他敏感数据</p>
+<h4 id="User-TempUser"><a href="#User-TempUser" class="headerlink" title="User: TempUser"></a>User: TempUser</h4><p>使用TempUser访问smb共享，从”Data\IT\Configs\RU Scanner”目录中找到c.smith的加密密钥<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ConfigFile</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="attr">xmlns:xsd</span>=<span class="string">"http://www.w3.org/2001/XMLSchema"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Port</span>&gt;</span>389<span class="tag">&lt;/<span class="name">Port</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Username</span>&gt;</span>c.smith<span class="tag">&lt;/<span class="name">Username</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Password</span>&gt;</span>fTEzAfYDoz1YzkqhQkH6GQFYKp1XY5hm7bjOP86yYxE=<span class="tag">&lt;/<span class="name">Password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ConfigFile</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>在“Data\IT\Configs\NotepadPlusPlus\config.xml”中找到最近打开的文件：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">History</span> <span class="attr">nbMaxFile</span>=<span class="string">"15"</span> <span class="attr">inSubMenu</span>=<span class="string">"no"</span> <span class="attr">customLength</span>=<span class="string">"-1"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">File</span> <span class="attr">filename</span>=<span class="string">"C:\windows\System32\drivers\etc\hosts"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">File</span> <span class="attr">filename</span>=<span class="string">"\\HTB-NEST\Secure$\IT\Carl\Temp.txt"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">File</span> <span class="attr">filename</span>=<span class="string">"C:\Users\C.Smith\Desktop\todo.txt"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">History</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>尝试访问共享文件夹“\HTB-NEST\Secure$”、“\HTB-NEST\Secure$\IT”、“\HTB-NEST\Secure$\IT\Carl”，最终，成功访问“\HTB-NEST\Secure$\IT\Carl”目录并找到一份VB Project的项目代码。<br>使用smbget下载目录内所有内容：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ smbget -R smb://TempUser:welcome2019@10.10.10.178/Secure$/IT/Carl/</span><br></pre></td></tr></table></figure></p>
+<h4 id="user-C-smith"><a href="#user-C-smith" class="headerlink" title="user: C.smith"></a>user: C.smith</h4><p>阅读项目源码后，发现项目读取RU_Config.xml文件并对其中的密码进行解密，于是，提取解密代码并使用<a href="https://dotnetfiddle.net/" target="_blank" rel="noopener">在线代码运行工具</a>解密，拿到明文密码：<code>xRxRxPANCAK3SxRxRx</code></p>
+<p><strong>解密代码</strong><br><figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Imports</span> System</span><br><span class="line"><span class="keyword">imports</span> System.IO</span><br><span class="line"></span><br><span class="line"><span class="keyword">Imports</span> System.<span class="keyword">Text</span></span><br><span class="line"><span class="keyword">Imports</span> System.Security.Cryptography</span><br><span class="line"><span class="keyword">Public</span> <span class="keyword">Class</span> Utils</span><br><span class="line"></span><br><span class="line">    <span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> GetLogFilePath() <span class="keyword">As</span> <span class="built_in">String</span></span><br><span class="line">        <span class="keyword">Return</span> IO.Path.Combine(Environment.CurrentDirectory, <span class="string">"Log.txt"</span>)</span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">Function</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> DecryptString(EncryptedString <span class="keyword">As</span> <span class="built_in">String</span>) <span class="keyword">As</span> <span class="built_in">String</span></span><br><span class="line">        <span class="keyword">If</span> <span class="built_in">String</span>.IsNullOrEmpty(EncryptedString) <span class="keyword">Then</span></span><br><span class="line">            <span class="keyword">Return</span> <span class="built_in">String</span>.Empty</span><br><span class="line">        <span class="keyword">Else</span></span><br><span class="line">            <span class="keyword">Return</span> Decrypt(EncryptedString, <span class="string">"N3st22"</span>, <span class="string">"88552299"</span>, <span class="number">2</span>, <span class="string">"464R5DFA5DL6LE28"</span>, <span class="number">256</span>)</span><br><span class="line">        <span class="keyword">End</span> <span class="keyword">If</span></span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">Function</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> EncryptString(PlainString <span class="keyword">As</span> <span class="built_in">String</span>) <span class="keyword">As</span> <span class="built_in">String</span></span><br><span class="line">        <span class="keyword">If</span> <span class="built_in">String</span>.IsNullOrEmpty(PlainString) <span class="keyword">Then</span></span><br><span class="line">            <span class="keyword">Return</span> <span class="built_in">String</span>.Empty</span><br><span class="line">        <span class="keyword">Else</span></span><br><span class="line">            <span class="keyword">Return</span> Encrypt(PlainString, <span class="string">"N3st22"</span>, <span class="string">"88552299"</span>, <span class="number">2</span>, <span class="string">"464R5DFA5DL6LE28"</span>, <span class="number">256</span>)</span><br><span class="line">        <span class="keyword">End</span> <span class="keyword">If</span></span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">Function</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> Encrypt(<span class="keyword">ByVal</span> plainText <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> passPhrase <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> saltValue <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                    <span class="keyword">ByVal</span> passwordIterations <span class="keyword">As</span> <span class="built_in">Integer</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> initVector <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> keySize <span class="keyword">As</span> <span class="built_in">Integer</span>) _</span><br><span class="line">                           <span class="keyword">As</span> <span class="built_in">String</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> initVectorBytes <span class="keyword">As</span> <span class="built_in">Byte</span>() = Encoding.ASCII.GetBytes(initVector)</span><br><span class="line">        <span class="keyword">Dim</span> saltValueBytes <span class="keyword">As</span> <span class="built_in">Byte</span>() = Encoding.ASCII.GetBytes(saltValue)</span><br><span class="line">        <span class="keyword">Dim</span> plainTextBytes <span class="keyword">As</span> <span class="built_in">Byte</span>() = Encoding.ASCII.GetBytes(plainText)</span><br><span class="line">        <span class="keyword">Dim</span> password <span class="keyword">As</span> <span class="keyword">New</span> Rfc2898DeriveBytes(passPhrase, _</span><br><span class="line">                                           saltValueBytes, _</span><br><span class="line">                                           passwordIterations)</span><br><span class="line">        <span class="keyword">Dim</span> keyBytes <span class="keyword">As</span> <span class="built_in">Byte</span>() = password.GetBytes(<span class="built_in">CInt</span>(keySize / <span class="number">8</span>))</span><br><span class="line">        <span class="keyword">Dim</span> symmetricKey <span class="keyword">As</span> <span class="keyword">New</span> AesCryptoServiceProvider</span><br><span class="line">        symmetricKey.Mode = CipherMode.CBC</span><br><span class="line">        <span class="keyword">Dim</span> encryptor <span class="keyword">As</span> ICryptoTransform = symmetricKey.CreateEncryptor(keyBytes, initVectorBytes)</span><br><span class="line">        <span class="keyword">Using</span> memoryStream <span class="keyword">As</span> <span class="keyword">New</span> IO.MemoryStream()</span><br><span class="line">            <span class="keyword">Using</span> cryptoStream <span class="keyword">As</span> <span class="keyword">New</span> CryptoStream(memoryStream, _</span><br><span class="line">                                            encryptor, _</span><br><span class="line">                                            CryptoStreamMode.Write)</span><br><span class="line">                cryptoStream.Write(plainTextBytes, <span class="number">0</span>, plainTextBytes.Length)</span><br><span class="line">                cryptoStream.FlushFinalBlock()</span><br><span class="line">                <span class="keyword">Dim</span> cipherTextBytes <span class="keyword">As</span> <span class="built_in">Byte</span>() = memoryStream.ToArray()</span><br><span class="line">                memoryStream.Close()</span><br><span class="line">                cryptoStream.Close()</span><br><span class="line">                <span class="keyword">Return</span> Convert.ToBase64String(cipherTextBytes)</span><br><span class="line">            <span class="keyword">End</span> <span class="keyword">Using</span></span><br><span class="line">        <span class="keyword">End</span> <span class="keyword">Using</span></span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">Function</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> Decrypt(<span class="keyword">ByVal</span> cipherText <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> passPhrase <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> saltValue <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                    <span class="keyword">ByVal</span> passwordIterations <span class="keyword">As</span> <span class="built_in">Integer</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> initVector <span class="keyword">As</span> <span class="built_in">String</span>, _</span><br><span class="line">                                   <span class="keyword">ByVal</span> keySize <span class="keyword">As</span> <span class="built_in">Integer</span>) _</span><br><span class="line">                           <span class="keyword">As</span> <span class="built_in">String</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> initVectorBytes <span class="keyword">As</span> <span class="built_in">Byte</span>()</span><br><span class="line">        initVectorBytes = Encoding.ASCII.GetBytes(initVector)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> saltValueBytes <span class="keyword">As</span> <span class="built_in">Byte</span>()</span><br><span class="line">        saltValueBytes = Encoding.ASCII.GetBytes(saltValue)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> cipherTextBytes <span class="keyword">As</span> <span class="built_in">Byte</span>()</span><br><span class="line">        cipherTextBytes = Convert.FromBase64String(cipherText)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> password <span class="keyword">As</span> <span class="keyword">New</span> Rfc2898DeriveBytes(passPhrase, _</span><br><span class="line">                                           saltValueBytes, _</span><br><span class="line">                                           passwordIterations)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> keyBytes <span class="keyword">As</span> <span class="built_in">Byte</span>()</span><br><span class="line">        keyBytes = password.GetBytes(<span class="built_in">CInt</span>(keySize / <span class="number">8</span>))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> symmetricKey <span class="keyword">As</span> <span class="keyword">New</span> AesCryptoServiceProvider</span><br><span class="line">        symmetricKey.Mode = CipherMode.CBC</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> decryptor <span class="keyword">As</span> ICryptoTransform</span><br><span class="line">        decryptor = symmetricKey.CreateDecryptor(keyBytes, initVectorBytes)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> memoryStream <span class="keyword">As</span> IO.MemoryStream</span><br><span class="line">        memoryStream = <span class="keyword">New</span> IO.MemoryStream(cipherTextBytes)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> cryptoStream <span class="keyword">As</span> CryptoStream</span><br><span class="line">        cryptoStream = <span class="keyword">New</span> CryptoStream(memoryStream, _</span><br><span class="line">                                        decryptor, _</span><br><span class="line">                                        CryptoStreamMode.Read)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> plainTextBytes <span class="keyword">As</span> <span class="built_in">Byte</span>()</span><br><span class="line">        <span class="keyword">ReDim</span> plainTextBytes(cipherTextBytes.Length)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> decryptedByteCount <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">        decryptedByteCount = cryptoStream.Read(plainTextBytes, _</span><br><span class="line">                                               <span class="number">0</span>, _</span><br><span class="line">                                               plainTextBytes.Length)</span><br><span class="line"></span><br><span class="line">        memoryStream.Close()</span><br><span class="line">        cryptoStream.Close()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Dim</span> plainText <span class="keyword">As</span> <span class="built_in">String</span></span><br><span class="line">        plainText = Encoding.ASCII.GetString(plainTextBytes, _</span><br><span class="line">                                            <span class="number">0</span>, _</span><br><span class="line">                                            decryptedByteCount)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Return</span> plainText</span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">Function</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Class</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Public</span> <span class="keyword">Module</span> Module1</span><br><span class="line">	<span class="keyword">Public</span> <span class="keyword">Sub</span> Main()</span><br><span class="line">		<span class="keyword">dim</span> a=Utils.DecryptString(<span class="string">"fTEzAfYDoz1YzkqhQkH6GQFYKp1XY5hm7bjOP86yYxE="</span>)</span><br><span class="line">		Console.WriteLine(a)</span><br><span class="line">	<span class="keyword">End</span> <span class="keyword">Sub</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Module</span></span><br></pre></td></tr></table></figure></p>
+<p>使用c.smith的账号密码拿到user.txt</p>
+<h4 id="HQK-Report-Service"><a href="#HQK-Report-Service" class="headerlink" title="HQK Report Service"></a>HQK Report Service</h4><p>从smb共享目录Users/c.smith的”HQK Reporting”子目录找到三个文件：</p>
+<ul>
+<li>Debug Mode Password.txt</li>
+<li>HQK_Config_Backup.xml</li>
+<li>HqkLdap.exe</li>
+</ul>
+<p>使用file查看exe文件格式”PE32 executable (console) Intel 80386 Mono/.Net assembly, for MS Windows”，exe是.Net编译后的可执行文件，可以通过dnSpy进行反汇编；</p>
+<p>使用dnspy反汇编查看源码，找到一组加解密的代码，该exe用于从ldap中导出数据。exe中没有更多的信息了，接下来看一下4386端口。</p>
+<p>telnet连接4386，学习HQK Report Service中的命令，发现debug命令，需要输入密码。之前有见到”Debug Mode Password.txt“文件，因此尝试寻找debug密码；（从htb论坛上看到的ntfs stream关键字，然后搜索ntfs隐写找到了相关的文章）</p>
+<h5 id="NTFS交换数据流隐写"><a href="#NTFS交换数据流隐写" class="headerlink" title="NTFS交换数据流隐写"></a>NTFS交换数据流隐写</h5><p>这部分的内容可以<a href="https://www.freebuf.com/column/205245.html" target="_blank" rel="noopener">freebuf</a>找到，检查NTFS交换数据流隐写可以使用windows命令：<code>cmd \r</code>。<br>检查隐写的数据：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">Z:\C.Smith\HQK Reporting&gt;dir</span><br><span class="line"> 驱动器 Z 中的卷没有标签。</span><br><span class="line"> 卷的序列号是 2C6F-6A14</span><br><span class="line"></span><br><span class="line"> Z:\C.Smith\HQK Reporting 的目录</span><br><span class="line"></span><br><span class="line">2019/08/09  07:06    &lt;DIR&gt;          .</span><br><span class="line">2019/08/09  07:06    &lt;DIR&gt;          ..</span><br><span class="line">2019/08/09  20:18    &lt;DIR&gt;          AD Integration Module</span><br><span class="line">2019/08/09  07:08                 0 Debug Mode Password.txt</span><br><span class="line">2019/08/09  07:09               249 HQK_Config_Backup.xml</span><br><span class="line">               2 个文件            249 字节</span><br><span class="line">               3 个目录 26,803,740,672 可用字节</span><br><span class="line"></span><br><span class="line">Z:\C.Smith\HQK Reporting&gt;dir /r</span><br><span class="line"> 驱动器 Z 中的卷没有标签。</span><br><span class="line"> 卷的序列号是 2C6F-6A14</span><br><span class="line"></span><br><span class="line"> Z:\C.Smith\HQK Reporting 的目录</span><br><span class="line"></span><br><span class="line">2019/08/09  07:06    &lt;DIR&gt;          .</span><br><span class="line">2019/08/09  07:06    &lt;DIR&gt;          ..</span><br><span class="line">2019/08/09  20:18    &lt;DIR&gt;          AD Integration Module</span><br><span class="line">2019/08/09  07:08                 0 Debug Mode Password.txt</span><br><span class="line">                                 15 Debug Mode Password.txt:Password:<span class="variable">$DATA</span></span><br><span class="line">2019/08/09  07:09               249 HQK_Config_Backup.xml</span><br><span class="line">               2 个文件            249 字节</span><br><span class="line">               3 个目录 26,803,740,672 可用字节</span><br><span class="line"></span><br><span class="line">Z:\C.Smith\HQK Reporting&gt;<span class="built_in">type</span> <span class="string">"Debug Mode Password.txt:Password:<span class="variable">$DATA</span>"</span></span><br><span class="line">WBQ201953D8w</span><br></pre></td></tr></table></figure></p>
+<p>拿到debug的密码。</p>
+<h4 id="root"><a href="#root" class="headerlink" title="root"></a>root</h4><p>拿到debug的密码之后，重新使用HQK Report Service，开启debug模式，增加了showquery、session、service等命令；<br>showquery命令用于查看文件内容；<br>session命令用于查看当前连接状况；<br>service命令用于查看服务详情；<br>setdir命令设置当前位于的工作区，类似cd；<br>list命令用于列出 当前工作区中的query，类似ls；</p>
+<p>使用setdir、list和showquery找到administrator的密码：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### session查看当前连接状态：</span></span><br><span class="line">&gt;session</span><br><span class="line"></span><br><span class="line">--- Session Information ---</span><br><span class="line"></span><br><span class="line">Session ID: 3ad3ca81-e9e5-4f93-b0ff-42bf291e4f63</span><br><span class="line">Debug: True</span><br><span class="line">Started At: 2/22/2020 4:24:33 PM</span><br><span class="line">Server Endpoint: 10.10.10.178:4386</span><br><span class="line">Client Endpoint: 10.10.15.204:19458</span><br><span class="line">Current Query Directory: C:\Program Files\HQK\ALL QUERIES</span><br><span class="line"></span><br><span class="line"><span class="comment">### 逐级查看目录</span></span><br><span class="line">&gt; setdir C:\Program Files\HQK</span><br><span class="line">&gt; list</span><br><span class="line"></span><br><span class="line">Use the query ID numbers below with the RUNQUERY <span class="built_in">command</span> and the directory names with the SETDIR <span class="built_in">command</span></span><br><span class="line"></span><br><span class="line"> QUERY FILES IN CURRENT DIRECTORY</span><br><span class="line"></span><br><span class="line">[DIR]  ALL QUERIES</span><br><span class="line">[DIR]  LDAP</span><br><span class="line">[DIR]  Logs</span><br><span class="line">[1]   HqkSvc.exe</span><br><span class="line">[2]   HqkSvc.InstallState</span><br><span class="line">[3]   HQK_Config.xml</span><br><span class="line"></span><br><span class="line">Current Directory: HQK</span><br></pre></td></tr></table></figure></p>
+<h3 id="查看config配置文件"><a href="#查看config配置文件" class="headerlink" title="查看config配置文件"></a>查看config配置文件</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ServiceSettings</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="attr">xmlns:xsd</span>=<span class="string">"http://www.w3.org/2001/XMLSchema"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Port</span>&gt;</span>4386<span class="tag">&lt;/<span class="name">Port</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">DebugPassword</span>&gt;</span>WBQ201953D8w<span class="tag">&lt;/<span class="name">DebugPassword</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">QueryDirectory</span>&gt;</span>C:\Program Files\HQK\ALL QUERIES<span class="tag">&lt;/<span class="name">QueryDirectory</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ServiceSettings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>根据xxx.exe文件的提示</strong> 通过LDAP查询数据然后导出到LDAP目录中，于是查看LDAP目录<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&gt; setdir C:\Program Files\HQK\LDAP</span><br><span class="line">Current directory <span class="built_in">set</span> to LDAP</span><br><span class="line"></span><br><span class="line">&gt; &gt; list</span><br><span class="line"></span><br><span class="line">Use the query ID numbers below with the RUNQUERY <span class="built_in">command</span> and the directory names with the SETDIR <span class="built_in">command</span></span><br><span class="line"></span><br><span class="line"> QUERY FILES IN CURRENT DIRECTORY</span><br><span class="line"></span><br><span class="line">[1]   HqkLdap.exe</span><br><span class="line">[2]   Ldap.conf</span><br><span class="line"></span><br><span class="line">Current Directory: LDAP</span><br><span class="line">&gt;showquery 2</span><br><span class="line"></span><br><span class="line">Domain=nest.local</span><br><span class="line">Port=389</span><br><span class="line">BaseOu=OU=WBQ Users,OU=Production,DC=nest,DC=<span class="built_in">local</span></span><br><span class="line">User=Administrator</span><br><span class="line">Password=yyEq0Uvvhq2uQOcWG8peLoeRQehqip/fKdeG/kjEVb4=</span><br><span class="line">密码明文：XtH4nkS4Pl4y1nGX</span><br></pre></td></tr></table></figure></p>
+<p>通过exe文件中的解密逻辑对administrator的password解密，代码如下：<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Security.Cryptography;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line">     </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span> &#123;</span><br><span class="line">  String a = RD(<span class="string">"yyEq0Uvvhq2uQOcWG8peLoeRQehqip/fKdeG/kjEVb4="</span>, <span class="string">"667912"</span>, <span class="string">"1313Rf99"</span>, <span class="number">3</span>, <span class="string">"1L1SA61493DRV53Z"</span>, <span class="number">256</span>);</span><br><span class="line">  Console.WriteLine(a);</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">string</span> <span class="title">RD</span>(<span class="params"><span class="keyword">string</span> cipherText, <span class="keyword">string</span> passPhrase, <span class="keyword">string</span> saltValue, <span class="keyword">int</span> passwordIterations, <span class="keyword">string</span> initVector, <span class="keyword">int</span> keySize</span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">   <span class="keyword">byte</span>[] bytes = Encoding.ASCII.GetBytes(initVector);</span><br><span class="line">   <span class="keyword">byte</span>[] bytes2 = Encoding.ASCII.GetBytes(saltValue);</span><br><span class="line">   <span class="keyword">byte</span>[] array = Convert.FromBase64String(cipherText);</span><br><span class="line">   Rfc2898DeriveBytes rfc2898DeriveBytes = <span class="keyword">new</span> Rfc2898DeriveBytes(passPhrase, bytes2, passwordIterations);</span><br><span class="line">   <span class="keyword">checked</span></span><br><span class="line">   &#123;</span><br><span class="line">    <span class="keyword">byte</span>[] bytes3 = rfc2898DeriveBytes.GetBytes((<span class="keyword">int</span>)Math.Round((<span class="keyword">double</span>)keySize / <span class="number">8.0</span>));</span><br><span class="line">    ICryptoTransform transform = <span class="keyword">new</span> AesCryptoServiceProvider</span><br><span class="line">    &#123;</span><br><span class="line">     Mode = CipherMode.CBC</span><br><span class="line">    &#125;.CreateDecryptor(bytes3, bytes);</span><br><span class="line">    MemoryStream memoryStream = <span class="keyword">new</span> MemoryStream(array);</span><br><span class="line">    CryptoStream cryptoStream = <span class="keyword">new</span> CryptoStream(memoryStream, transform, CryptoStreamMode.Read);</span><br><span class="line">    <span class="keyword">byte</span>[] array2 = <span class="keyword">new</span> <span class="keyword">byte</span>[array.Length + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">int</span> count = cryptoStream.Read(array2, <span class="number">0</span>, array2.Length);</span><br><span class="line">    memoryStream.Close();</span><br><span class="line">    cryptoStream.Close();</span><br><span class="line">    <span class="keyword">return</span> Encoding.ASCII.GetString(array2, <span class="number">0</span>, count);</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最终通过smbclient读取root.txt.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/smb/" rel="tag"># smb</a>
+          
+            <a href="/tags/custom-decrypt/" rel="tag"># custom decrypt</a>
+          
+            <a href="/tags/stage/" rel="tag"># stage</a>
+          
+            <a href="/tags/NTFS交换数据流隐写/" rel="tag"># NTFS交换数据流隐写</a>
+          
+            <a href="/tags/HQK-Reporting-Service-V1-2/" rel="tag"># HQK Reporting Service V1.2</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/20/HTB-Linux-Postman/" rel="next" title="HTB Linux Postman">
+                <i class="fa fa-chevron-left"></i> HTB Linux Postman
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/07/windows-privilege-escalate-DnsAdmins-Group/" rel="prev" title="windows privilege escalate: DnsAdmins Group">
+                windows privilege escalate: DnsAdmins Group <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#信息收集"><span class="nav-number">1.</span> <span class="nav-text">信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SMB匿名共享"><span class="nav-number">1.0.1.</span> <span class="nav-text">SMB匿名共享</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#User-TempUser"><span class="nav-number">1.0.2.</span> <span class="nav-text">User: TempUser</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#user-C-smith"><span class="nav-number">1.0.3.</span> <span class="nav-text">user: C.smith</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HQK-Report-Service"><span class="nav-number">1.0.4.</span> <span class="nav-text">HQK Report Service</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#NTFS交换数据流隐写"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">NTFS交换数据流隐写</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#root"><span class="nav-number">1.0.5.</span> <span class="nav-text">root</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看config配置文件"><span class="nav-number">1.1.</span> <span class="nav-text">查看config配置文件</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

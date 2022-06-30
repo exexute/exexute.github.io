@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="甲方安全,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如">
+<meta name="keywords" content="甲方安全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="csrf_prevention">
+<meta property="og:url" content="https://exexute.github.io/2019/03/21/csrf-prevention/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:03:38.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="csrf_prevention">
+<meta name="twitter:description" content="简介CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/03/21/csrf-prevention/">
+
+
+
+
+
+  <title>csrf_prevention | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/03/21/csrf-prevention/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">csrf_prevention</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-21T09:11:34+08:00">
+                2019-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>CSRF漏洞属于客户端攻击, 且需要借助一定的社工手段方可实现攻击, 对于国内的甲方爸爸来说, CSRF的优先级明显低于XSS之类的影响用户的漏洞.<br>倘若单单是甲方不重视CSRF的防御也就罢了, 可事实是, 甲方往往会收到乙方提供的添加token、验证码、验证referer之类标准答案, 甲方明知有漏洞却迫于开发的抵制无法推动CSRF漏洞的修改. 标准方案在落地的时候总会遇到一些实际情况, 比如: 产品采用前后端分离架构，无法从服务器端下发token、增加验证码会影响用户体验、产品拥有多个域名本身需要跨域、产品有些接口需要被第三方程序调用, 无法设置referer、公司实行有大中台小前台的产品架构<br>漏洞该业务线修复还是平台修复等种种问题.<br>为了解决甲方爸爸们的困扰, 特写此CSRF防御方案解决以上提出的问题</p>
+<a id="more"></a>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>owef谈csrf原理</li>
+<li>最常用的跨域方式</li>
+<li>不同场景下的CSRF防御方案</li>
+</ul>
+<h2 id="owef谈csrf原理"><a href="#owef谈csrf原理" class="headerlink" title="owef谈csrf原理"></a>owef谈csrf原理</h2><p>Cross Site Request-forgery, 译为跨站点请求伪造. CSRF是一个知其名便知其意的漏洞, 它的原理是：跨站、伪造客户端请求.<br>何为跨站, 此处不予以解释, 请自行查阅. 伪造客户端请求这个话题就比较有意思了, 伪造的方式乙方大佬们应该非常清楚, 所以我不谈伪造方式, 谈一个请求可伪造的前提, 1. get请求都可以被伪造; 2. post请求中除了严格使用json格式传输数据的外, 都可以尝试是否可伪造。<br>当目标站点有了可伪造的请求, 允许跨站调用, 那么它基本上就存在CSRF了.</p>
+<h2 id="最常用的跨域方式"><a href="#最常用的跨域方式" class="headerlink" title="最常用的跨域方式"></a>最常用的跨域方式</h2><p>当下互联网厂商都在进行架构的调整和转型, 无论是BAT还是新型的中型企业都在做大中台、小前台架构的调整，目的是提高整个企业的产能和效益, 同时当下WEB技术的发展已经进入前端的后辉煌时代, 中型以上规模的互联网企业都在做前后端分离, 这种时代背景下, 多域名、多产品线互相调用的情况是不可避免的, 且大中台负责给小前台提供强有力的平台支撑, 称为PAAS平台. 平台提供给业务线接口自然要负责处理业务线的跨域需求, 于是大部分企业选用了这两种跨域方式：jsonp、cors.</p>
+<p>jsonp需要在调用后端接口时传入<code>callback</code>参数（实际参数名可自行判断获取）来接收服务器返回的数据, 然后通过js函数处理对应的数据. cors跨域需要注意的是<code>Access-Control-Allow-Origin</code>属性不支持列表形势的参数, 无法传入多个值.</p>
+<h2 id="不同场景下的CSRF防御方案"><a href="#不同场景下的CSRF防御方案" class="headerlink" title="不同场景下的CSRF防御方案"></a>不同场景下的CSRF防御方案</h2><p>基于上述对CSRF原理的理解和对甲方爸爸们所处现状的分析, owef认为, 在这种场景下如果想搞定CSRF, 必须有PAAS平台来做安全组件, 供小前台调用; 接下来就是分析如何设置适合自己的方案了.</p>
+<p>前提工作：</p>
+<ol>
+<li>分析请求是否易伪造, 是否可更改现有post请求参数为json格式并在后端验证json格式</li>
+<li>获取公司使用的主域名</li>
+</ol>
+<p>场景一: JSONP跨域<br>JSONP跨域请求是通过js发起调用的, 目前市场上几乎所有的浏览器都不支持通过js修改请求的referer字段, 因此, 通过限制referer可以解决掉大部分的jsonp劫持问题</p>
+<p>场景二: 同域调用, 前后端分离<br>前后端分离的架构下, 无法通过后端分发token, 当然有其他的替代方案来解决, 但是此处讨论最简单的方案, 通过验证referer可以解决前后端分离架构下的大部分CSRF问题</p>
+<p>场景三: CORS跨域<br>CORS跨域是可以带cookie发起请求的, 而真实场景中大部分后端接口也都是需要携带cookie进行访问的, 针对CORS下的CSRF可通过验证origin进行防御</p>
+<h3 id="CORS跨域的方案"><a href="#CORS跨域的方案" class="headerlink" title="CORS跨域的方案"></a>CORS跨域的方案</h3><p><strong>核心</strong> 验证origin、配置Access-Control-Allow-Origin属性<br><strong>方案</strong></p>
+<ol>
+<li>收集公司现有的域名</li>
+<li>创建域名白名单列表</li>
+<li>根据http request参数匹配白名单列表, 如果存在在服务器端设置Access-Control-Allow-Origin为匹配到的域名; 如果不存在, 服务器端不设置CORS系列的属性.</li>
+</ol>
+<p><strong>方案平台化</strong><br>通过编写python装饰器或django中间处理程序、.net 过滤器等来完成防御方案的编写, 业务线调用对应的接口来对特定的接口实现CSRF防御.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/甲方安全/" rel="tag"># 甲方安全</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/20/port-service-vul/" rel="next" title="port_service_vul">
+                <i class="fa fa-chevron-left"></i> port_service_vul
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/25/python-MetaClass/" rel="prev" title="Python MetaClass">
+                Python MetaClass <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#owef谈csrf原理"><span class="nav-number">2.</span> <span class="nav-text">owef谈csrf原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最常用的跨域方式"><span class="nav-number">3.</span> <span class="nav-text">最常用的跨域方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同场景下的CSRF防御方案"><span class="nav-number">4.</span> <span class="nav-text">不同场景下的CSRF防御方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS跨域的方案"><span class="nav-number">4.1.</span> <span class="nav-text">CORS跨域的方案</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

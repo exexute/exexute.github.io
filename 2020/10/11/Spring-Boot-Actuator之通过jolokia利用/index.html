@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="actuator,MBeans,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="The article has been encrypted, please enter your password to view.">
+<meta name="keywords" content="actuator,MBeans">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot Actuator之jolokia利用">
+<meta property="og:url" content="https://exexute.github.io/2020/10/11/Spring-Boot-Actuator之通过jolokia利用/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="The article has been encrypted, please enter your password to view.">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-06-24T14:10:53.323Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot Actuator之jolokia利用">
+<meta name="twitter:description" content="The article has been encrypted, please enter your password to view.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2020/10/11/Spring-Boot-Actuator之通过jolokia利用/">
+
+
+
+
+
+  <title>Spring Boot Actuator之jolokia利用 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2020/10/11/Spring-Boot-Actuator之通过jolokia利用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring Boot Actuator之jolokia利用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-10-11T22:21:19+08:00">
+                2020-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<div id="hbe-security">
+  <div class="hbe-input-container">
+  <input type="password" class="hbe-form-control" id="pass" placeholder="Please enter the password to read the blog.">
+    <label for="pass">Please enter the password to read the blog.</label>
+    <div class="bottom-line"></div>
+  </div>
+</div>
+<div id="decryptionError" style="display: none;">Incorrect Password!</div>
+<div id="noContentError" style="display: none;">No content to display!</div>
+<div id="encrypt-blog" style="display:none">
+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
+</div>
+<script src="/lib/crypto-js.js"></script><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/actuator/" rel="tag"># actuator</a>
+          
+            <a href="/tags/MBeans/" rel="tag"># MBeans</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/10/10/IAST-交互式安全测试工具关键技术流程/" rel="next" title="IAST交互式安全测试之核心流程">
+                <i class="fa fa-chevron-left"></i> IAST交互式安全测试之核心流程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/10/18/Java代码开发规范-重构/" rel="prev" title="【持续更新】Java代码开发规范之重构">
+                【持续更新】Java代码开发规范之重构 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
