@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Go,Gin,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近在学习 Go Web 开发，记录一下 Go 小白 如何从0开始，搭建出 Gin Web 服务，快速了解Gin Web开发的关键步骤。">
+<meta name="keywords" content="Go,Gin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gin框架: 从0开始搭建 Gin Web 服务">
+<meta property="og:url" content="https://exexute.github.io/2022/07/27/Gin框架-从0开始搭建-Gin-Web-服务/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="最近在学习 Go Web 开发，记录一下 Go 小白 如何从0开始，搭建出 Gin Web 服务，快速了解Gin Web开发的关键步骤。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://exexute.github.io/2022/07/27/Gin框架-从0开始搭建-Gin-Web-服务/run-go-server.png">
+<meta property="og:image" content="https://exexute.github.io/2022/07/27/Gin框架-从0开始搭建-Gin-Web-服务/sayhi.png">
+<meta property="og:updated_time" content="2022-08-14T06:43:16.362Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gin框架: 从0开始搭建 Gin Web 服务">
+<meta name="twitter:description" content="最近在学习 Go Web 开发，记录一下 Go 小白 如何从0开始，搭建出 Gin Web 服务，快速了解Gin Web开发的关键步骤。">
+<meta name="twitter:image" content="https://exexute.github.io/2022/07/27/Gin框架-从0开始搭建-Gin-Web-服务/run-go-server.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2022/07/27/Gin框架-从0开始搭建-Gin-Web-服务/">
+
+
+
+
+
+  <title>Gin框架: 从0开始搭建 Gin Web 服务 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2022/07/27/Gin框架-从0开始搭建-Gin-Web-服务/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Gin框架: 从0开始搭建 Gin Web 服务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-07-27T22:04:08+08:00">
+                2022-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发/" itemprop="url" rel="index">
+                    <span itemprop="name">开发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在学习 Go Web 开发，记录一下 <strong>Go 小白</strong> 如何从0开始，搭建出 <strong>Gin Web</strong> 服务，快速了解Gin Web开发的关键步骤。<br><a id="more"></a></p>
+<p>题外话：博主做过多年的 Java Web、Python Web 开发，习惯在用不同框架开发前，先了解框架的目录结构、开发规范，按照标准规范进行开发，这样可以避免踩很多不必要的坑。Gin 算是 Go Web 中发展比较成熟的框架了，插件的支持也都很完善，但官网上并没有目录结构、开发规范的相关介绍，所以，本文的代码结构是参考 Github 众多开源项目的目录结构及开发规范后创建的。</p>
+<h4 id="先决条件"><a href="#先决条件" class="headerlink" title="先决条件"></a>先决条件</h4><p>搭建本地的 Go 开发环境，具体搭建过程可以参考大量文章，自行百度即可。</p>
+<h4 id="创建-Gin-Web-服务的目录结构"><a href="#创建-Gin-Web-服务的目录结构" class="headerlink" title="创建 Gin Web 服务的目录结构"></a>创建 Gin Web 服务的目录结构</h4><p>1、创建目录 <code>ast-framework-service</code><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mkdir ast-framework-service</span><br></pre></td></tr></table></figure></p>
+<p>2、初始化为 Go 项目<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cd ast-framework-service</span><br><span class="line"><span class="meta">$</span> go mod init io.ast.service</span><br></pre></td></tr></table></figure></p>
+<p>3、安装 gin 模块<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> go get -u github.com/gin-gonic/gin</span><br></pre></td></tr></table></figure></p>
+<p>4、创建基本的目录结构及文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mkdir router model service config</span><br><span class="line"><span class="meta">#</span> 创建 router 目录，用于创建 Go Web 的 API 路由</span><br><span class="line"><span class="meta">#</span> 创建 model 目录，保存应用与数据库交互式使用到的对象模型</span><br><span class="line"><span class="meta">#</span> 创建 service 目录，保存 API 的具体处理逻辑</span><br><span class="line"><span class="meta">#</span> 创建 config 目录，创建配置文件，保存运行所需的各种配置</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> touch app.go config/config.ini model/mysql_driver.go router/router_init.go</span><br><span class="line"><span class="meta">#</span> 创建 app.go 文件，作为应用的入口，注册路由、启动服务、监听端口等</span><br><span class="line"><span class="meta">#</span> 创建配置文件</span><br><span class="line"><span class="meta">#</span> 创建数据库连接文件、API 路由入口文件</span><br></pre></td></tr></table></figure>
+<p>配置文件 config/config.ini 内容如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[server]</span></span><br><span class="line"><span class="comment">; :8080 表示监听 0.0.0.0:8080</span></span><br><span class="line"><span class="attr">addr</span> = <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="section">[mysql]</span></span><br><span class="line"><span class="attr">db_host</span> = db_host</span><br><span class="line"><span class="attr">db_port</span> = <span class="number">3306</span></span><br><span class="line"><span class="attr">db_name</span> = db_name</span><br><span class="line"><span class="attr">db_user</span> = db_user</span><br><span class="line"><span class="attr">db_pwd</span> = db_pwd</span><br><span class="line"><span class="attr">db_charset</span> = db_charset</span><br></pre></td></tr></table></figure>
+<p>数据库连接文件 model/mysql_driver.go 内容如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"gopkg.in/ini.v1"</span></span><br><span class="line">	<span class="string">"gorm.io/driver/mysql"</span></span><br><span class="line">	<span class="string">"gorm.io/gorm"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> DB *gorm.DB</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InitDB</span><span class="params">(conf *ini.File)</span> *<span class="title">gorm</span>.<span class="title">DB</span></span> &#123;</span><br><span class="line">	mysqlName := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_name"</span>).String()</span><br><span class="line">	mysqlUser := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_user"</span>).String()</span><br><span class="line">	mysqlPwd := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_pwd"</span>).Value()</span><br><span class="line">	mysqlHost := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_host"</span>).String()</span><br><span class="line">	mysqlPort := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_port"</span>).String()</span><br><span class="line">	mysqlCharset := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_charset"</span>).String()</span><br><span class="line">	mysqlPwd = mysqlPwd + <span class="string">"#"</span></span><br><span class="line">	fmt.Println(mysqlPwd)</span><br><span class="line">	dsn := mysqlUser + <span class="string">":"</span> + mysqlPwd + <span class="string">"@tcp("</span> + mysqlHost + <span class="string">":"</span> + mysqlPort + <span class="string">")/"</span> + mysqlName + <span class="string">"?charset="</span> + mysqlCharset</span><br><span class="line">	fmt.Println(dsn)</span><br><span class="line">	DB, _ = gorm.Open(mysql.Open(dsn), &amp;gorm.Config&#123;&#125;)</span><br><span class="line">	<span class="keyword">return</span> DB</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>API 路由入口文件 router/router_init.go 如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> router</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	anonymousRouterRole = <span class="built_in">make</span>([]<span class="function"><span class="keyword">func</span><span class="params">(*gin.RouterGroup)</span>, 0)</span></span><br><span class="line"><span class="function">)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">Init</span><span class="params">(r *gin.Engine)</span></span> &#123;</span><br><span class="line">	registerRoute(r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">registerRoute</span><span class="params">(r *gin.Engine)</span></span> &#123;</span><br><span class="line">	v1 := r.Group(<span class="string">"/api/v1"</span>)</span><br><span class="line">	<span class="keyword">for</span> _, f := <span class="keyword">range</span> anonymousRouterRole &#123;</span><br><span class="line">		f(v1)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Gin-Web 应用入口文件 app.go 如下<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"golang.org/x/sync/errgroup"</span></span><br><span class="line">	<span class="string">"gopkg.in/ini.v1"</span></span><br><span class="line">	<span class="string">"io.gin.sample/model"</span></span><br><span class="line">	router <span class="string">"io.gin.sample/router"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	g errgroup.Group</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	conf, err := ini.Load(<span class="string">"config/app.ini"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	model.InitDB(conf)</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	router.Init(r)</span><br><span class="line">	<span class="comment">// 监听并在 0.0.0.0:8080 上启动服务</span></span><br><span class="line">	g.Go(<span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">		<span class="keyword">return</span> r.Run(conf.Section(<span class="string">"server"</span>).Key(<span class="string">"addr"</span>).String())</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err := g.Wait(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="创建-sayHi-API-实现打招呼的功能"><a href="#创建-sayHi-API-实现打招呼的功能" class="headerlink" title="创建 sayHi API 实现打招呼的功能"></a>创建 sayHi API 实现打招呼的功能</h4><p>创建 service 文件 service/say_hi.go，内容如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> service</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sayhi</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">	name := c.Query(<span class="string">"name"</span>)</span><br><span class="line">	c.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">		<span class="string">"code"</span>: <span class="number">200</span>,</span><br><span class="line">		<span class="string">"msg"</span>:  <span class="string">"success"</span>,</span><br><span class="line">		<span class="string">"data"</span>: fmt.Sprintf(<span class="string">"hello, world. my name is %s"</span>, name),</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>创建 route 文件 router/say_hi.go，注册路由并绑定处理方法，内容如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> router</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"io.gin.sample/service"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	anonymousRouterRole = <span class="built_in">append</span>(anonymousRouterRole, registerAgentRoute)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">registerAgentRoute</span><span class="params">(rg *gin.RouterGroup)</span></span> &#123;</span><br><span class="line">	rg.GET(<span class="string">"/sayhi"</span>, service.Sayhi)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="运行-Gin-Web-服务"><a href="#运行-Gin-Web-服务" class="headerlink" title="运行 Gin-Web 服务"></a>运行 Gin-Web 服务</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> go run app.go</span><br></pre></td></tr></table></figure>
+<p><img src="run-go-server.png" alt></p>
+<p>访问 sayhi 打招呼：<br><img src="sayhi.png" alt></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://github.com/VulScanSpace/io.ast.apiservice" target="_blank" rel="noopener">https://github.com/VulScanSpace/io.ast.apiservice</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Go/" rel="tag"># Go</a>
+          
+            <a href="/tags/Gin/" rel="tag"># Gin</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/12/CVE-2022-33980-Apache-Commons-Configuration2-ScriptEngine-RCE/" rel="next" title="CVE-2022-33980: Apache-Commons-Configuration2 ScriptEngine RCE">
+                <i class="fa fa-chevron-left"></i> CVE-2022-33980: Apache-Commons-Configuration2 ScriptEngine RCE
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/08/13/Linux如何强制覆盖文件/" rel="prev" title="Linux如何强制覆盖文件">
+                Linux如何强制覆盖文件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#先决条件"><span class="nav-number">1.</span> <span class="nav-text">先决条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建-Gin-Web-服务的目录结构"><span class="nav-number">2.</span> <span class="nav-text">创建 Gin Web 服务的目录结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建-sayHi-API-实现打招呼的功能"><span class="nav-number">3.</span> <span class="nav-text">创建 sayHi API 实现打招呼的功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行-Gin-Web-服务"><span class="nav-number">4.</span> <span class="nav-text">运行 Gin-Web 服务</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number"></span> <span class="nav-text">参考链接</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

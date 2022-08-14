@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="owefsad 的博客">
 <meta property="og:description" content="编写高质量的代码是一种艺术，本文持续记录各种代码优化的思路，不断提高代码的质量">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2022-06-24T14:07:51.703Z">
+<meta property="og:updated_time" content="2022-08-14T05:40:10.984Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="【持续更新】Java代码开发规范之重构">
 <meta name="twitter:description" content="编写高质量的代码是一种艺术，本文持续记录各种代码优化的思路，不断提高代码的质量">
@@ -384,6 +384,9 @@
 <p><strong>糟糕的注释</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    <span class="comment">// 等待2秒</span></span><br><span class="line">    Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span>(InterruptedException e) &#123;</span><br><span class="line">    logger.error(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><strong>好的注释</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    <span class="comment">// 等待2秒，为了等待关联系统处理结果</span></span><br><span class="line">    Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span>(InterruptedException e) &#123;</span><br><span class="line">    logger.error(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>第二个注释解释了sleep背后的业务意图。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://github.com/VulScanSpace" target="_blank" rel="noopener">https://github.com/VulScanSpace</a></li>
+</ul>
 
       
     </div>
@@ -505,7 +508,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -527,7 +530,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">166</span>
+                  <span class="site-state-item-count">169</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -576,7 +579,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码重构"><span class="nav-number">1.</span> <span class="nav-text">代码重构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本概念"><span class="nav-number">1.0.1.</span> <span class="nav-text">基本概念</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#开发规范"><span class="nav-number">2.</span> <span class="nav-text">开发规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名规范"><span class="nav-number">2.1.</span> <span class="nav-text">命名规范</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#有意义的命名"><span class="nav-number">2.1.1.</span> <span class="nav-text">有意义的命名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名称保持一致性"><span class="nav-number">2.1.2.</span> <span class="nav-text">名称保持一致性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名字应该尽量做到自明"><span class="nav-number">2.1.3.</span> <span class="nav-text">名字应该尽量做到自明</span></a></li></ol></li></ol></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码重构"><span class="nav-number">1.</span> <span class="nav-text">代码重构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本概念"><span class="nav-number">1.0.1.</span> <span class="nav-text">基本概念</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#开发规范"><span class="nav-number">2.</span> <span class="nav-text">开发规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名规范"><span class="nav-number">2.1.</span> <span class="nav-text">命名规范</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#有意义的命名"><span class="nav-number">2.1.1.</span> <span class="nav-text">有意义的命名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名称保持一致性"><span class="nav-number">2.1.2.</span> <span class="nav-text">名称保持一致性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名字应该尽量做到自明"><span class="nav-number">2.1.3.</span> <span class="nav-text">名字应该尽量做到自明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></div>
             
 
           </div>

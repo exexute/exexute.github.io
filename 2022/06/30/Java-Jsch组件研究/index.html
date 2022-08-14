@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="简介JSch 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。">
+<meta name="description" content="JSch 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。">
 <meta name="keywords" content="JSch">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java Jsch组件研究">
 <meta property="og:url" content="https://exexute.github.io/2022/06/30/Java-Jsch组件研究/index.html">
 <meta property="og:site_name" content="owefsad 的博客">
-<meta property="og:description" content="简介JSch 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。">
+<meta property="og:description" content="JSch 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2022-07-11T13:17:05.633Z">
+<meta property="og:updated_time" content="2022-08-14T05:35:29.681Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java Jsch组件研究">
-<meta name="twitter:description" content="简介JSch 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。">
+<meta name="twitter:description" content="JSch 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。">
 
 
 
@@ -352,7 +352,7 @@
       
 
       
-        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><a href="http://www.jcraft.com/jsch/" target="_blank" rel="noopener">JSch</a> 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。</p>
+        <p><a href="http://www.jcraft.com/jsch/" target="_blank" rel="noopener">JSch</a> 是 SSH2 协议在 Java 中的一种实现，通过 JSch 可以连接到任意一台 SSHD 服务器，实现远程命令执行、SSH会话、端口转发、X11 转发、文件操作等功能。</p>
 <a id="more"></a>
 <h3 id="JSch使用"><a href="#JSch使用" class="headerlink" title="JSch使用"></a>JSch使用</h3><p>创建一个 maven 项目，引入 jsch 的依赖<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/com.jcraft/jsch --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.jcraft<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jsch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.1.55<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>通过 JSch 创建 ssh session，之后调用 channel 实现命令执行、交互式 shell、文件操作、转发等<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">case01Exec</span><span class="params">(String user, String host, <span class="keyword">int</span> port, String password, String filename)</span> <span class="keyword">throws</span> JSchException, IOException </span>&#123;</span><br><span class="line">    JSch jsch = <span class="keyword">new</span> JSch();</span><br><span class="line"></span><br><span class="line">    Session session = jsch.getSession(user, host, <span class="number">22</span>);</span><br><span class="line"></span><br><span class="line">    session.setPassword(password);</span><br><span class="line">    session.connect();</span><br><span class="line">    String command = <span class="string">"scp -f "</span> + filename;</span><br><span class="line">    Channel channel = session.openChannel(<span class="string">"exec"</span>);</span><br><span class="line"></span><br><span class="line">    ((ChannelExec) channel).setCommand(command);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// get I/O streams for remote scp</span></span><br><span class="line">    OutputStream out = channel.getOutputStream();</span><br><span class="line"></span><br><span class="line">    channel.connect();</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"success"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -361,6 +361,9 @@
 <h3 id="SAST与IAST如何检测？"><a href="#SAST与IAST如何检测？" class="headerlink" title="SAST与IAST如何检测？"></a>SAST与IAST如何检测？</h3><p>漏洞触发方法为 <code>com.jcraft.jsch.ChannelExec.setCommand(java.lang.String)</code>，因此，设置 ChannelExec 类的 setCommand 方法为 sink 点即可实现漏洞检测。</p>
 <p>通过 CodeQL 的 <code>CWE-078/ExecTainted.ql</code> 规则可实现检测，CodeQL 的规则详情如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Provides classes for JSch OS command injection detection</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">import java</span><br><span class="line"></span><br><span class="line">/** The class `com.jcraft.jsch.ChannelExec`. */</span><br><span class="line">private class JSchChannelExec extends RefType &#123;</span><br><span class="line">  JSchChannelExec() &#123; this.hasQualifiedName(&quot;com.jcraft.jsch&quot;, &quot;ChannelExec&quot;) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/** A method to set an OS Command for the execution. */</span><br><span class="line">private class ChannelExecSetCommandMethod extends Method, ExecCallable &#123;</span><br><span class="line">  ChannelExecSetCommandMethod() &#123;</span><br><span class="line">    this.hasName(&quot;setCommand&quot;) and</span><br><span class="line">    this.getDeclaringType() instanceof JSchChannelExec</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  override int getAnExecutedArgument() &#123; result = 0 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="JSch-远程命令执行漏洞如何修复？"><a href="#JSch-远程命令执行漏洞如何修复？" class="headerlink" title="JSch 远程命令执行漏洞如何修复？"></a>JSch 远程命令执行漏洞如何修复？</h3><p>远程命令执行的漏洞修复方案与命令执行的修复方案相同，严格限制输入的命令即可，推荐修复方案：限制输入的命令/参数，只允许输入 <code>[a-zA-Z0-9.]</code> 正则中的内容</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a href="https://github.com/VulScanSpace/AST-Vulns" target="_blank" rel="noopener">https://github.com/VulScanSpace/AST-Vulns</a></li>
+</ul>
 
       
     </div>
@@ -480,7 +483,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -502,7 +505,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">166</span>
+                  <span class="site-state-item-count">169</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -551,7 +554,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSch使用"><span class="nav-number">2.</span> <span class="nav-text">JSch使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SAST与IAST如何检测？"><span class="nav-number">3.</span> <span class="nav-text">SAST与IAST如何检测？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSch-远程命令执行漏洞如何修复？"><span class="nav-number">4.</span> <span class="nav-text">JSch 远程命令执行漏洞如何修复？</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSch使用"><span class="nav-number">1.</span> <span class="nav-text">JSch使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SAST与IAST如何检测？"><span class="nav-number">2.</span> <span class="nav-text">SAST与IAST如何检测？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSch-远程命令执行漏洞如何修复？"><span class="nav-number">3.</span> <span class="nav-text">JSch 远程命令执行漏洞如何修复？</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number"></span> <span class="nav-text">参考链接</span></a></li></div>
             
 
           </div>
