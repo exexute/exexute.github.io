@@ -103,7 +103,7 @@
     root: '/',
     scheme: 'Mist',
     version: '5.1.4',
-    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
     fancybox: true,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
@@ -339,6 +339,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  894
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  4
+                </span>
+              
+            </div>
+          
 
           
 
@@ -358,11 +389,11 @@
         <p>最近在学习 Go Web 开发，记录一下 <strong>Go 小白</strong> 如何从0开始，搭建出 <strong>Gin Web</strong> 服务，快速了解Gin Web开发的关键步骤。<br><a id="more"></a></p>
 <p>题外话：博主做过多年的 Java Web、Python Web 开发，习惯在用不同框架开发前，先了解框架的目录结构、开发规范，按照标准规范进行开发，这样可以避免踩很多不必要的坑。Gin 算是 Go Web 中发展比较成熟的框架了，插件的支持也都很完善，但官网上并没有目录结构、开发规范的相关介绍，所以，本文的代码结构是参考 Github 众多开源项目的目录结构及开发规范后创建的。</p>
 <h4 id="先决条件"><a href="#先决条件" class="headerlink" title="先决条件"></a>先决条件</h4><p>搭建本地的 Go 开发环境，具体搭建过程可以参考大量文章，自行百度即可。</p>
-<h4 id="创建-Gin-Web-服务的目录结构"><a href="#创建-Gin-Web-服务的目录结构" class="headerlink" title="创建 Gin Web 服务的目录结构"></a>创建 Gin Web 服务的目录结构</h4><p>1、创建目录 <code>ast-framework-service</code><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mkdir ast-framework-service</span><br></pre></td></tr></table></figure></p>
-<p>2、初始化为 Go 项目<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cd ast-framework-service</span><br><span class="line"><span class="meta">$</span> go mod init io.ast.service</span><br></pre></td></tr></table></figure></p>
-<p>3、安装 gin 模块<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> go get -u github.com/gin-gonic/gin</span><br></pre></td></tr></table></figure></p>
+<h4 id="创建-Gin-Web-服务的目录结构"><a href="#创建-Gin-Web-服务的目录结构" class="headerlink" title="创建 Gin Web 服务的目录结构"></a>创建 Gin Web 服务的目录结构</h4><p>1、创建目录 <code>ast-framework-service</code><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir ast-framework-service</span></span><br></pre></td></tr></table></figure></p>
+<p>2、初始化为 Go 项目<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ast-framework-service</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> go mod init io.ast.service</span></span><br></pre></td></tr></table></figure></p>
+<p>3、安装 gin 模块<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> go get -u github.com/gin-gonic/gin</span></span><br></pre></td></tr></table></figure></p>
 <p>4、创建基本的目录结构及文件</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mkdir router model service config</span><br><span class="line"><span class="meta">#</span> 创建 router 目录，用于创建 Go Web 的 API 路由</span><br><span class="line"><span class="meta">#</span> 创建 model 目录，保存应用与数据库交互式使用到的对象模型</span><br><span class="line"><span class="meta">#</span> 创建 service 目录，保存 API 的具体处理逻辑</span><br><span class="line"><span class="meta">#</span> 创建 config 目录，创建配置文件，保存运行所需的各种配置</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> touch app.go config/config.ini model/mysql_driver.go router/router_init.go</span><br><span class="line"><span class="meta">#</span> 创建 app.go 文件，作为应用的入口，注册路由、启动服务、监听端口等</span><br><span class="line"><span class="meta">#</span> 创建配置文件</span><br><span class="line"><span class="meta">#</span> 创建数据库连接文件、API 路由入口文件</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir router model service config</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建 router 目录，用于创建 Go Web 的 API 路由</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建 model 目录，保存应用与数据库交互式使用到的对象模型</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建 service 目录，保存 API 的具体处理逻辑</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建 config 目录，创建配置文件，保存运行所需的各种配置</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> touch app.go config/config.ini model/mysql_driver.go router/router_init.go</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建 app.go 文件，作为应用的入口，注册路由、启动服务、监听端口等</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建配置文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建数据库连接文件、API 路由入口文件</span></span><br></pre></td></tr></table></figure>
 <p>配置文件 config/config.ini 内容如下：</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[server]</span></span><br><span class="line"><span class="comment">; :8080 表示监听 0.0.0.0:8080</span></span><br><span class="line"><span class="attr">addr</span> = <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="section">[mysql]</span></span><br><span class="line"><span class="attr">db_host</span> = db_host</span><br><span class="line"><span class="attr">db_port</span> = <span class="number">3306</span></span><br><span class="line"><span class="attr">db_name</span> = db_name</span><br><span class="line"><span class="attr">db_user</span> = db_user</span><br><span class="line"><span class="attr">db_pwd</span> = db_pwd</span><br><span class="line"><span class="attr">db_charset</span> = db_charset</span><br></pre></td></tr></table></figure>
 <p>数据库连接文件 model/mysql_driver.go 内容如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"gopkg.in/ini.v1"</span></span><br><span class="line">	<span class="string">"gorm.io/driver/mysql"</span></span><br><span class="line">	<span class="string">"gorm.io/gorm"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> DB *gorm.DB</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InitDB</span><span class="params">(conf *ini.File)</span> *<span class="title">gorm</span>.<span class="title">DB</span></span> &#123;</span><br><span class="line">	mysqlName := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_name"</span>).String()</span><br><span class="line">	mysqlUser := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_user"</span>).String()</span><br><span class="line">	mysqlPwd := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_pwd"</span>).Value()</span><br><span class="line">	mysqlHost := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_host"</span>).String()</span><br><span class="line">	mysqlPort := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_port"</span>).String()</span><br><span class="line">	mysqlCharset := conf.Section(<span class="string">"mysql"</span>).Key(<span class="string">"db_charset"</span>).String()</span><br><span class="line">	mysqlPwd = mysqlPwd + <span class="string">"#"</span></span><br><span class="line">	fmt.Println(mysqlPwd)</span><br><span class="line">	dsn := mysqlUser + <span class="string">":"</span> + mysqlPwd + <span class="string">"@tcp("</span> + mysqlHost + <span class="string">":"</span> + mysqlPort + <span class="string">")/"</span> + mysqlName + <span class="string">"?charset="</span> + mysqlCharset</span><br><span class="line">	fmt.Println(dsn)</span><br><span class="line">	DB, _ = gorm.Open(mysql.Open(dsn), &amp;gorm.Config&#123;&#125;)</span><br><span class="line">	<span class="keyword">return</span> DB</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -370,7 +401,7 @@
 <p>Gin-Web 应用入口文件 app.go 如下<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"golang.org/x/sync/errgroup"</span></span><br><span class="line">	<span class="string">"gopkg.in/ini.v1"</span></span><br><span class="line">	<span class="string">"io.gin.sample/model"</span></span><br><span class="line">	router <span class="string">"io.gin.sample/router"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	g errgroup.Group</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	conf, err := ini.Load(<span class="string">"config/app.ini"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	model.InitDB(conf)</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	router.Init(r)</span><br><span class="line">	<span class="comment">// 监听并在 0.0.0.0:8080 上启动服务</span></span><br><span class="line">	g.Go(<span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">		<span class="keyword">return</span> r.Run(conf.Section(<span class="string">"server"</span>).Key(<span class="string">"addr"</span>).String())</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err := g.Wait(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h4 id="创建-sayHi-API-实现打招呼的功能"><a href="#创建-sayHi-API-实现打招呼的功能" class="headerlink" title="创建 sayHi API 实现打招呼的功能"></a>创建 sayHi API 实现打招呼的功能</h4><p>创建 service 文件 service/say_hi.go，内容如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> service</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sayhi</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">	name := c.Query(<span class="string">"name"</span>)</span><br><span class="line">	c.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">		<span class="string">"code"</span>: <span class="number">200</span>,</span><br><span class="line">		<span class="string">"msg"</span>:  <span class="string">"success"</span>,</span><br><span class="line">		<span class="string">"data"</span>: fmt.Sprintf(<span class="string">"hello, world. my name is %s"</span>, name),</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>创建 route 文件 router/say_hi.go，注册路由并绑定处理方法，内容如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> router</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"io.gin.sample/service"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	anonymousRouterRole = <span class="built_in">append</span>(anonymousRouterRole, registerAgentRoute)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">registerAgentRoute</span><span class="params">(rg *gin.RouterGroup)</span></span> &#123;</span><br><span class="line">	rg.GET(<span class="string">"/sayhi"</span>, service.Sayhi)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="运行-Gin-Web-服务"><a href="#运行-Gin-Web-服务" class="headerlink" title="运行 Gin-Web 服务"></a>运行 Gin-Web 服务</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> go run app.go</span><br></pre></td></tr></table></figure>
+<h4 id="运行-Gin-Web-服务"><a href="#运行-Gin-Web-服务" class="headerlink" title="运行 Gin-Web 服务"></a>运行 Gin-Web 服务</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> go run app.go</span></span><br></pre></td></tr></table></figure>
 <p><img src="run-go-server.png" alt></p>
 <p>访问 sayhi 打招呼：<br><img src="sayhi.png" alt></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
@@ -383,6 +414,14 @@
     
     
 
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/wechat-qcode.jpg" alt="owefsad wechat" style="width: 200px; max-width: 100%;">
+    <div>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</div>
+</div>
+
+      </div>
     
 
     
@@ -497,7 +536,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -519,7 +558,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-count">172</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -595,6 +634,15 @@
   <span class="author" itemprop="copyrightHolder">owefsad</span>
 
   
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">111.9k</span>
+  
 </div>
 
 
@@ -626,6 +674,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     

@@ -100,7 +100,7 @@
     root: '/',
     scheme: 'Mist',
     version: '5.1.4',
-    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
     fancybox: true,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
@@ -336,6 +336,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  324
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -355,7 +386,7 @@
         <p>最近在 <strong>非交互式shell</strong> 中执行 <strong>cp</strong> 命令时，遇到了个坑，由于目标文件已存在，cp 命令出现交互式输入，要求确认是否执行强制覆盖，但由于是非交互式 shell，无法操作。查看 cp 命令的文档后发现，cp 命令可以进行强制覆盖，只需要执行 <code>cp -rf &lt;source&gt; &lt;target&gt;</code> 即可，但是在 shell 中输入强制覆盖的指令后，依然无法成功复制。经过折腾，终于找到了原因，记录一下解决方案和爬坑过程。</p>
 <a id="more"></a>
 <h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p><strong>解决方案一：使用原生CP命令</strong><br><code>/bin/cp -rf &lt;source&gt; &lt;target&gt;</code></p>
-<p><strong>解决方案二：取消别名</strong><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> unalias cp</span><br><span class="line"><span class="meta">$</span> cp -rf &lt;source&gt; &lt;target&gt;</span><br><span class="line"><span class="meta">$</span> alias cp='cp -i'</span><br></pre></td></tr></table></figure></p>
+<p><strong>解决方案二：取消别名</strong><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">unalias</span> cp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cp -rf &lt;<span class="built_in">source</span>&gt; &lt;target&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">alias</span> cp=<span class="string">'cp -i'</span></span></span><br></pre></td></tr></table></figure></p>
 <h2 id="无法强制覆盖的原因"><a href="#无法强制覆盖的原因" class="headerlink" title="无法强制覆盖的原因"></a>无法强制覆盖的原因</h2><p>部分 linux 机器在配置命令别名时，会将 cp 命令配置为 <code>cp -i</code>，其中，-i 表示交互式模式，因此，当目标文件已存在时，会出现交互式输入，要求用户输入是否执行强制覆盖。</p>
 <p>当出现使用 linux 命令但未获得预期结果时，可执行 <code>alias</code> 查看当前命令是否为 <strong>别名</strong>，然后再做后续排查，避免掉入别名带来的天坑中。</p>
 
@@ -365,6 +396,14 @@
     
     
 
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/wechat-qcode.jpg" alt="owefsad wechat" style="width: 200px; max-width: 100%;">
+    <div>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</div>
+</div>
+
+      </div>
     
 
     
@@ -477,7 +516,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -499,7 +538,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-count">172</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -575,6 +614,15 @@
   <span class="author" itemprop="copyrightHolder">owefsad</span>
 
   
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">111.9k</span>
+  
 </div>
 
 
@@ -606,6 +654,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SAST,代码分析,AST-Framework,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="The article has been encrypted, please enter your password to view.">
+<meta name="keywords" content="SAST,代码分析,AST-Framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="白盒检测工具之跨二三方包检测">
+<meta property="og:url" content="https://exexute.github.io/2022/09/07/白盒检测工具之跨二三方包检测/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="The article has been encrypted, please enter your password to view.">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-09-06T23:53:22.647Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="白盒检测工具之跨二三方包检测">
+<meta name="twitter:description" content="The article has been encrypted, please enter your password to view.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2022/09/07/白盒检测工具之跨二三方包检测/">
+
+
+
+
+
+  <title>白盒检测工具之跨二三方包检测 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2022/09/07/白盒检测工具之跨二三方包检测/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">白盒检测工具之跨二三方包检测</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-09-07T08:02:50+08:00">
+                2022-09-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  254
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<div id="hbe-security">
+  <div class="hbe-input-container">
+  <input type="password" class="hbe-form-control" id="pass" placeholder="Please enter the password to read the blog.">
+    <label for="pass">Please enter the password to read the blog.</label>
+    <div class="bottom-line"></div>
+  </div>
+</div>
+<div id="decryptionError" style="display: none;">Incorrect Password!</div>
+<div id="noContentError" style="display: none;">No content to display!</div>
+<div id="encrypt-blog" style="display:none">
+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
+</div>
+<script src="/lib/crypto-js.js"></script><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/wechat-qcode.jpg" alt="owefsad wechat" style="width: 200px; max-width: 100%;">
+    <div>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SAST/" rel="tag"># SAST</a>
+          
+            <a href="/tags/代码分析/" rel="tag"># 代码分析</a>
+          
+            <a href="/tags/AST-Framework/" rel="tag"># AST-Framework</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/09/06/白盒检测工具之代码预分析/" rel="next" title="白盒检测工具之代码统计">
+                <i class="fa fa-chevron-left"></i> 白盒检测工具之代码统计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/08/白盒检测工具之Java与Kotlin混编漏洞检测/" rel="prev" title="白盒检测工具之Java与Kotlin混编漏洞检测">
+                白盒检测工具之Java与Kotlin混编漏洞检测 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">172</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">111.9k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

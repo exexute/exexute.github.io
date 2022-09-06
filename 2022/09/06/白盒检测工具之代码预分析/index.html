@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SAST,代码分析,AST-Framework,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="AST-Framework 产品的白盒工具在进行代码分析之前，需要做一些前置的数据采集用于后续项目基本信息的输出，包括：项目使用的编程语言、项目使用的开发框架、代码行数等信息。经过调研，发现了一款成熟度很高的代码统计工具 Tokei，本文将重点介绍如何在 AST-Framework 产品的 sast-plugin 插件中集成 Tokei，实现项目的代码统计。">
+<meta name="keywords" content="SAST,代码分析,AST-Framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="白盒检测工具之代码统计">
+<meta property="og:url" content="https://exexute.github.io/2022/09/06/白盒检测工具之代码预分析/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="AST-Framework 产品的白盒工具在进行代码分析之前，需要做一些前置的数据采集用于后续项目基本信息的输出，包括：项目使用的编程语言、项目使用的开发框架、代码行数等信息。经过调研，发现了一款成熟度很高的代码统计工具 Tokei，本文将重点介绍如何在 AST-Framework 产品的 sast-plugin 插件中集成 Tokei，实现项目的代码统计。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2022-09-06T23:29:07.689Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="白盒检测工具之代码统计">
+<meta name="twitter:description" content="AST-Framework 产品的白盒工具在进行代码分析之前，需要做一些前置的数据采集用于后续项目基本信息的输出，包括：项目使用的编程语言、项目使用的开发框架、代码行数等信息。经过调研，发现了一款成熟度很高的代码统计工具 Tokei，本文将重点介绍如何在 AST-Framework 产品的 sast-plugin 插件中集成 Tokei，实现项目的代码统计。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2022/09/06/白盒检测工具之代码预分析/">
+
+
+
+
+
+  <title>白盒检测工具之代码统计 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2022/09/06/白盒检测工具之代码预分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">白盒检测工具之代码统计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-09-06T08:02:25+08:00">
+                2022-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>AST-Framework 产品</strong>的白盒工具在进行代码分析之前，需要做一些前置的数据采集用于后续项目基本信息的输出，包括：项目使用的编程语言、项目使用的开发框架、代码行数等信息。经过调研，发现了一款成熟度很高的代码统计工具 <strong>Tokei</strong>，本文将重点介绍如何在 AST-Framework 产品的 sast-plugin 插件中集成 Tokei，实现项目的代码统计。</p>
+<a id="more"></a>
+<h2 id="Tokei-官方文档及用法"><a href="#Tokei-官方文档及用法" class="headerlink" title="Tokei 官方文档及用法"></a>Tokei 官方文档及用法</h2><p>Tokei 是一个用于统计代码文件数据的<a href="https://github.com/XAMPPRocky/tokei" target="_blank" rel="noopener">开源工具</a>，通过 Tokei 可以查看代码仓库中文件的数量、文件总行数、代码行数、注释行数和空行数量。Tokei 从2015年开源至今，项目已经非常成熟，拥有 7k 的star，支持 217 种<a href="https://github.com/XAMPPRocky/tokei#supported-languages" target="_blank" rel="noopener">语言</a>、统计结果准确度、统计速度等指标都非常优秀，下面介绍 tokei 的基本用法。</p>
+<h3 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h3><p>MacOS 通过 <code>brew install tokei</code> 命令安装 <strong>tokei</strong> 工具，然后执行 <code>tokei &lt;dir&gt;</code> 获取<strong>&lt;dir></strong>目录中代码文件的统计数据，包括：每种语言的文件数、总行数、代码行数、评论行数和空行数。</p>
+<p>更多操作系统的安装方法及手动安装方法请访问<a href="https://github.com/XAMPPRocky/tokei#installation" target="_blank" rel="noopener">官方文档🔗</a></p>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>Tokei 的配置文件为<code>tokei.toml</code> 或 <code>.tokeirc</code>，默认从执行tokei命令的目录、用户的HOME目录或配置文件目录中搜索并使用配置文件，搜索顺序为从左到右。配置文件格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># The width of the terminal output in columns.</span><br><span class="line">columns = 80</span><br><span class="line"># Sort languages based on the specified column.</span><br><span class="line">sort = &quot;lines&quot;</span><br><span class="line"># If set, tokei will only show the languages in `types`.</span><br><span class="line">types = [&quot;Python&quot;]</span><br><span class="line"># Any doc strings (e.g. `&quot;&quot;&quot;hello&quot;&quot;&quot;` in python) will be counted as comments.</span><br><span class="line">treat_doc_strings_as_comments = true</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">USAGE:</span><br><span class="line">    tokei [FLAGS] [OPTIONS] [--] [input]...</span><br><span class="line"></span><br><span class="line">FLAGS:</span><br><span class="line">    -f, --files               Will print out statistics on individual files.</span><br><span class="line">    -h, --help                Prints help information</span><br><span class="line">        --hidden              Count hidden files.</span><br><span class="line">    -l, --languages           Prints out supported languages and their extensions.</span><br><span class="line">        --no-ignore           Don&apos;t respect ignore files (.gitignore, .ignore, etc.). This implies --no-ignore-parent,</span><br><span class="line">                              --no-ignore-dot, and --no-ignore-vcs.</span><br><span class="line">        --no-ignore-dot       Don&apos;t respect .ignore and .tokeignore files, including those in parent directories.</span><br><span class="line">        --no-ignore-parent    Don&apos;t respect ignore files (.gitignore, .ignore, etc.) in parent directories.</span><br><span class="line">        --no-ignore-vcs       Don&apos;t respect VCS ignore files (.gitignore, .hgignore, etc.), including those in parent</span><br><span class="line">                              directories.</span><br><span class="line">    -V, --version             Prints version information</span><br><span class="line">    -v, --verbose             Set log output level:</span><br><span class="line">                                          1: to show unknown file extensions,</span><br><span class="line">                                          2: reserved for future debugging,</span><br><span class="line">                                          3: enable file level trace. Not recommended on multiple files</span><br><span class="line"></span><br><span class="line">OPTIONS:</span><br><span class="line">    -c, --columns &lt;columns&gt;       Sets a strict column width of the output, only available for terminal output.</span><br><span class="line">    -e, --exclude &lt;exclude&gt;...    Ignore all files &amp; directories matching the pattern.</span><br><span class="line">    -i, --input &lt;file_input&gt;      Gives statistics from a previous tokei run. Can be given a file path, or &quot;stdin&quot; to</span><br><span class="line">                                  read from stdin.</span><br><span class="line">    -o, --output &lt;output&gt;         Outputs Tokei in a specific format. Compile with additional features for more format</span><br><span class="line">                                  support. [possible values: cbor, json, yaml]</span><br><span class="line">    -s, --sort &lt;sort&gt;             Sort languages based on column [possible values: files, lines, blanks, code, comments]</span><br><span class="line">    -t, --type &lt;types&gt;            Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown</span><br><span class="line"></span><br><span class="line">ARGS:</span><br><span class="line">    &lt;input&gt;...    The path(s) to the file or directory to be counted.</span><br></pre></td></tr></table></figure>
+<h4 id="查看特定项目的代码文件统计数据"><a href="#查看特定项目的代码文件统计数据" class="headerlink" title="查看特定项目的代码文件统计数据"></a>查看特定项目的代码文件统计数据</h4><p>用法：<code>tokei &lt;target code dir&gt;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ tokei .</span><br><span class="line">===============================================================================</span><br><span class="line"> Language            Files        Lines         Code     Comments       Blanks</span><br><span class="line">===============================================================================</span><br><span class="line"> Java                  168         8956         6373         1358         1225</span><br><span class="line"> XML                    15          862          784            6           72</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line"> Markdown                4           39            0           27           12</span><br><span class="line"> |- Java                 1           28           25            0            3</span><br><span class="line"> |- Shell                2            4            4            0            0</span><br><span class="line"> (Total)                             71           29           27           15</span><br><span class="line">===============================================================================</span><br><span class="line"> Total                 187         9857         7157         1391         1309</span><br><span class="line">===============================================================================</span><br></pre></td></tr></table></figure>
+<h4 id="查看多个项目的代码文件统计数据"><a href="#查看多个项目的代码文件统计数据" class="headerlink" title="查看多个项目的代码文件统计数据"></a>查看多个项目的代码文件统计数据</h4><p>用法：<code>tokei &lt;dir1&gt; &lt;dir2&gt; &lt;dir3&gt;</code> 或 <code>tokei &lt;dir1&gt;,&lt;dir2&gt;,&lt;dir3&gt;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ tokei AstApi AstSpy</span><br><span class="line">===============================================================================</span><br><span class="line"> Language            Files        Lines         Code     Comments       Blanks</span><br><span class="line">===============================================================================</span><br><span class="line"> Java                    4          288          116          124           48</span><br><span class="line"> Markdown                1            2            0            2            0</span><br><span class="line"> XML                     2           38           32            0            6</span><br><span class="line">===============================================================================</span><br><span class="line"> Total                   7          328          148          126           54</span><br><span class="line">===============================================================================</span><br></pre></td></tr></table></figure>
+<h4 id="查看排除特定目录-文件后的代码文件统计数据"><a href="#查看排除特定目录-文件后的代码文件统计数据" class="headerlink" title="查看排除特定目录/文件后的代码文件统计数据"></a>查看排除特定目录/文件后的代码文件统计数据</h4><p>很多时候我们并不需要统计一些类型的文件，比如：Java 编译后生成的 <strong>.class</strong> 文件、Python 运行后创建的 <strong>.pyc</strong> 文件等，在 git 代码仓库中，可以通过 <code>.gitignore</code> 文件进行排除。</p>
+<p>tokei 作为一款成熟的工具，支持复用已有的排除策略，直接排除代码无关或我们不关注的目录/文件，tokei 在扫描时，解析<code>.gitignore</code> 和 <code>.ignore</code> 文件并使用文件中定义的排除策略，此外，也支持通过命令行参数( <code>--exclude</code> )的方式额外指定排除策略，语法与 gitignore <a href="https://git-scm.com/docs/gitignore" target="_blank" rel="noopener">语法</a>相同。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> tokei IastEngine --exclude .classs</span><br><span class="line">===============================================================================</span><br><span class="line"> Language            Files        Lines         Code     Comments       Blanks</span><br><span class="line">===============================================================================</span><br><span class="line"> Java                   28         1715         1175          325          215</span><br><span class="line"> XML                     1          116          111            0            5</span><br><span class="line">===============================================================================</span><br><span class="line"> Total                  29         1831         1286          325          220</span><br><span class="line">===============================================================================</span><br></pre></td></tr></table></figure>
+<h4 id="统计结果排序"><a href="#统计结果排序" class="headerlink" title="统计结果排序"></a>统计结果排序</h4><p>tokei 默认按照编程语言进行排序，也支持通过 <code>--sort</code> 参数指定排序字段，12.0.0 版本支持的排序字段包括：blanks, code, comments, lines<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> tokei ./IastEngine --sort code</span><br></pre></td></tr></table></figure></p>
+<h4 id="查看每个文件的统计数据"><a href="#查看每个文件的统计数据" class="headerlink" title="查看每个文件的统计数据"></a>查看每个文件的统计数据</h4><p>tokei 默认输出用户指定目录或文件的代码统计结果，白盒做应用框架预分析时，不仅需要知道项目中使用的语言分布，还需要知道都有哪些文件，方便直接根据特征解析文件，提取使用的框架。我们可以通过<code>--files</code> 参数来返回每个文件的结果，同时拿到语言分析和对应的代码文件路径。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> tokei ./foo --files</span><br><span class="line">=====================================================================================================================</span><br><span class="line"> Language                                                 Files        Lines         Code     Comments       Blanks</span><br><span class="line">=====================================================================================================================</span><br><span class="line">Apache Velocity                                              19        10018         9558           25          435</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------</span><br><span class="line"> ./src/site/xdoc/manual/customloglevels.xml.vm              347          340            0            7</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------</span><br><span class="line"> XML                                                        584        54251        43766         9010         1475</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------</span><br><span class="line"> ./log4j-taglib/pom.xml                                     205          184           20            1</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------</span><br><span class="line"> YAML                                                        10          322          284            1           37</span><br><span class="line">---------------------------------------------------------------------------------------------------------------------</span><br><span class="line"> ./log4j-spring-boot/src/test/resources/application.yml       5            5            0            0</span><br><span class="line">=====================================================================================================================</span><br><span class="line"> Total                                                    3083       388247       245182       103556        39509</span><br><span class="line">======================================================================================================================</span><br></pre></td></tr></table></figure></p>
+<h4 id="统计结果输出值文件"><a href="#统计结果输出值文件" class="headerlink" title="统计结果输出值文件"></a>统计结果输出值文件</h4><p>tokei 支持将统计结果输出至文件中，目前支持的文件格式包括：<code>json</code>、<code>yaml</code>、<code>cbor</code>，可通过 <code>--output</code> 参数指定输出的数据格式<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> tokei ./foo --output json</span><br><span class="line"><span class="meta">$</span> tokei ./foo --output yaml</span><br><span class="line"><span class="meta">$</span> tokei ./foo --output cbor</span><br></pre></td></tr></table></figure></p>
+<h2 id="sast-plugin集成tokei工具"><a href="#sast-plugin集成tokei工具" class="headerlink" title="sast-plugin集成tokei工具"></a>sast-plugin集成tokei工具</h2><p>sast-plugin 中只需要调用 tokei 命令，将结果转换为 golang 对象即可，代码示例如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> statistic</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bytes"</span></span><br><span class="line">	<span class="string">"os/exec"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"gopkg.in/yaml.v3"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CodeStatistic <span class="keyword">struct</span> &#123;</span><br><span class="line">	Total <span class="keyword">struct</span> &#123;</span><br><span class="line">		Blanks   <span class="keyword">int</span> <span class="string">`yaml:"blanks"`</span></span><br><span class="line">		Children <span class="keyword">struct</span> &#123;</span><br><span class="line">			Java []<span class="keyword">struct</span> &#123;</span><br><span class="line">				Name  <span class="keyword">string</span> <span class="string">`yaml:"name"`</span></span><br><span class="line">				Stats <span class="keyword">struct</span> &#123;</span><br><span class="line">					Blanks <span class="keyword">int</span> <span class="string">`yaml:"blanks"`</span></span><br><span class="line">					Blobs  <span class="keyword">struct</span> &#123;</span><br><span class="line">					&#125; <span class="string">`yaml:"blobs"`</span></span><br><span class="line">					Code     <span class="keyword">int</span> <span class="string">`yaml:"code"`</span></span><br><span class="line">					Comments <span class="keyword">int</span> <span class="string">`yaml:"comments"`</span></span><br><span class="line">				&#125; <span class="string">`yaml:"stats"`</span></span><br><span class="line">			&#125; <span class="string">`yaml:"Java"`</span></span><br><span class="line">			Markdown []<span class="keyword">struct</span> &#123;</span><br><span class="line">				Name  <span class="keyword">string</span> <span class="string">`yaml:"name"`</span></span><br><span class="line">				Stats <span class="keyword">struct</span> &#123;</span><br><span class="line">					Blanks <span class="keyword">int</span> <span class="string">`yaml:"blanks"`</span></span><br><span class="line">					Blobs  <span class="keyword">struct</span> &#123;</span><br><span class="line">					&#125; <span class="string">`yaml:"blobs"`</span></span><br><span class="line">					Code     <span class="keyword">int</span> <span class="string">`yaml:"code"`</span></span><br><span class="line">					Comments <span class="keyword">int</span> <span class="string">`yaml:"comments"`</span></span><br><span class="line">				&#125; <span class="string">`yaml:"stats"`</span></span><br><span class="line">			&#125; <span class="string">`yaml:"Markdown"`</span></span><br><span class="line">		&#125; <span class="string">`yaml:"children"`</span></span><br><span class="line">		Code       <span class="keyword">int</span>           <span class="string">`yaml:"code"`</span></span><br><span class="line">		Comments   <span class="keyword">int</span>           <span class="string">`yaml:"comments"`</span></span><br><span class="line">		Inaccurate <span class="keyword">bool</span>          <span class="string">`yaml:"inaccurate"`</span></span><br><span class="line">		Reports    []<span class="keyword">interface</span>&#123;&#125; <span class="string">`yaml:"reports"`</span></span><br><span class="line">	&#125; <span class="string">`yaml:"Total"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StatisticalCode</span><span class="params">(codeDir <span class="keyword">string</span>)</span> <span class="params">(*CodeStatistic, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> stdout, stderr bytes.Buffer</span><br><span class="line">	cmd := exec.Command(<span class="string">"tokei"</span>, codeDir, <span class="string">"--output"</span>, <span class="string">"json"</span>)</span><br><span class="line">	cmd.Stdout = &amp;stdout <span class="comment">// 标准输出</span></span><br><span class="line">	cmd.Stderr = &amp;stderr <span class="comment">// 标准错误</span></span><br><span class="line">	cmd.Run()</span><br><span class="line"></span><br><span class="line">	codeStatistic = CodeStatistic&#123;&#125;</span><br><span class="line">	yaml.Unmarshal(stdout.Bytes(), &amp;codeStatistic)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="相关链接"><a href="#相关链接" class="headerlink" title="相关链接"></a>相关链接</h2><ul>
+<li><a href="https://github.com/XAMPPRocky/tokei" target="_blank" rel="noopener">https://github.com/XAMPPRocky/tokei</a></li>
+<li><a href="https://github.com/VulScanSpace/AST-Framework" target="_blank" rel="noopener">https://github.com/VulScanSpace/AST-Framework</a></li>
+<li><a href="https://github.com/VulScanSpace/io.ast.plugins" target="_blank" rel="noopener">https://github.com/VulScanSpace/io.ast.plugins</a></li>
+</ul>
+<p>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/wechat-qcode.jpg" alt="owefsad wechat" style="width: 200px; max-width: 100%;">
+    <div>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SAST/" rel="tag"># SAST</a>
+          
+            <a href="/tags/代码分析/" rel="tag"># 代码分析</a>
+          
+            <a href="/tags/AST-Framework/" rel="tag"># AST-Framework</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/08/13/如何反编译RPM包/" rel="next" title="如何反编译RPM包">
+                <i class="fa fa-chevron-left"></i> 如何反编译RPM包
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/07/白盒检测工具之跨二三方包检测/" rel="prev" title="白盒检测工具之跨二三方包检测">
+                白盒检测工具之跨二三方包检测 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">172</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tokei-官方文档及用法"><span class="nav-number">1.</span> <span class="nav-text">Tokei 官方文档及用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装方法"><span class="nav-number">1.1.</span> <span class="nav-text">安装方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">1.2.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方法"><span class="nav-number">1.3.</span> <span class="nav-text">使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本用法"><span class="nav-number">1.3.1.</span> <span class="nav-text">基本用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看特定项目的代码文件统计数据"><span class="nav-number">1.3.2.</span> <span class="nav-text">查看特定项目的代码文件统计数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看多个项目的代码文件统计数据"><span class="nav-number">1.3.3.</span> <span class="nav-text">查看多个项目的代码文件统计数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看排除特定目录-文件后的代码文件统计数据"><span class="nav-number">1.3.4.</span> <span class="nav-text">查看排除特定目录/文件后的代码文件统计数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#统计结果排序"><span class="nav-number">1.3.5.</span> <span class="nav-text">统计结果排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看每个文件的统计数据"><span class="nav-number">1.3.6.</span> <span class="nav-text">查看每个文件的统计数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#统计结果输出值文件"><span class="nav-number">1.3.7.</span> <span class="nav-text">统计结果输出值文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sast-plugin集成tokei工具"><span class="nav-number">2.</span> <span class="nav-text">sast-plugin集成tokei工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关链接"><span class="nav-number">3.</span> <span class="nav-text">相关链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">111.9k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

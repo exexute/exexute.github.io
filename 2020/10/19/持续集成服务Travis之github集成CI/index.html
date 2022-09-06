@@ -88,7 +88,7 @@
 <meta property="og:description" content="软件开发中，编写代码只占很小的一部分，大部分时间是用来编译、测试和部署代码；为了提高软件开发的效率，出现了很多构建和测试的工具，Travis是众多工具中的一个，可以与github无缝集成实现构建、测试与部署。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://exexute.github.io/2020/10/19/持续集成服务Travis之github集成CI/add_proj_to_travis.gif">
-<meta property="og:updated_time" content="2022-06-24T00:08:18.853Z">
+<meta property="og:updated_time" content="2022-09-06T14:23:27.960Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="【转载】持续集成服务Travis之github集成CI">
 <meta name="twitter:description" content="软件开发中，编写代码只占很小的一部分，大部分时间是用来编译、测试和部署代码；为了提高软件开发的效率，出现了很多构建和测试的工具，Travis是众多工具中的一个，可以与github无缝集成实现构建、测试与部署。">
@@ -102,7 +102,7 @@
     root: '/',
     scheme: 'Mist',
     version: '5.1.4',
-    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
     fancybox: true,
     tabs: true,
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
@@ -338,6 +338,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  3
+                </span>
+              
+            </div>
+          
 
           
 
@@ -385,6 +416,7 @@
 <p><strong>部署</strong><br>script阶段执行结束之后，还可以设置<strong>通知</strong>和<strong>部署</strong>，它们不是必须的，但是，在日常项目中，一般是需要的。本文以自定义脚本实现部署为例：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  - provider:</span> <span class="string">script</span></span><br><span class="line"><span class="attr">    script:</span> <span class="string">deploy_production.sh</span></span><br><span class="line"><span class="attr">    on:</span></span><br><span class="line"><span class="attr">      branch:</span> <span class="string">production</span></span><br><span class="line"><span class="attr">  - provider:</span> <span class="string">script</span></span><br><span class="line"><span class="attr">    script:</span> <span class="string">deploy_staging.sh</span></span><br><span class="line"><span class="attr">    on:</span></span><br><span class="line"><span class="attr">      branch:</span> <span class="string">staging</span></span><br></pre></td></tr></table></figure></p>
 <p>上述配置，指定了两个部署动作，一个在分支production上执行deploy_producation.sh脚本，另一个在分支staging上执行deploy_staging.sh脚本</p>
 <p>其他内容本文暂不记录，请参阅<a href="http://www.ruanyifeng.com/blog/2017/12/travis_ci_tutorial.html" target="_blank" rel="noopener">阮一峰-持续集成服务</a></p>
+<p>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</p>
 
       
     </div>
@@ -392,6 +424,14 @@
     
     
 
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/wechat-qcode.jpg" alt="owefsad wechat" style="width: 200px; max-width: 100%;">
+    <div>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</div>
+</div>
+
+      </div>
     
 
     
@@ -504,7 +544,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -526,7 +566,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-count">172</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -602,6 +642,15 @@
   <span class="author" itemprop="copyrightHolder">owefsad</span>
 
   
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">111.9k</span>
+  
 </div>
 
 
@@ -633,6 +682,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     
