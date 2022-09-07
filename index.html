@@ -345,7 +345,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  161
+                  178
                 </span>
               
 
@@ -522,7 +522,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  254
+                  1.4k
                 </span>
               
 
@@ -538,7 +538,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  1
+                  4
                 </span>
               
             </div>
@@ -560,7 +560,10 @@
 
       
         
-          The article has been encrypted, please enter your password to view.<br>
+          <p>随着Java Web应用模块化、微服务化的程度越来越高，传统的单应用、单项目中的安全风险正逐渐转变为跨组件、跨应用、跨项目等复杂路径下的安全风险，传统白盒工具针对单项目的扫描无法覆盖这种类型的漏洞产生场景，包括：二方包、项目与二方包结合、项目与三方包结合、项目与项目通过API结合、项目与项目通过消息队列/数据库结合等众多细分场景。</p>
+<p>笔者用白盒工具（CheckMarx、Coverity、内部自研白盒、CodeQL）在每个细分场景下都做了对比和测试，现有工具的检测效果都不理想，相比之下，CodeQL 基于编译时的数据流、控制流采集方案，效果优于其它工具，有望解决项目与二方包、项目与三方包结合的漏洞检测场景下的漏洞检测。</p>
+<p>由于 CodeQL 强依赖于代码编译，如果只是对个别项目做代码审计，倒是可以配置环境、配置构建命令实现检测，但笔者的真实场景是在 CI/CD 的构建流程里做统一的安全控制。如果联合 CI/CD 部门做适配开发，将带来很大的人力成本，而且 CodeQL 的检测方案还无法解决全部细分场景的问题，所以笔者索性自己实现，即不需要额外的人力成本，又可以很灵活的测试、调试和变更，这感觉真香～</p>
+<p><strong>AST-Framework 产品</strong>的 sast-plugin 中增加了二方包、项目与二方包结合、项目与三方包结合 三种细分场景下的安全风险监测能力，使用 AST-Framework 的白盒扫描，并勾选☑️ “深度监测” 即可触发该能力，实现上述场景的漏洞检测。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2022/09/07/白盒检测工具之跨二三方包检测/#more" rel="contents">
@@ -2156,7 +2159,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">111.9k</span>
+    <span title="Site words total count">113.1k</span>
   
 </div>
 

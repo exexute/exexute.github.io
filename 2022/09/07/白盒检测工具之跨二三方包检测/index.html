@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="SAST,代码分析,AST-Framework,">
+  <meta name="keywords" content="AST-Framework,SAST,代码分析,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="The article has been encrypted, please enter your password to view.">
-<meta name="keywords" content="SAST,代码分析,AST-Framework">
+<meta name="description" content="随着Java Web应用模块化、微服务化的程度越来越高，传统的单应用、单项目中的安全风险正逐渐转变为跨组件、跨应用、跨项目等复杂路径下的安全风险，传统白盒工具针对单项目的扫描无法覆盖这种类型的漏洞产生场景，包括：二方包、项目与二方包结合、项目与三方包结合、项目与项目通过API结合、项目与项目通过消息队列/数据库结合等众多细分场景。 笔者用白盒工具（CheckMarx、Coverity、内部自研白盒">
+<meta name="keywords" content="AST-Framework,SAST,代码分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="白盒检测工具之跨二三方包检测">
 <meta property="og:url" content="https://exexute.github.io/2022/09/07/白盒检测工具之跨二三方包检测/index.html">
 <meta property="og:site_name" content="owefsad 的博客">
-<meta property="og:description" content="The article has been encrypted, please enter your password to view.">
+<meta property="og:description" content="随着Java Web应用模块化、微服务化的程度越来越高，传统的单应用、单项目中的安全风险正逐渐转变为跨组件、跨应用、跨项目等复杂路径下的安全风险，传统白盒工具针对单项目的扫描无法覆盖这种类型的漏洞产生场景，包括：二方包、项目与二方包结合、项目与三方包结合、项目与项目通过API结合、项目与项目通过消息队列/数据库结合等众多细分场景。 笔者用白盒工具（CheckMarx、Coverity、内部自研白盒">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2022-09-06T23:53:22.647Z">
+<meta property="og:updated_time" content="2022-09-07T14:23:19.816Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="白盒检测工具之跨二三方包检测">
-<meta name="twitter:description" content="The article has been encrypted, please enter your password to view.">
+<meta name="twitter:description" content="随着Java Web应用模块化、微服务化的程度越来越高，传统的单应用、单项目中的安全风险正逐渐转变为跨组件、跨应用、跨项目等复杂路径下的安全风险，传统白盒工具针对单项目的扫描无法覆盖这种类型的漏洞产生场景，包括：二方包、项目与二方包结合、项目与三方包结合、项目与项目通过API结合、项目与项目通过消息队列/数据库结合等众多细分场景。 笔者用白盒工具（CheckMarx、Coverity、内部自研白盒">
 
 
 
@@ -346,7 +346,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  254
+                  1.4k
                 </span>
               
 
@@ -362,7 +362,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  1
+                  4
                 </span>
               
             </div>
@@ -383,20 +383,27 @@
       
 
       
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<div id="hbe-security">
-  <div class="hbe-input-container">
-  <input type="password" class="hbe-form-control" id="pass" placeholder="Please enter the password to read the blog.">
-    <label for="pass">Please enter the password to read the blog.</label>
-    <div class="bottom-line"></div>
-  </div>
-</div>
-<div id="decryptionError" style="display: none;">Incorrect Password!</div>
-<div id="noContentError" style="display: none;">No content to display!</div>
-<div id="encrypt-blog" style="display:none">
-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
-</div>
-<script src="/lib/crypto-js.js"></script><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">
+        <p>随着Java Web应用模块化、微服务化的程度越来越高，传统的单应用、单项目中的安全风险正逐渐转变为跨组件、跨应用、跨项目等复杂路径下的安全风险，传统白盒工具针对单项目的扫描无法覆盖这种类型的漏洞产生场景，包括：二方包、项目与二方包结合、项目与三方包结合、项目与项目通过API结合、项目与项目通过消息队列/数据库结合等众多细分场景。</p>
+<p>笔者用白盒工具（CheckMarx、Coverity、内部自研白盒、CodeQL）在每个细分场景下都做了对比和测试，现有工具的检测效果都不理想，相比之下，CodeQL 基于编译时的数据流、控制流采集方案，效果优于其它工具，有望解决项目与二方包、项目与三方包结合的漏洞检测场景下的漏洞检测。</p>
+<p>由于 CodeQL 强依赖于代码编译，如果只是对个别项目做代码审计，倒是可以配置环境、配置构建命令实现检测，但笔者的真实场景是在 CI/CD 的构建流程里做统一的安全控制。如果联合 CI/CD 部门做适配开发，将带来很大的人力成本，而且 CodeQL 的检测方案还无法解决全部细分场景的问题，所以笔者索性自己实现，即不需要额外的人力成本，又可以很灵活的测试、调试和变更，这感觉真香～</p>
+<p><strong>AST-Framework 产品</strong>的 sast-plugin 中增加了二方包、项目与二方包结合、项目与三方包结合 三种细分场景下的安全风险监测能力，使用 AST-Framework 的白盒扫描，并勾选☑️ “深度监测” 即可触发该能力，实现上述场景的漏洞检测。</p>
+<a id="more"></a>
+<h3 id="白盒工具做二方包检测，遇到的挑战是什么？"><a href="#白盒工具做二方包检测，遇到的挑战是什么？" class="headerlink" title="白盒工具做二方包检测，遇到的挑战是什么？"></a>白盒工具做二方包检测，遇到的挑战是什么？</h3><blockquote>
+<p>该小节讨论的二方包，特指具有 API 接口，同时又作为组件引入至其它应用中的组件，比如：<code>spring-boot-starter-actuator</code> </p>
+</blockquote>
+<p>我们从应用中引入二方包的方式开始梳理，引入二方包的方式有两种：通过 Java 包管理工具( Maven、Gradle )拉取企业内部组件仓库、通过 classpath 直接引入运行环境中文件系统内的 Jar 包；其中，通过组件仓库引入的二方包又分为通过标准开发流程创建和非标创建两种。</p>
+<p>根据二方包的引入方式可以看出，白盒只能覆盖走标准开发流程创建二方包的场景，针对非标创建二方包和直接引入文件系统内的二方包，无法直接检测。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>白盒无法有效检测二方包的原因包括<strong>流程未覆盖</strong>和<strong>能力未覆盖</strong>两类。针对流程未覆盖的情况，可以针对上述场景做针对性的解决方案，比如：在组件推送到组件库时，拉取 Jar 包做异步白盒检测、在测试环境中拉取 Java 应用启动时依赖的所有 Jar 包进行检测等，解决方案需要与企业内部的环境匹配才能达到最高的投入产出比，这里不过多论述，重点介绍如何解决能力未覆盖的问题。</p>
+<p>大部分白盒应用都只支持源码级的检测，我们可以在白盒工具检测前，通过 sast-plugin 做 Jar 包反编译，还原 Jar 包为 Java 源代码，然后调用白盒工具，实现源码级的检测。反编译工具有很多，经过对比，最终选择了 IDEA 开源的 Java 反编译工具 fernflower。</p>
+<p>调用 fernflower 对 jar 包进行反编译<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> java -jar fernflower.jar &lt;target jar&gt; &lt;source root path&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="白盒做项目与二三方包联合检测、时，遇到的挑战是什么？"><a href="#白盒做项目与二三方包联合检测、时，遇到的挑战是什么？" class="headerlink" title="白盒做项目与二三方包联合检测、时，遇到的挑战是什么？"></a>白盒做项目与二三方包联合检测、时，遇到的挑战是什么？</h3><p>当我们做跨组件（本身也是跨项目的一种）检测时，遇到的挑战与白盒工具的实现方式和检测原理有很大的关系，主要分为以下两类：</p>
+<ul>
+<li>传统白盒工具采用 AST 分析，然后把分析结果临时存储在内存、数据库等位置，然后在内存中进行污点链路的梳理，这种实现方式的挑战在于反编译二方包后，数据量激增，污点链路梳理时会放大 AST 分析时 <strong>路径爆炸</strong> 的缺点，同时需要 <strong>消耗大量内存资源</strong>。</li>
+<li>基于 QL 的白盒工具，可以分别对项目、二方包进行 AST 解析并存入数据库或其它位置，然后在不同项目的结果上做关联查询，这部分的挑战在于，需要重新构建 AST 模型，添加不同项目的标识，模型的建立需要根据大量的场景进行抽象和验证。</li>
+</ul>
+<h3 id="跨项目API调用场景下，白盒检测遇到的挑战是什么？"><a href="#跨项目API调用场景下，白盒检测遇到的挑战是什么？" class="headerlink" title="跨项目API调用场景下，白盒检测遇到的挑战是什么？"></a>跨项目API调用场景下，白盒检测遇到的挑战是什么？</h3><p>笔者暂时无法解决传统白盒工具在跨项目 API 调用场景下的检测方案，只能在基于 QL 的白盒工具上，尝试一些解决方案。在基于 QL 的白盒工具里进行跨项目 API 调用场景下的漏洞检测时，核心点在于如何构建项目间的关联关系。</p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><p>关于跨项目的解决方案，欢迎大家带着自己的思考与笔者交流。也可以等 AST-Framework 产品发布后，直接体验效果。</p>
+
       
     </div>
     
@@ -421,11 +428,11 @@ U2FsdGVkX1+psFUSopBxhb0xajbT23kRn+FyKGb0k5vJktMc5o3C6ZG1/UG+LHfM01zZdWgATyxK78Qo
       
         <div class="post-tags">
           
+            <a href="/tags/AST-Framework/" rel="tag"># AST-Framework</a>
+          
             <a href="/tags/SAST/" rel="tag"># SAST</a>
           
             <a href="/tags/代码分析/" rel="tag"># 代码分析</a>
-          
-            <a href="/tags/AST-Framework/" rel="tag"># AST-Framework</a>
           
         </div>
       
@@ -502,8 +509,17 @@ U2FsdGVkX1+psFUSopBxhb0xajbT23kRn+FyKGb0k5vJktMc5o3C6ZG1/UG+LHfM01zZdWgATyxK78Qo
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -580,6 +596,22 @@ U2FsdGVkX1+psFUSopBxhb0xajbT23kRn+FyKGb0k5vJktMc5o3C6ZG1/UG+LHfM01zZdWgATyxK78Qo
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#白盒工具做二方包检测，遇到的挑战是什么？"><span class="nav-number">1.</span> <span class="nav-text">白盒工具做二方包检测，遇到的挑战是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">1.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#白盒做项目与二三方包联合检测、时，遇到的挑战是什么？"><span class="nav-number">2.</span> <span class="nav-text">白盒做项目与二三方包联合检测、时，遇到的挑战是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨项目API调用场景下，白盒检测遇到的挑战是什么？"><span class="nav-number">3.</span> <span class="nav-text">跨项目API调用场景下，白盒检测遇到的挑战是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案-1"><span class="nav-number">4.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -607,7 +639,7 @@ U2FsdGVkX1+psFUSopBxhb0xajbT23kRn+FyKGb0k5vJktMc5o3C6ZG1/UG+LHfM01zZdWgATyxK78Qo
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">111.9k</span>
+    <span title="Site words total count">113.1k</span>
   
 </div>
 

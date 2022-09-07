@@ -385,7 +385,7 @@
       
         <p>Java WEB 应用打成 RPM 包进行安装和启动，针对这种应用，该如何进行代码审计呢？让人头大 QAQ<br><a id="more"></a></p>
 <p>我们忽略 RPM 包的结构、构建过程，先说最终的结论。RPM 安装包中含有若干个可执行程序，在RPM包安装时，可执行程序需要存放的位置、启动时执行的命令等，都是通过 <strong>spec文件</strong> 进行声明的。所以，即使将 <strong>Java Web应用</strong> 打包成了RPM安装包，Java Web的可执行Jar包在RPM安装包中依然是以独立的Jar包形式存在。</p>
-<p>了解了这个前提之后，就可以直接对 RPM 包进行反编译，提取其中的文件，这里我们使用 <strong>rpm2cpio命令</strong>，该命令用于将 rpm 软件包转换为 cpio 格式的文件。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> mkdir -p /tmp/rpm-decompile</span><br><span class="line"><span class="meta">$</span> cp rpm-package.rpm /tmp/rpm-decompile/</span><br><span class="line"><span class="meta">$</span> cd /tmp/rpm-decompile</span><br><span class="line"><span class="meta">$</span> # 提取 RPM 安装包中的文件</span><br><span class="line"><span class="meta">$</span> rpm2cpio rpm-package.rpm | cpio -idmv</span><br></pre></td></tr></table></figure></p>
+<p>了解了这个前提之后，就可以直接对 RPM 包进行反编译，提取其中的文件，这里我们使用 <strong>rpm2cpio命令</strong>，该命令用于将 rpm 软件包转换为 cpio 格式的文件。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p /tmp/rpm-decompile</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cp rpm-package.rpm /tmp/rpm-decompile/</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /tmp/rpm-decompile</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment"># 提取 RPM 安装包中的文件</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm2cpio rpm-package.rpm | cpio -idmv</span></span><br></pre></td></tr></table></figure></p>
 <p>至此，已经完成了 <strong>RPM安装包</strong> 内 Java Web 应用的提取，之后通过 <strong>Jar包反编译工具</strong> 即可还原源代码或直接使用字节码分析工具，进行代码审计。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
 <li><a href="https://zhuanlan.zhihu.com/p/47868584" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/47868584</a></li>
@@ -626,7 +626,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">111.9k</span>
+    <span title="Site words total count">113.1k</span>
   
 </div>
 
