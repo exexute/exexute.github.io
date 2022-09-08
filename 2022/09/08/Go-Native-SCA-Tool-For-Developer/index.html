@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="SCA,Go,">
+  <meta name="keywords" content="Go,SCA,">
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="2022-09-06，Go 安全团队正式对外宣布Go漏洞管理工具 Govulncheck， Govulncheck 是一款面向开发者的供应链漏洞检测工具，通过分析源代码或编译后的二进制文件，分析项目中引入的三方包及相关函数，然后在漏洞库 https://vuln.go.dev/ 中查询是否是否存在漏洞。 值得称赞的是， Govulncheck 在三方包的名称和版本进行漏洞匹配的基础上，还分析了三方">
-<meta name="keywords" content="SCA,Go">
+<meta name="keywords" content="Go,SCA">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GoLang native sca tool for developer">
 <meta property="og:url" content="https://exexute.github.io/2022/09/08/Go-Native-SCA-Tool-For-Developer/index.html">
@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://exexute.github.io/2022/09/08/Go-Native-SCA-Tool-For-Developer/go-vuln-check-3.png">
 <meta property="og:image" content="https://exexute.github.io/2022/09/08/Go-Native-SCA-Tool-For-Developer/go-vuln-check-source.jpg">
 <meta property="og:image" content="https://exexute.github.io/2022/09/08/Go-Native-SCA-Tool-For-Developer/go-vuln-check-binary.jpg">
-<meta property="og:updated_time" content="2022-09-08T15:38:12.810Z">
+<meta property="og:updated_time" content="2022-09-08T23:52:24.903Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GoLang native sca tool for developer">
 <meta name="twitter:description" content="2022-09-06，Go 安全团队正式对外宣布Go漏洞管理工具 Govulncheck， Govulncheck 是一款面向开发者的供应链漏洞检测工具，通过分析源代码或编译后的二进制文件，分析项目中引入的三方包及相关函数，然后在漏洞库 https://vuln.go.dev/ 中查询是否是否存在漏洞。 值得称赞的是， Govulncheck 在三方包的名称和版本进行漏洞匹配的基础上，还分析了三方">
@@ -352,7 +352,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  2k
+                  2.2k
                 </span>
               
 
@@ -368,7 +368,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  7
+                  8
                 </span>
               
             </div>
@@ -407,8 +407,8 @@
 <p><img src="go-vuln-check-3.png" alt="无符号二进制文件检测结果"></p>
 <h2 id="Govulncheck-分析项目源代码原理"><a href="#Govulncheck-分析项目源代码原理" class="headerlink" title="Govulncheck 分析项目源代码原理"></a>Govulncheck 分析项目源代码原理</h2><p>流程如下：</p>
 <ol>
-<li>判断执行 <code>govulncheck</code> 命令的目录中是否存在 <strong>go.mod</strong> 和 <strong>go.sum</strong> 方法</li>
 <li>提取项目中使用到的三方组件和函数信息</li>
+<li>如果执行失败，则判断执行 <code>govulncheck</code> 命令的目录中是否存在 <strong>go.mod</strong> 和 <strong>go.sum</strong> 方法，输出相关的错误提示信息</li>
 <li>拉取三方组件相关的漏洞信息（该操作会优先检查本地文件缓存）</li>
 <li>根据三方组件和函数名称与漏洞信息进行匹配</li>
 <li>梳理三方组件函数的调用入口及相关的调用链路</li>
@@ -431,6 +431,8 @@
 <li>输出检测结果</li>
 </ol>
 <p><img src="go-vuln-check-binary.jpg" alt></p>
+<h2 id="漏洞库"><a href="#漏洞库" class="headerlink" title="漏洞库"></a>漏洞库</h2><p>漏洞库一直是 SCA 类产品的核心数据， Govulncheck 默认使用<a href="https://vuln.go.dev/" target="_blank" rel="noopener">Go 官方漏洞库</a>，该漏洞库的数据来源包括已有的 CVEs 数据、GHSAs 数据和 Go 三方包的维护者自己公布的漏洞信息，数据质量笔者没有进行测试，但从数据源上来看，国外的三方包的漏洞信息应该还是能覆盖的比较全。为了满足企业更复杂的需求， Govulncheck 也支持通过环境变量 <strong>GOVULNDB</strong> 指定一个私有漏洞库，但是，私有漏洞库需要遵守相关<a href="https://go.dev/security/vuln/database" target="_blank" rel="noopener">规范和要求</a>。</p>
+<p>无法联网环境下的使用：Govulncheck 进行漏洞检测时，会缓存相关的组件信息到本地的文件系统中，可以考虑定期备份完整的组件漏洞信息到本地，实现离线检测；或通过跳板机的方案，走代理访问远端漏洞库。</p>
 <h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><ol>
 <li>流程设计非人类：需要进入项目根目录，然后运行 <code>govulncheck .</code> 才能检测，不能在任意位置置顶要检测的项目目录</li>
 <li>准确性不足：调用链路过于简单且准确性不足，很多存在链路但是无法在源码层面跟踪出来的情况</li>
@@ -471,9 +473,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/SCA/" rel="tag"># SCA</a>
-          
             <a href="/tags/Go/" rel="tag"># Go</a>
+          
+            <a href="/tags/SCA/" rel="tag"># SCA</a>
           
         </div>
       
@@ -642,7 +644,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Govulncheck-快速使用"><span class="nav-number">1.</span> <span class="nav-text">Govulncheck 快速使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Govulncheck-分析-Golang-项目源码"><span class="nav-number">1.1.</span> <span class="nav-text">Govulncheck 分析 Golang 项目源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Govulncheck-分析-Golang-二进制文件"><span class="nav-number">1.2.</span> <span class="nav-text">Govulncheck 分析 Golang 二进制文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Govulncheck-分析去除符号表-Golang-二进制文件"><span class="nav-number">1.3.</span> <span class="nav-text">Govulncheck 分析去除符号表 Golang 二进制文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Govulncheck-分析项目源代码原理"><span class="nav-number">2.</span> <span class="nav-text">Govulncheck 分析项目源代码原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Govulncheck-分析二进制文件"><span class="nav-number">3.</span> <span class="nav-text">Govulncheck 分析二进制文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写在最后"><span class="nav-number">4.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐几个链接"><span class="nav-number">5.</span> <span class="nav-text">推荐几个链接</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Govulncheck-快速使用"><span class="nav-number">1.</span> <span class="nav-text">Govulncheck 快速使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Govulncheck-分析-Golang-项目源码"><span class="nav-number">1.1.</span> <span class="nav-text">Govulncheck 分析 Golang 项目源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Govulncheck-分析-Golang-二进制文件"><span class="nav-number">1.2.</span> <span class="nav-text">Govulncheck 分析 Golang 二进制文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Govulncheck-分析去除符号表-Golang-二进制文件"><span class="nav-number">1.3.</span> <span class="nav-text">Govulncheck 分析去除符号表 Golang 二进制文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Govulncheck-分析项目源代码原理"><span class="nav-number">2.</span> <span class="nav-text">Govulncheck 分析项目源代码原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Govulncheck-分析二进制文件"><span class="nav-number">3.</span> <span class="nav-text">Govulncheck 分析二进制文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#漏洞库"><span class="nav-number">4.</span> <span class="nav-text">漏洞库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写在最后"><span class="nav-number">5.</span> <span class="nav-text">写在最后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐几个链接"><span class="nav-number">6.</span> <span class="nav-text">推荐几个链接</span></a></li></ol></div>
             
 
           </div>
@@ -676,7 +678,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">115k</span>
+    <span title="Site words total count">115.3k</span>
   
 </div>
 
