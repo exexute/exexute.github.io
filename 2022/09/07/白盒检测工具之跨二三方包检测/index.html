@@ -395,7 +395,7 @@
 <p>根据二方包的引入方式可以看出，白盒只能覆盖走标准开发流程创建二方包的场景，针对非标创建二方包和直接引入文件系统内的二方包，无法直接检测。</p>
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>白盒无法有效检测二方包的原因包括<strong>流程未覆盖</strong>和<strong>能力未覆盖</strong>两类。针对流程未覆盖的情况，可以针对上述场景做针对性的解决方案，比如：在组件推送到组件库时，拉取 Jar 包做异步白盒检测、在测试环境中拉取 Java 应用启动时依赖的所有 Jar 包进行检测等，解决方案需要与企业内部的环境匹配才能达到最高的投入产出比，这里不过多论述，重点介绍如何解决能力未覆盖的问题。</p>
 <p>大部分白盒应用都只支持源码级的检测，我们可以在白盒工具检测前，通过 sast-plugin 做 Jar 包反编译，还原 Jar 包为 Java 源代码，然后调用白盒工具，实现源码级的检测。反编译工具有很多，经过对比，最终选择了 IDEA 开源的 Java 反编译工具 fernflower。</p>
-<p>调用 fernflower 对 jar 包进行反编译<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> java -jar fernflower.jar &lt;target jar&gt; &lt;source root path&gt;</span><br></pre></td></tr></table></figure></p>
+<p>调用 fernflower 对 jar 包进行反编译<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> java -jar fernflower.jar &lt;target jar&gt; &lt;<span class="built_in">source</span> root path&gt;</span></span><br></pre></td></tr></table></figure></p>
 <h3 id="白盒做项目与二三方包联合检测、时，遇到的挑战是什么？"><a href="#白盒做项目与二三方包联合检测、时，遇到的挑战是什么？" class="headerlink" title="白盒做项目与二三方包联合检测、时，遇到的挑战是什么？"></a>白盒做项目与二三方包联合检测、时，遇到的挑战是什么？</h3><p>当我们做跨组件（本身也是跨项目的一种）检测时，遇到的挑战与白盒工具的实现方式和检测原理有很大的关系，主要分为以下两类：</p>
 <ul>
 <li>传统白盒工具采用 AST 分析，然后把分析结果临时存储在内存、数据库等位置，然后在内存中进行污点链路的梳理，这种实现方式的挑战在于反编译二方包后，数据量激增，污点链路梳理时会放大 AST 分析时 <strong>路径爆炸</strong> 的缺点，同时需要 <strong>消耗大量内存资源</strong>。</li>
@@ -534,7 +534,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">89</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -556,7 +556,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">172</span>
+                  <span class="site-state-item-count">173</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -639,7 +639,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">113.1k</span>
+    <span title="Site words total count">115k</span>
   
 </div>
 

@@ -260,6 +260,185 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2022/09/08/Go-Native-SCA-Tool-For-Developer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/09/08/Go-Native-SCA-Tool-For-Developer/" itemprop="url">GoLang native sca tool for developer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-09-08T19:36:34+08:00">
+                2022-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全研究/" itemprop="url" rel="index">
+                    <span itemprop="name">安全研究</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>2022-09-06，Go 安全团队正式<a href="https://go.dev/blog/vuln" target="_blank" rel="noopener">对外宣布</a>Go漏洞管理工具 <a href="https://github.com/golang/vuln" target="_blank" rel="noopener">Govulncheck</a>， Govulncheck 是一款面向开发者的供应链漏洞检测工具，通过分析源代码或编译后的二进制文件，分析项目中引入的三方包及相关函数，然后在<a href="https://vuln.go.dev/" target="_blank" rel="noopener">漏洞库 https://vuln.go.dev/</a> 中查询是否是否存在漏洞。</p>
+<p>值得称赞的是， Govulncheck 在三方包的名称和版本进行漏洞匹配的基础上，还分析了三方包中的函数是否被调用，以及相关的调用路径。此外， Govulncheck 还结合了 Go 版本、操作系统的版本和架构做进一步的漏洞筛选，最终只展示在当前操作系统和 Go 语言版本中，具有真实危害的三方包。例如，对于 Linux 平台运行的二进制文件，不会报告具有 Windows 特定依赖条件的三方包漏洞，更详细的内容可以查看<a href="https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck#hdr-Limitations" target="_blank" rel="noopener">官方文档</a>。</p>
+<p>Govulncheck 通过分析二进制文件的符号信息查找出三方包及显式调用的函数，根据三方包和函数查找漏洞库，最终确定三方包是否存在漏洞，因此 Govulncheck 无法检测去除符号表信息的二进制文件。但是，生产环境中运行的 Go 二进制文件基本上都会去除符号表信息，减小体积并提高安全性。这一点也更加印证了 Govulncheck 的核心定位是一款为 Developer 开发的 DevSecOps 工具。 Govulncheck 还有一些其它的不足，比如：只支持 Go 1.18 及以上版本编译的二进制文件，分析二进制文件时无法展示漏洞调用图等，更多的限制信息可以查看<a href="https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck#hdr-Limitations" target="_blank" rel="noopener">官方博客</a>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/09/08/Go-Native-SCA-Tool-For-Developer/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2022/09/08/白盒检测工具之Java与Kotlin混编漏洞检测/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -345,7 +524,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  178
+                  187
                 </span>
               
 
@@ -1843,183 +2022,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2022/01/04/Github-Actions中元数据的语法-md/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="owefsad">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="owefsad 的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/01/04/Github-Actions中元数据的语法-md/" itemprop="url">Github Actions中元数据的语法.md</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-01-04T18:49:26+08:00">
-                2022-01-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DevSecOps/" itemprop="url" rel="index">
-                    <span itemprop="name">DevSecOps</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  222
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>简介<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/01/04/Github-Actions中元数据的语法-md/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </p></div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2070,7 +2072,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">89</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2092,7 +2094,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">172</span>
+                  <span class="site-state-item-count">173</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -2159,7 +2161,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">113.1k</span>
+    <span title="Site words total count">115k</span>
   
 </div>
 
