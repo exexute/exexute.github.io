@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="udf,CloudSecurity,unauthorized,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="AutoWarp 是 Azure 自动化服务中的一个严重漏洞，通过该漏洞，攻击者可以在未经授权的情况下访问使用该服务的其它 Azure 客户的 Azure Automation 账号凭证，然后访问该账号下分配的资源与数据。 我们的研究表明，多家大公司正在使用该服务并存在被攻击的可能。我们直接向微软报告了这个问题，现在漏洞已经修复，所有受影响的客户都已收到通知。">
+<meta name="keywords" content="udf,CloudSecurity,unauthorized">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译文] AutoWarp: Microsoft Azure自动化服务中的严重跨帐户漏洞">
+<meta property="og:url" content="https://exexute.github.io/2023/02/26/译文-AutoWarp-Microsoft-Azure自动化服务中的严重跨帐户漏洞/index.html">
+<meta property="og:site_name" content="owefsad 的博客">
+<meta property="og:description" content="AutoWarp 是 Azure 自动化服务中的一个严重漏洞，通过该漏洞，攻击者可以在未经授权的情况下访问使用该服务的其它 Azure 客户的 Azure Automation 账号凭证，然后访问该账号下分配的资源与数据。 我们的研究表明，多家大公司正在使用该服务并存在被攻击的可能。我们直接向微软报告了这个问题，现在漏洞已经修复，所有受影响的客户都已收到通知。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://orca.security/wp-content/uploads/2022/03/embedded-image_ubuntu_Autowarp_blog.png">
+<meta property="og:image" content="https://orca.security/wp-content/uploads/2022/03/embedded-image_temp_Autowarp_blog.png">
+<meta property="og:image" content="https://orca.security/wp-content/uploads/2022/03/embedded-image_MSI_Autowarp_blog.png">
+<meta property="og:image" content="https://orca.security/wp-content/uploads/2022/03/embedded-image_GET_Autowarp_blog.png">
+<meta property="og:image" content="https://orca.security/wp-content/uploads/2022/03/embedded-image_automationacc_Autowarp_blog.png">
+<meta property="og:updated_time" content="2023-02-26T13:28:30.434Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译文] AutoWarp: Microsoft Azure自动化服务中的严重跨帐户漏洞">
+<meta name="twitter:description" content="AutoWarp 是 Azure 自动化服务中的一个严重漏洞，通过该漏洞，攻击者可以在未经授权的情况下访问使用该服务的其它 Azure 客户的 Azure Automation 账号凭证，然后访问该账号下分配的资源与数据。 我们的研究表明，多家大公司正在使用该服务并存在被攻击的可能。我们直接向微软报告了这个问题，现在漏洞已经修复，所有受影响的客户都已收到通知。">
+<meta name="twitter:image" content="https://orca.security/wp-content/uploads/2022/03/embedded-image_ubuntu_Autowarp_blog.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://exexute.github.io/2023/02/26/译文-AutoWarp-Microsoft-Azure自动化服务中的严重跨帐户漏洞/">
+
+
+
+
+
+  <title>[译文] AutoWarp: Microsoft Azure自动化服务中的严重跨帐户漏洞 | owefsad 的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2a72b138b6ef81ae123fcd18e91fa843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">owefsad 的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://exexute.github.io/2023/02/26/译文-AutoWarp-Microsoft-Azure自动化服务中的严重跨帐户漏洞/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="owefsad">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="owefsad 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[译文] AutoWarp: Microsoft Azure自动化服务中的严重跨帐户漏洞</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2023-02-26T18:48:20+08:00">
+                2023-02-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CloudSecurity/" itemprop="url" rel="index">
+                    <span itemprop="name">CloudSecurity</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>AutoWarp</strong> 是 Azure 自动化服务中的一个严重漏洞，通过该漏洞，攻击者可以在未经授权的情况下访问使用该服务的其它 Azure 客户的 Azure Automation 账号凭证，然后访问该账号下分配的资源与数据。</p>
+<p>我们的研究表明，多家大公司正在使用该服务并存在被攻击的可能。我们直接向微软报告了这个问题，现在漏洞已经修复，所有受影响的客户都已收到通知。</p>
+<a id="more"></a>
+<h3 id="如何判断自己的-Azure-账号是否受-AutoWarp-漏洞的影响"><a href="#如何判断自己的-Azure-账号是否受-AutoWarp-漏洞的影响" class="headerlink" title="如何判断自己的 Azure 账号是否受 AutoWarp 漏洞的影响"></a>如何判断自己的 Azure 账号是否受 AutoWarp 漏洞的影响</h3><p>1.账号开通并使用了 Azure Automation 服务<br>2.启用了运行 Automation 服务时使用的账号(子账号)的 <strong>Managed Identity</strong> 特性（默认启用）</p>
+<h3 id="什么是-Azure-Automation-服务"><a href="#什么是-Azure-Automation-服务" class="headerlink" title="什么是 Azure Automation 服务"></a>什么是 Azure Automation 服务</h3><p>Azure Automation 服务允许客户以托管的方式在 Azure 上执行代码，客户可以指定执行的任务、任务输入与输出等信息。代码独立运行在沙箱中，与在同一个虚拟机上执行的其它客户的代码相隔离。</p>
+<h3 id="发现漏洞的细节"><a href="#发现漏洞的细节" class="headerlink" title="发现漏洞的细节"></a>发现漏洞的细节</h3><p>我在浏览 Azure 服务列表，寻找下一个要研究的服务时，在 <strong>管理与治理</strong> 类别下看到 <strong>自动化账户</strong> 的服务，我以为这是一种允许我自动化控制 Azure 帐户的服务。但当我创建了 Automation 账号后，才发现这是一个标准的自动化脚本服务；用户可以上传 Python 或 PowerShell 脚本并在 Azure 上托管执行。</p>
+<p>关于研究，我最喜欢的是探索未知，所以我做的第一件事就是查看文件系统，看看我能找到什么有趣的东西。我执行了一个用于反弹 Shell 的 Python 任务，获取到 Shell 之后，我试图执行一些常见的 cmd 命令，如 <code>tasklist</code>。但是命令报错了，根据错误信息可以定位出 <strong>PathExt</strong> 环境变量的值不正确，通常情况下，它会包含 <code>.exe</code> 文件扩展名，但这台机器只有 <code>.cpl</code>（Windows 控制面板项的文件扩展名）。<br><img src="https://orca.security/wp-content/uploads/2022/03/embedded-image_ubuntu_Autowarp_blog.png" alt></p>
+<p>当我查看 <code>C:\</code> 目录时，首先引起我注意的是 <strong>orchestrator</strong> 和 <strong>temp</strong> 目录。<strong>orchestrator</strong> 目录中存在很多 <code>dll</code> 和 <code>exe</code> 文件，<strong>sandbox</strong> 文件让我意识到 <strong>orchestrator</strong> 目录中存放的就是运行 <code>udf</code> 功能的程序。<strong>temp</strong> 目录中发现了 <strong>“digs”</strong> 目录和 <strong>“trace.log”</strong> 文件。<br><img src="https://orca.security/wp-content/uploads/2022/03/embedded-image_temp_Autowarp_blog.png" alt></p>
+<p>一般情况下，日志都中会记录对开发人员重要的信息。幸运的是，这是一个非常好的日志文件。在第7行发现了:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Orchestrator.Sandbox.Diagnostics Critical: </span><br><span class="line">0 : [2021-12-06T12:08:04.5527647Z]  </span><br><span class="line">Creating asset retrieval web service. </span><br><span class="line">[assetRetrievalEndpoint=</span><br><span class="line">http://127.0.0.1:40008]</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>“没有什么比发现你的目标公开一个 web 服务更令人兴奋的了。特别是当它是本地的，在一个高的，似乎随机的端口。”</p>
+</blockquote>
+<p>这对我来说是个危险信号，这就是我通常所说的“掩护” —— 为了绕过某些技术限制而做出的决策。为什么要选择如此高的随机端口呢? 因为其它端口已被占用。</p>
+<p>我用 <code>cURL</code> 访问了 assetRetrievalEndpoint，但是没有返回什么有用的信息。我尝试访问了 40009、40010 等端口，部分端口可以正常访问，这证实了我的怀疑：日志中记录的 web 服务是由通过前面看到的 <strong>orchestrator</strong> 管理的。因此我必须了解发生了什么，这个 web 服务的作用是什么?</p>
+<h3 id="分析-Azure-Automation-的代码"><a href="#分析-Azure-Automation-的代码" class="headerlink" title="分析 Azure Automation 的代码"></a>分析 Azure Automation 的代码</h3><p>下载了 <code>orchestrator</code> 目录中的文件后，我用 <code>ILSpy</code>(一款 .NET 反编译器) 查找与 <strong>asset retrieval web service</strong> 相关的代码，我查看了配置 HTTP 路由的方法，发现 <code>/oauth2/token</code> 和 <code>/metadata/identity/oauth2/token</code> 接口被映射到名为 <code>MSI</code> 的控制器上。当时我还不知道 <strong>MSI</strong> 是“托管服务标识”的首字母缩写。很有趣，对吧?<br><img src="https://orca.security/wp-content/uploads/2022/03/embedded-image_MSI_Autowarp_blog.png" alt></p>
+<p>我之前没怎么做过 <code>.net web</code> 的开发或研究，所以我从代码中推断出这些路由映射到 <code>MSIController</code> 类，如果你熟悉MVC(模型-视图-控制器)的概念，这是非常简单的。同样有趣的是，一些软件开发的经验在审查源代码时很有帮助——它有助于在更复杂的情况下“读懂字里行间”。<br><img src="https://orca.security/wp-content/uploads/2022/03/embedded-image_GET_Autowarp_blog.png" alt></p>
+<p>我开始请求 <code>/oauth2/token</code>，为了让请求看起来像是来自元数据的请求，我加了 <code>metadata: True</code> 的 HTTP 请求头，并设置了 resource 参数。我想获取一个 Azure 管理 api 可以使用的令牌，所以 resource 参数为 <code>resource=https://managment.azure.com/</code>；发送请求后，返回了一个 JWT Token。Token 对应的用户身份是谁呢？我解码了 JWT Token，看到了自己的 <code>subscription id</code>、<code>tenant ID</code> 和自动化帐户的资源ID。通过查看 <strong>Azure Automation Identity</strong> 的资料，我发现每个自动化帐户都有一个 “系统分配的托管身份”，这意味着我们可以将角色分配给执行自动化脚本任务的账号/子账号，然后，通过该服务管理角色身份。</p>
+<p>我用 Azure CLI 发起获取所有虚拟机列表的请求来验证 JWT Token 是否有效，在发送请求时拦截并替换令牌，然后返回“没有权限“。这是因为我没有给 <strong>Automation</strong> 账号/子账号分配角色，在分配了兼容的角色后，令牌生效。这意味着，此处获取的是 Automation 账号的 JWT Token。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>获取 Automation 账号的 JWT Token 本身并没有风险，但是，在托管 UDF 的机器上，可以通过访问 <strong>asset retrieval</strong> 服务的其它端口获取到其它租户 Automation 账号的 JWT Token，这就很严重了。我写了个 PoC 用于从 40,000 开始向 20 个端口发出 HTTP 请求:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">PORT_RANGE_START = <span class="number">40000</span></span><br><span class="line">PORTS_TO_SCAN = <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">"Making requests to ports 40000 and up..."</span>)</span><br><span class="line"><span class="keyword">for</span> port <span class="keyword">in</span> range(PORT_RANGE_START, PORT_RANGE_START + PORTS_TO_SCAN):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        resp = requests.post(<span class="string">f"http://127.0.0.1:<span class="subst">&#123;port&#125;</span>/oauth2/token"</span>, </span><br><span class="line">timeout=<span class="number">0.5</span>, headers=&#123;<span class="string">'Metadata'</span>: <span class="string">'True'</span>&#125;, data=&#123;<span class="string">'resource'</span>: </span><br><span class="line"><span class="string">'https://management.azure.com/'</span>&#125;)</span><br><span class="line">        print(<span class="string">f"Port <span class="subst">&#123;port&#125;</span>: <span class="subst">&#123;resp.json()&#125;</span>"</span>)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">continue</span></span><br></pre></td></tr></table></figure></p>
+<p>端口返回了不同的 JWT Token，很明显，我已经拿到了其它人的 Automation 账号 Token，在前面我已经证明只要给 Automation 账号相关的权限，就可以通过 JWT Token 来管理对应 Azure 帐户中的资源与数据。</p>
+<p>我们想知道这个简单的漏洞对应的危害如何，因此使用 Azure 自动化的调度特性尝试从几百个端口获取令牌，并查看出现了哪些租户。我们不存储令牌，只提取关于租户的元数据(租户ID和自动化帐户资源ID)。</p>
+<p>在这个问题被修补之前的短时间内，我们看到了许多独特的租户，包括几家非常知名的公司! 这是每小时一次的计划任务。如果我们持续运行，我们可能会捕获更多(一旦自动化作业完成，标识端点就会下降，因此在某些情况下，您必须非常快速地捕获它)。</p>
+<p>这是一个相当简单的缺陷，但却演变成了一个非常有趣的漏洞。不清楚这里缺少什么，身份端点可能需要某种形式的身份验证(这个服务器上的其他端点肯定需要)。或者可能有人忽略了这样一个事实，即机器内部的内部网络实际上并不是您所期望的沙盒。</p>
+<h3 id="AutoWarp-微软-Azure-自动化漏洞的修复方案"><a href="#AutoWarp-微软-Azure-自动化漏洞的修复方案" class="headerlink" title="AutoWarp 微软 Azure 自动化漏洞的修复方案"></a>AutoWarp 微软 Azure 自动化漏洞的修复方案</h3><p>我当天就向微软报告了这个漏洞。我要感谢他们在负责任的披露过程中如此积极响应和合作。微软决定通过在请求 JWT Token 时添加 <code>X-IDENTITY-HEADER</code> HTTP 请求头来修复这个漏洞。必须将该值设置为在环境变量中设置的秘密值。他们还提到他们正在对他们的架构进行全面审查，以确保这样的事情不会再次发生!<br><img src="https://orca.security/wp-content/uploads/2022/03/embedded-image_automationacc_Autowarp_blog.png" alt></p>
+<p>我们很高兴在问题落到坏人手里之前发现了这个问题。我们要感谢微软与我们合作，迅速而专业地解决了这个问题。我们对云提供商的重点研究将继续进行，您可以期待很快听到我们的更多消息。</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>当云产品存在执行 UDF 的功能时，除了关注基本的漏洞外，还要额外关注执行 UDF 的服务本身是否会创建其它服务，以及 UDF 之间的网络/内存/磁盘隔离情况。</p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><ul>
+<li><a href="https://orca.security/resources/blog/autowarp-microsoft-azure-automation-service-vulnerability/" target="_blank" rel="noopener">autowarp-microsoft-azure-automation-service-vulnerability</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/wechat-qcode.jpg" alt="owefsad wechat" style="width: 200px; max-width: 100%;">
+    <div>进击的DevSecOps，持续分享SAST/IAST/RASP的技术原理及甲方落地实践。如果你对 SAST、IAST、RASP方向感兴趣，可以扫描下方二维码关注公众号，获得更及时的内容推送。</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/udf/" rel="tag"># udf</a>
+          
+            <a href="/tags/CloudSecurity/" rel="tag"># CloudSecurity</a>
+          
+            <a href="/tags/unauthorized/" rel="tag"># unauthorized</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/09/19/从0开始上手使用nebula图数据库/" rel="next" title="从0开始上手使用nebula图数据库">
+                <i class="fa fa-chevron-left"></i> 从0开始上手使用nebula图数据库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">owefsad</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">91</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">175</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/exexute" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:owefsad@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何判断自己的-Azure-账号是否受-AutoWarp-漏洞的影响"><span class="nav-number">1.</span> <span class="nav-text">如何判断自己的 Azure 账号是否受 AutoWarp 漏洞的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-Azure-Automation-服务"><span class="nav-number">2.</span> <span class="nav-text">什么是 Azure Automation 服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发现漏洞的细节"><span class="nav-number">3.</span> <span class="nav-text">发现漏洞的细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析-Azure-Automation-的代码"><span class="nav-number">4.</span> <span class="nav-text">分析 Azure Automation 的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#漏洞利用"><span class="nav-number">5.</span> <span class="nav-text">漏洞利用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AutoWarp-微软-Azure-自动化漏洞的修复方案"><span class="nav-number">6.</span> <span class="nav-text">AutoWarp 微软 Azure 自动化漏洞的修复方案</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#思考"><span class="nav-number"></span> <span class="nav-text">思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链接"><span class="nav-number"></span> <span class="nav-text">链接</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">owefsad</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">118.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
